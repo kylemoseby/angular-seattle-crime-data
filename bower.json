@@ -1,6 +1,6 @@
 {
   "name": "angular-seatle-crime-data",
-  "description": "Directives that produce interactive visualizations using data from seattle.data.gov",
+  "description": "Directives that load interactive visualizations using data from seattle.data.gov",
   "version": "1.0.0",
   "homepage": "https://github.com/angular/angular-seatle-crime-data",
   "license": "MIT",

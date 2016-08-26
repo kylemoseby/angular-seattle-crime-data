@@ -2,7 +2,7 @@
   "name": "angular-seatle-crime-data",
   "private": true,
   "version": "0.0.0",
-  "description": "Directives that produce interactive visualizations using data from seattle.data.gov",
+  "description": "Directives that load interactive visualizations using data from seattle.data.gov",
   "repository": "https://github.com/kylemoseby/angular-seatle-crime-data",
   "license": "MIT",
   "devDependencies": {
