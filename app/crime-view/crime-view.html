@@ -1,0 +1,30 @@
+<div class="container-fluid">
+  <div class="row" incident-detail="crimeData" timeline-id="$vizTimeline" map-id="$crimeMap" ng-hide="incidentDetail === null">
+  </div>
+  <div class="row">
+    <div class="col-md-1" uib-dropdown>
+      <div id="filter-types" uib-dropdown-toggle class="btn-group">
+        <button type="button" class="btn btn-default">
+          <span class="glyphicon glyphicon-filter"></span>
+        </button>
+      </div>
+      <ul filter-report-types="$index" crime-map-filter="$crimeMap" crime-timeline-filter="$vizTimeline" uib-dropdown-menu role="menu" aria-labelledby="filter-types">
+      </ul>
+    </div>
+    <div class="col-md-5">
+      <div id="sea-crime-viz" viz-time-line="$vizTimeline" viz-time-data="crimeData" crime-viz-map="$crimeMap"></div>
+    </div>
+    <div class="col-md-5">
+      <br>
+      <div map-canvas="$crimeMap" map-promise="crimeData" map-timeline="$vizTimeline"></div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-12" crime-reports-summary="$typeDetail" summary-index="$index"></div>
+  </div>
+  <div class="row">
+    <div class="col-md-10 col-md-offset-1">
+      <div id="crime-reports-block" crime-reports-block="$vizBlocks" crime-reports-data="crimeData"></div>
+    </div>
+  </div>
+</div>

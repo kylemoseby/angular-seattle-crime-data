@@ -1,0 +1,7 @@
+<ul class="list-unstyled">
+  <li ng-repeat="(key, val) in $index | orderObjectBy : 'count' : true">
+    <div class="reportTotals" style="background-color: {{val.fillColor}}; width: {{val.count / 10}}%"></div>
+    {{val.offenseCategory}} <span class="badge">{{val.count}}</span>
+    <span ng-repeat="child in val.children">{{child.$type}}&nbsp;&nbsp;{{child.count}}&nbsp;&nbsp;</span>
+  </li>
+</ul>

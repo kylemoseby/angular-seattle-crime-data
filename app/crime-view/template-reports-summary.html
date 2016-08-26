@@ -1,0 +1,50 @@
+<div class="panel panel-default" ng-show="$typeDetail.data !== null">
+  <!-- Default panel contents -->
+  <div class="panel-heading">Incident Type Summary</div>
+  <div class="panel-body">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Offense Category</th>
+          <th></th>
+          <th>Offense Count</th>
+          <th>% of Total Incidents</th>
+          <th>Child types</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <td>
+          {{$typeDetail.data.offenseCategory}}
+        </td>
+        <td>
+          <span class="badge" style="background-color: {{$typeDetail.data.fillColor}};">&nbsp;</span>
+        </td>
+        <td>
+          {{$typeDetail.data.count}}
+        </td>
+        <td>
+          {{ ($typeDetail.data.count / $reports.length) * 100 | number:0 }}
+        </td>
+        <td>
+          <ul>
+            <li ng-repeat="(key, value) in $typeDetail.data.children | orderObjectBy : 'count' : true" class="list-unstyled">
+              {{value.$type}} {{value.count}}
+            </li>
+          </ul>
+        </td>
+        <td width="33%">
+          <ul>
+            <li ng-repeat="(key, value) in $typeDetail.data.children | orderObjectBy : 'count' : true" class="list-unstyled">
+              <div class="reportTotals" style="background-color: {{$typeDetail.data.fillColor}}; width: {{value.count / 10}}%">&nbsp;</div>
+            </li>
+          </ul>
+        </td>
+      </tbody>
+    </table>
+    <div class="btn-group" role="group">
+      <button type="button" class="btn btn-default" ng-click="filterTypeDetail($event)"><span class="glyphicon glyphicon-filter"></span></button>
+      <button type="button" class="btn btn-default" ng-click="clearTypeDetail($event)"><span class="glyphicon glyphicon-remove"></span></button>
+    </div>
+  </div>
+</div>

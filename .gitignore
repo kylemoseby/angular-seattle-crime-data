@@ -1,0 +1,9 @@
+/node_modules
+/dist
+/.tmp
+/.sass-cache
+/bower_components
+app/images
+/other_components
+app/scripts/api_key.js
+portfolio/
