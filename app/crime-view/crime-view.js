@@ -1,9 +1,10 @@
 'use strict';
 
-angular.module('crimeView', ['ngRoute'])
-  .config(['$routeProvider', function($routeProvider) {
+angular.module('seaCrimeData', [
+    'ngRoute'
+  ]).config(['$routeProvider', function($routeProvider) {
     $routeProvider.when('/seattle-crime-map', {
-      'templateUrl': '/app/crime-view/crime-view.html',
+      'templateUrl': 'crime-view/crime-view.html',
       'controller': 'CrimeMapCtrl'
     });
 
@@ -15,7 +16,7 @@ angular.module('crimeView', ['ngRoute'])
     var _http = $http({
       'method': 'GET',
       // 'url': 'https://data.seattle.gov/resource/7ais-f98f.json'
-      url: '/app/crime-view/7ais-f98f.json'
+      url: 'crime-view/7ais-f98f.json'
     });
 
     /*
@@ -298,14 +299,14 @@ angular.module('crimeView', ['ngRoute'])
 
     return {
       'link': link,
-      'templateUrl': '/app/crime-view/template-crime-map-filter.html'
+      'templateUrl': 'crime-view/template-crime-map-filter.html'
     };
 
   }])
   .directive('summaryList', [function() {
 
     return {
-      'templateUrl': '/app/crime-view/template-summary-list.html'
+      'templateUrl': 'crime-view/template-summary-list.html'
     };
 
   }])
@@ -361,7 +362,7 @@ angular.module('crimeView', ['ngRoute'])
 
     return {
       'link': link,
-      'templateUrl': '//app/crime-view/template-reports-summary.html'
+      'templateUrl': '/crime-view/template-reports-summary.html'
     };
 
   }])
@@ -548,7 +549,7 @@ angular.module('crimeView', ['ngRoute'])
 
     return {
       'link': link,
-      'templateUrl': '/app/crime-view/template-reports-block.html'
+      'templateUrl': 'crime-view/template-reports-block.html'
     };
 
   }])
@@ -944,7 +945,7 @@ angular.module('crimeView', ['ngRoute'])
 
     return {
       'link': link,
-      'templateUrl': '/app/crime-view/template-reports-viz.html'
+      'templateUrl': 'crime-view/template-reports-viz.html'
     };
 
   }])
@@ -1178,7 +1179,7 @@ angular.module('crimeView', ['ngRoute'])
 
     return {
       'link': link,
-      'templateUrl': '/app/crime-view/template-map-canvas.html'
+      'templateUrl': 'crime-view/template-map-canvas.html'
     };
 
   }])
@@ -1210,7 +1211,7 @@ angular.module('crimeView', ['ngRoute'])
 
     return {
       'link': link,
-      'templateUrl': '/app/crime-view/template-incident-detail.html'
+      'templateUrl': 'crime-view/template-incident-detail.html'
     };
 
   }])
@@ -1239,33 +1240,4 @@ angular.module('crimeView', ['ngRoute'])
       return filtered;
     };
 
-  })
-  .controller('CrimeMapCtrl', ['$scope', '$http', '$window', 'seattleDataGov', function($scope, $http, $window, seattleDataGov) {
-
-    $scope.crimeData = seattleDataGov;
-
-    $scope.crimeData.promise
-      .then(function(data) {
-
-        $scope.$index = data.index;
-
-        $scope.$reports = data.incidents;
-      });
-
-    var w = angular.element($window);
-
-    w.bind('resize', function(ev) {
-
-      try {
-        $scope.$crimeMap.refresh();
-      } catch (e) {}
-
-      try {
-        $scope.$vizTimeline.refresh();
-      } catch (e) {}
-
-      try {
-        $scope.$vizBlocks.refreshBlocks();
-      } catch (e) {}
-    });
-  }]);
+  });

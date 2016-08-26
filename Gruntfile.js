@@ -9,19 +9,8 @@
 
 module.exports = function(grunt) {
 
-  // grunt.loadNpmTasks('grunt-contrib-clean');
-  // grunt.loadNpmTasks('grunt-contrib-concat');
-  grunt.loadNpmTasks('grunt-contrib-connect');
-  // grunt.loadNpmTasks('grunt-contrib-copy');
-  // grunt.loadNpmTasks('grunt-contrib-cssmin');
-  // grunt.loadNpmTasks('grunt-contrib-htmlmin');
-  // grunt.loadNpmTasks('grunt-contrib-imagemin');
-  // grunt.loadNpmTasks('grunt-contrib-uglify');
-  // grunt.loadNpmTasks('grunt-contrib-watch');
-  // grunt.loadNpmTasks('grunt-wiredep');
-  grunt.loadNpmTasks('grunt-contrib-less');
-  grunt.loadNpmTasks('grunt-contrib-watch');
-  grunt.loadNpmTasks('grunt-contrib-jshint');
+  // load all grunt tasks matching the ['grunt-*', '@*/grunt-*'] patterns 
+  require('load-grunt-tasks')(grunt);
 
   // Configurable paths for the application
   var appConfig = {
@@ -37,39 +26,39 @@ module.exports = function(grunt) {
 
     // Watches files for changes and runs tasks based on the changed files
     watch: {
-      // bower: {
-      //   files: ['bower.json'],
-      //   tasks: ['wiredep']
-      // },
+      bower: {
+        files: ['bower.json'],
+        tasks: ['wiredep']
+      },
       js: {
         files: ['<%= yeoman.app %>/crime-view/{,*/}*.js'],
         tasks: ['jshint'],
-        // options: {
-        //   livereload: '<%= connect.options.livereload %>'
-        // }
+        options: {
+          livereload: '<%= connect.options.livereload %>'
+        }
       },
-      // jsTest: {
-      //   files: ['test/spec/{,*/}*.js'],
-      //   tasks: ['jshint:test', 'karma']
-      // },
+      jsTest: {
+        files: ['test/spec/{,*/}*.js'],
+        tasks: ['jshint:test', 'karma']
+      },
       styles: {
         files: ['<%= yeoman.app %>/styles/{,*/}*.less'],
         // {,*/}*.css
         tasks: ['less']
       },
-      // gruntfile: {
-      //   files: ['Gruntfile.js']
-      // },
-      // livereload: {
-      //   options: {
-      //     livereload: '<%= connect.options.livereload %>'
-      //   },
-      //   files: [
-      //     '<%= yeoman.app %>/{,*/}*.html',
-      //     '.tmp/styles/{,*/}*.css',
-      //     '<%= yeoman.app %>/images/{,*/}*.{png,jpg,jpeg,gif,webp,svg}'
-      //   ]
-      // }
+      gruntfile: {
+        files: ['Gruntfile.js']
+      },
+      livereload: {
+        options: {
+          livereload: '<%= connect.options.livereload %>'
+        },
+        files: [
+          '<%= yeoman.app %>/{,*/}*.html',
+          '.tmp/styles/{,*/}*.css',
+          '<%= yeoman.app %>/images/{,*/}*.{png,jpg,jpeg,gif,webp,svg}'
+        ]
+      }
     },
 
     // The actual grunt server settings
@@ -401,19 +390,19 @@ module.exports = function(grunt) {
     },
 
     // Run some tasks in parallel to speed up the build process
-    // concurrent: {
-    //   server: [
-    //     'copy:styles'
-    //   ],
-    //   test: [
-    //     'copy:styles'
-    //   ],
-    //   dist: [
-    //     'copy:styles',
-    //     'imagemin',
-    //     'svgmin'
-    //   ]
-    // },
+    concurrent: {
+      server: [
+        'copy:styles'
+      ],
+      test: [
+        'copy:styles'
+      ],
+      dist: [
+        'copy:styles',
+        'imagemin',
+        'svgmin'
+      ]
+    },
 
     // Test settings
     karma: {
@@ -424,52 +413,52 @@ module.exports = function(grunt) {
     }
   });
 
-  // grunt.registerTask('serve', 'Compile then start a connect web server', function(target) {
-  //   if (target === 'dist') {
-  //     return grunt.task.run(['build', 'connect:dist:keepalive']);
-  //   }
+  grunt.registerTask('serve', 'Compile then start a connect web server', function(target) {
+    if (target === 'dist') {
+      return grunt.task.run(['build', 'connect:dist:keepalive']);
+    }
 
-  //   grunt.task.run([
-  //     'clean:server',
-  //     'wiredep',
-  //     'concurrent:server',
-  //     'autoprefixer:server',
-  //     'connect:livereload',
-  //     'watch'
-  //   ]);
-  // });
+    grunt.task.run([
+      'clean:server',
+      'wiredep',
+      'concurrent:server',
+      'autoprefixer:server',
+      'connect:livereload',
+      'watch'
+    ]);
+  });
 
-  // grunt.registerTask('server', 'DEPRECATED TASK. Use the "serve" task instead', function(target) {
-  //   grunt.log.warn('The `server` task has been deprecated. Use `grunt serve` to start a server.');
-  //   grunt.task.run(['serve:' + target]);
-  // });
+  grunt.registerTask('server', 'DEPRECATED TASK. Use the "serve" task instead', function(target) {
+    grunt.log.warn('The `server` task has been deprecated. Use `grunt serve` to start a server.');
+    grunt.task.run(['serve:' + target]);
+  });
 
-  // grunt.registerTask('test', [
-  //   'clean:server',
-  //   'wiredep',
-  //   // 'concurrent:test',
-  //   'autoprefixer',
-  //   'connect:test',
-  //   'karma'
-  // ]);
+  grunt.registerTask('test', [
+    'clean:server',
+    'wiredep',
+    'concurrent:test',
+    'autoprefixer',
+    'connect:test',
+    'karma'
+  ]);
 
-  // grunt.registerTask('build', [
-  //   'clean:dist',
-  //   'wiredep',
-  //   'useminPrepare',
-  //   'concurrent:dist',
-  //   'autoprefixer',
-  //   'ngtemplates',
-  //   'concat',
-  //   'ngAnnotate',
-  //   'copy:dist',
-  //   'cdnify',
-  //   'cssmin',
-  //   'uglify',
-  //   'filerev',
-  //   'usemin',
-  //   'htmlmin'
-  // ]);
+  grunt.registerTask('build', [
+    'clean:dist',
+    'wiredep',
+    'useminPrepare',
+    'concurrent:dist',
+    'autoprefixer',
+    'ngtemplates',
+    'concat',
+    'ngAnnotate',
+    'copy:dist',
+    'cdnify',
+    'cssmin',
+    'uglify',
+    'filerev',
+    'usemin',
+    'htmlmin'
+  ]);
 
   grunt.registerTask('default', [
     'jshint',
