@@ -1,43 +1,17 @@
 'use strict';
 
-angular.module('seaCrimeData', [
+angular.module('mkm.seaCrimeData', [
     'ngRoute'
-  ]).config(['$routeProvider', function($routeProvider) {
-    $routeProvider.when('/seattle-crime-map', {
-      'templateUrl': 'crime-view/crime-view.html',
-      'controller': 'CrimeMapCtrl'
-    });
-
-  }])
+  ])
   .service('seattleDataGov', ['$http', '$q', function($http, $q) {
 
     var _mapBounds = new google.maps.LatLngBounds();
 
     var _http = $http({
       'method': 'GET',
-      // 'url': 'https://data.seattle.gov/resource/7ais-f98f.json'
-      url: 'crime-view/7ais-f98f.json'
+      'url': 'https://data.seattle.gov/resource/7ais-f98f.json'
+        // url: 'scripts/sea-crime/7ais-f98f.json'
     });
-
-    /*
-      Promise is resolved with data from returned from _http
-       that has been processed by processIncidentData
-       this is then rendered by directives
-    */
-    var _promise = $q.defer();
-
-    _http
-      .then(function(response) {
-        var processedData = processIncidentData(response.data);
-
-        _promise.resolve({
-          'incidents': processedData.reports,
-          'index': processedData.index,
-          'mapBounds': _mapBounds
-        });
-      });
-
-    return _promise;
 
     function processIncidentData(data) {
       /*
@@ -47,44 +21,12 @@ angular.module('seaCrimeData', [
           creates a GEOJSON object to pass to mapCanvas directive compatable with Google Maps API standards
       */
 
-      var _index_ = {};
-
-      var _plots_ = [];
-
-      for (var i = data.length - 1; i >= 0; i--) {
-
-        plotsAddReport(data[i]);
-
-        indexUpdate(data[i]);
-      }
-
       function indexUpdate(_report_) {
 
         //  PARENT TYPE
         var offType = _report_.offense_type;
 
         var parentType = (offType.indexOf('-') === -1) ? offType : offType.slice(0, offType.indexOf('-'));
-
-        if (_index_.hasOwnProperty(parentType)) {
-
-          var childrenNow = _index_[parentType].children;
-
-          _index_[parentType].children = updateIndex(offType, childrenNow);
-
-          _index_[parentType].count++;
-
-        } else if (parentType !== undefined) {
-
-          // if code is node found a new $inex object property is created
-          _index_[parentType] = {
-            'count': 1,
-            'offenseCategory': offType === 'VEH-THEFT-AUTO' ? offType : parentType,
-            'show': true,
-            'children': null
-          };
-
-          _index_[parentType].children = updateIndex(offType, {});
-        }
 
         function updateIndex(typeStr, currentChildren) {
 
@@ -129,6 +71,28 @@ angular.module('seaCrimeData', [
 
           return childTypes;
         }
+
+        if (_index_.hasOwnProperty(parentType)) {
+
+          var childrenNow = _index_[parentType].children;
+
+          _index_[parentType].children = updateIndex(offType, childrenNow);
+
+          _index_[parentType].count++;
+
+        } else if (parentType !== undefined) {
+
+          // if code is node found a new $inex object property is created
+          _index_[parentType] = {
+            'count': 1,
+            'offenseCategory': offType === 'VEH-THEFT-AUTO' ? offType : parentType,
+            'show': true,
+            'children': null
+          };
+
+          _index_[parentType].children = updateIndex(offType, {});
+
+        }
       }
 
       /*
@@ -140,19 +104,24 @@ angular.module('seaCrimeData', [
         var _longitude = Number(_report_.longitude);
         var _latitude = Number(_report_.latitude);
 
-        _mapBounds.extend(new google.maps.LatLng(_latitude, _longitude));
+        if (!isNaN(_longitude) && !isNaN(_latitude)) {
 
-        _plots_.push({
-          'type': 'Feature',
-          'geometry': {
-            'type': 'Point',
-            'coordinates': [_longitude, _latitude]
-          },
-          'properties': _report_
-        });
+          _mapBounds.extend(new google.maps.LatLng(_latitude, _longitude));
+
+          _plots_.push({
+            'type': 'Feature',
+            'geometry': {
+              'type': 'Point',
+              'coordinates': [_longitude, _latitude]
+            },
+            'properties': _report_
+          });
+
+        }
+
       }
 
-      (function setIndexColors() {
+      function setIndexColors() {
 
         // function colorBrewer(ind) {
         //   var brew = [
@@ -188,13 +157,47 @@ angular.module('seaCrimeData', [
         for (var key in _index_) {
           _index_[key].fillColor = d3Colour(key);
         }
-      }());
+      }
+
+
+      var _index_ = {};
+
+      var _plots_ = [];
+
+      for (var i = data.length - 1; i >= 0; i--) {
+
+        plotsAddReport(data[i]);
+
+        indexUpdate(data[i]);
+      }
+
+      setIndexColors();
 
       return {
         reports: _plots_,
         index: _index_
       };
     }
+
+    /*
+      Promise is resolved with data from returned from _http
+       that has been processed by processIncidentData
+       this is then rendered by directives
+    */
+    var _promise = $q.defer();
+
+    _http
+      .then(function(response) {
+        var processedData = processIncidentData(response.data);
+
+        _promise.resolve({
+          'incidents': processedData.reports,
+          'index': processedData.index,
+          'mapBounds': _mapBounds
+        });
+      });
+
+    return _promise;
 
   }])
   .directive('filterReportTypes', [function() {
@@ -299,14 +302,14 @@ angular.module('seaCrimeData', [
 
     return {
       'link': link,
-      'templateUrl': 'crime-view/template-crime-map-filter.html'
+      'templateUrl': 'views/template-crime-map-filter.html'
     };
 
   }])
   .directive('summaryList', [function() {
 
     return {
-      'templateUrl': 'crime-view/template-summary-list.html'
+      'templateUrl': 'views/template-summary-list.html'
     };
 
   }])
@@ -331,7 +334,7 @@ angular.module('seaCrimeData', [
         Sets summarytype's data attribute to 'null'
         Hides view from DOM
       */
-      scope.clearTypeDetail = function($event) {
+      scope.clearTypeDetail = function() {
         scope[summaryType].data = null;
       };
 
@@ -362,7 +365,7 @@ angular.module('seaCrimeData', [
 
     return {
       'link': link,
-      'templateUrl': '/crime-view/template-reports-summary.html'
+      'templateUrl': '/views/template-reports-summary.html'
     };
 
   }])
@@ -398,6 +401,11 @@ angular.module('seaCrimeData', [
       var crimeReportData = scope[promiseAttr];
 
       crimeReportData.promise.then(function(data) {
+
+        function setTypeDetail(d) {
+          scope.$typeDetail.renderChart(d);
+        }
+
         var _index_ = data.index;
 
         var indexArr = [];
@@ -445,7 +453,7 @@ angular.module('seaCrimeData', [
             var scaleVal = (d.offenseCategory === 'VEH-THEFT-AUTO') ? scaleAxisX('VEH') : scaleAxisX(d.offenseCategory);
             return 'translate(' + scaleVal + ',' + ((barHght - padding) * 2) + ') rotate(180)';
           })
-          .attr('y', function(d) {
+          .attr('y', function() {
             return barHght - padding;
           })
           .attr('width', scaleAxisX.rangeBand())
@@ -484,9 +492,6 @@ angular.module('seaCrimeData', [
           })
           .on('click', setTypeDetail);
 
-        function setTypeDetail(d) {
-          scope.$typeDetail.renderChart(d);
-        }
 
         scope[blockID] = {
           refreshBlocks: function() {
@@ -534,7 +539,7 @@ angular.module('seaCrimeData', [
 
                 return 'translate(' + scaleVal + ',' + ((barHght - padding) * 2) + ') rotate(180)';
               })
-              .attr('y', function(d) {
+              .attr('y', function() {
                 return barHght - padding;
               })
               .attr('width', scaleAxisX.rangeBand())
@@ -549,7 +554,7 @@ angular.module('seaCrimeData', [
 
     return {
       'link': link,
-      'templateUrl': 'crime-view/template-reports-block.html'
+      'templateUrl': 'views/template-reports-block.html'
     };
 
   }])
@@ -620,9 +625,6 @@ angular.module('seaCrimeData', [
           return new Date(d.properties.date_reported).valueOf();
         });
 
-        var firstDate = _incidents[0];
-
-        var rectWidth = 20;
 
         scaleAxisX.domain(dateRange);
         scaleAxisX.nice(d3.time.day);
@@ -746,7 +748,7 @@ angular.module('seaCrimeData', [
               this.setAttribute('r', '8');
             }
           })
-          .on('mouseout', function(d) {
+          .on('mouseout', function() {
             if (!scope.toolTipLock) {
               toolTipHide();
             }
@@ -945,7 +947,7 @@ angular.module('seaCrimeData', [
 
     return {
       'link': link,
-      'templateUrl': 'crime-view/template-reports-viz.html'
+      'templateUrl': 'views/template-reports-viz.html'
     };
 
   }])
@@ -1026,45 +1028,6 @@ angular.module('seaCrimeData', [
               }]
             }]
           });
-
-          scope[mapID].$g.data.addGeoJson({
-            'type': 'FeatureCollection',
-            'features': data.incidents
-          });
-
-          scope[mapID].$g.data.setStyle(plotstyleBasic);
-
-          scope[mapID].$g.data.addListener('click', function($event) {
-            markerClick($event);
-          });
-
-          scope[mapID].$g.fitBounds(data.mapBounds);
-
-          scope[mapID].update = function(indexArray) {
-            function indexSelected(feature) {
-              //  PARENT TYPE
-              var offType = feature.f.offense_type;
-
-              var parentType = (offType.indexOf('-') === -1) ? offType : offType.slice(0, offType.indexOf('-'));
-
-              var filterOffence = (indexArray.indexOf(parentType) > -1);
-
-              var offenseHex = scope.$index[parentType].fillColor;
-
-              return {
-                icon: {
-                  'path': google.maps.SymbolPath.CIRCLE,
-                  'scale': 2.75,
-                  'fillColor': filterOffence ? 'transparent' : offenseHex,
-                  'fillOpacity': filterOffence ? 0 : 1,
-                  'strokeWeight': 0,
-                  'zIndex': filterOffence ? 100 : 1
-                }
-              };
-            }
-
-            scope[mapID].$g.data.setStyle(indexSelected);
-          };
 
           function plotstyleBasic(feature) {
             if (scope[mapID].$g !== undefined && scope[mapID].$g !== undefined) {
@@ -1174,12 +1137,51 @@ angular.module('seaCrimeData', [
             }
           }
 
+          scope[mapID].$g.data.addGeoJson({
+            'type': 'FeatureCollection',
+            'features': data.incidents
+          });
+
+          scope[mapID].$g.data.setStyle(plotstyleBasic);
+
+          scope[mapID].$g.data.addListener('click', function($event) {
+            markerClick($event);
+          });
+
+          scope[mapID].$g.fitBounds(data.mapBounds);
+
+          scope[mapID].update = function(indexArray) {
+            function indexSelected(feature) {
+              //  PARENT TYPE
+              var offType = feature.f.offense_type;
+
+              var parentType = (offType.indexOf('-') === -1) ? offType : offType.slice(0, offType.indexOf('-'));
+
+              var filterOffence = (indexArray.indexOf(parentType) > -1);
+
+              var offenseHex = scope.$index[parentType].fillColor;
+
+              return {
+                icon: {
+                  'path': google.maps.SymbolPath.CIRCLE,
+                  'scale': 2.75,
+                  'fillColor': filterOffence ? 'transparent' : offenseHex,
+                  'fillOpacity': filterOffence ? 0 : 1,
+                  'strokeWeight': 0,
+                  'zIndex': filterOffence ? 100 : 1
+                }
+              };
+            }
+
+            scope[mapID].$g.data.setStyle(indexSelected);
+          };
+
         });
     }
 
     return {
       'link': link,
-      'templateUrl': 'crime-view/template-map-canvas.html'
+      'templateUrl': 'views/template-map-canvas.html'
     };
 
   }])
@@ -1211,7 +1213,7 @@ angular.module('seaCrimeData', [
 
     return {
       'link': link,
-      'templateUrl': 'crime-view/template-incident-detail.html'
+      'templateUrl': 'views/template-incident-detail.html'
     };
 
   }])

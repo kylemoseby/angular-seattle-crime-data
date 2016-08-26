@@ -1,6 +1,7 @@
 'use strict';
 
-angular.module('myApp.crimeView', ['ngRoute'])
+// Declare app level module which depends on views, and components
+angular.module('mkm.seaCrimeData')
   .directive('crimeReportsBlock', [function() {
 
     function link(scope, element) {
@@ -15,7 +16,7 @@ angular.module('myApp.crimeView', ['ngRoute'])
       var padding = element[0].offsetWidth * 0.025;
       var wdth = element[0].offsetWidth;
       var hght = element[0].offsetHeight;
-      var barHght = hght * 0.70;
+      var barHght = hght * 0.5;
 
       var svg = wrapper
         .append('svg')
@@ -33,6 +34,11 @@ angular.module('myApp.crimeView', ['ngRoute'])
       var crimeReportData = scope[promiseAttr];
 
       crimeReportData.promise.then(function(data) {
+
+        function setTypeDetail(d) {
+          scope.$typeDetail.renderChart(d);
+        }
+
         var _index_ = data.index;
 
         var indexArr = [];
@@ -80,7 +86,7 @@ angular.module('myApp.crimeView', ['ngRoute'])
             var scaleVal = (d.offenseCategory === 'VEH-THEFT-AUTO') ? scaleAxisX('VEH') : scaleAxisX(d.offenseCategory);
             return 'translate(' + scaleVal + ',' + ((barHght - padding) * 2) + ') rotate(180)';
           })
-          .attr('y', function(d) {
+          .attr('y', function() {
             return barHght - padding;
           })
           .attr('width', scaleAxisX.rangeBand())
@@ -119,9 +125,6 @@ angular.module('myApp.crimeView', ['ngRoute'])
           })
           .on('click', setTypeDetail);
 
-        function setTypeDetail(d) {
-          scope.$typeDetail.renderChart(d);
-        }
 
         scope[blockID] = {
           refreshBlocks: function() {
@@ -169,7 +172,7 @@ angular.module('myApp.crimeView', ['ngRoute'])
 
                 return 'translate(' + scaleVal + ',' + ((barHght - padding) * 2) + ') rotate(180)';
               })
-              .attr('y', function(d) {
+              .attr('y', function() {
                 return barHght - padding;
               })
               .attr('width', scaleAxisX.rangeBand())
@@ -184,7 +187,7 @@ angular.module('myApp.crimeView', ['ngRoute'])
 
     return {
       'link': link,
-      'templateUrl': 'crime-view/template-reports-block.html'
+      'templateUrl': 'views/template-reports-block.html'
     };
 
   }]);

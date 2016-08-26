@@ -1,11 +1,16 @@
 'use strict';
 
 // Declare app level module which depends on views, and components
-angular.module('seaCrimeData')
+angular.module('mkm.seaCrimeData')
   .config(['$routeProvider', function($routeProvider) {
-    $routeProvider.otherwise({
-      redirectTo: '/seattle-crime-map'
-    });
+    $routeProvider
+      .when('/seattle-crime-map', {
+        'templateUrl': 'views/crime-view.html',
+        'controller': 'CrimeMapCtrl'
+      })
+      .otherwise({
+        redirectTo: '/seattle-crime-map'
+      });
   }])
   .controller('CrimeMapCtrl', ['$scope', 'seattleDataGov', function($scope, seattleDataGov) {
 

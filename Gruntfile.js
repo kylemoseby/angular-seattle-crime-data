@@ -9,7 +9,7 @@
 
 module.exports = function(grunt) {
 
-  // load all grunt tasks matching the ['grunt-*', '@*/grunt-*'] patterns 
+  // load all grunt tasks matching the ['grunt-*', '@*/grunt-*'] patterns
   require('load-grunt-tasks')(grunt);
 
   // Configurable paths for the application
@@ -31,7 +31,7 @@ module.exports = function(grunt) {
         tasks: ['wiredep']
       },
       js: {
-        files: ['<%= yeoman.app %>/crime-view/{,*/}*.js'],
+        files: ['<%= yeoman.app %>/scripts/{,*/}*.js'],
         tasks: ['jshint'],
         options: {
           livereload: '<%= connect.options.livereload %>'
@@ -125,7 +125,7 @@ module.exports = function(grunt) {
       all: {
         src: [
           'Gruntfile.js',
-          '<%= yeoman.app %>/crime-view/{,*/}*.js'
+          '<%= yeoman.app %>/scripts/{,*/}*.js'
         ]
       }
     },
@@ -210,7 +210,7 @@ module.exports = function(grunt) {
     filerev: {
       dist: {
         src: [
-          '<%= yeoman.dist %>/crime-view/{,*/}*.js',
+          '<%= yeoman.dist %>/scripts/{,*/}*.js',
           '<%= yeoman.dist %>/styles/{,*/}*.css',
           '<%= yeoman.dist %>/images/{,*/}*.{png,jpg,jpeg,gif,webp,svg}',
           '<%= yeoman.dist %>/styles/fonts/*'
@@ -241,7 +241,7 @@ module.exports = function(grunt) {
     usemin: {
       html: ['<%= yeoman.dist %>/{,*/}*.html'],
       css: ['<%= yeoman.dist %>/styles/{,*/}*.css'],
-      js: ['<%= yeoman.dist %>/crime-view/{,*/}*.js'],
+      js: ['<%= yeoman.dist %>/scripts/{,*/}*.js'],
       options: {
         assetsDirs: [
           '<%= yeoman.dist %>',
@@ -269,18 +269,25 @@ module.exports = function(grunt) {
     //     }
     //   }
     // },
-    // uglify: {
-    //   dist: {
-    //     files: {
-    //       '<%= yeoman.dist %>/crime-view/crime-view.js': [
-    //         '<%= yeoman.dist %>/crime-view/crime-view.js'
-    //       ]
-    //     }
-    //   }
-    // },
-    // concat: {
-    //   dist: {}
-    // },
+    uglify: {
+      options: {
+        mangle: false
+      },
+      dist: {
+        files: {
+          '<%= yeoman.dist %>/scripts/scripts.js': [
+            '<%= yeoman.dist %>/scripts/scripts.js'
+          ]
+        }
+      }
+    },
+
+    concat: {
+      dist: {
+        src: ['<%= yeoman.app %>/scripts/{,*/}*.js'],
+        dest: 'dist/scripts.js',
+      },
+    },
 
     imagemin: {
       dist: {
@@ -324,9 +331,9 @@ module.exports = function(grunt) {
     ngtemplates: {
       dist: {
         options: {
-          module: 'kylemosebyDotcomApp',
+          module: 'mkm.seaCrimeData',
           htmlmin: '<%= htmlmin.dist.options %>',
-          usemin: 'scripts/crime-view.js'
+          usemin: 'scripts/scripts.js'
         },
         cwd: '<%= yeoman.app %>',
         src: 'views/{,*/}*.html',
@@ -340,9 +347,9 @@ module.exports = function(grunt) {
       dist: {
         files: [{
           expand: true,
-          cwd: '.tmp/concat/crime-view',
+          cwd: '.tmp/concat/scripts',
           src: '*.js',
-          dest: '.tmp/concat/crime-view'
+          dest: '.tmp/concat/scripts'
         }]
       }
     },
@@ -374,12 +381,13 @@ module.exports = function(grunt) {
           cwd: '.tmp/images',
           dest: '<%= yeoman.dist %>/images',
           src: ['generated/*']
-        }, {
-          expand: true,
-          cwd: 'bower_components/bootstrap/dist',
-          src: 'fonts/*',
-          dest: '<%= yeoman.dist %>'
         }]
+      },
+      source: {
+        expand: true,
+        cwd: '<%= yeoman.app %>/styles',
+        dest: '.tmp/styles/',
+        src: '{,*/}*.css'
       },
       styles: {
         expand: true,
@@ -399,7 +407,7 @@ module.exports = function(grunt) {
       ],
       dist: [
         'copy:styles',
-        'imagemin',
+        // 'imagemin',
         'svgmin'
       ]
     },
@@ -457,7 +465,8 @@ module.exports = function(grunt) {
     'uglify',
     'filerev',
     'usemin',
-    'htmlmin'
+    'htmlmin',
+    // 'copy:source'
   ]);
 
   grunt.registerTask('default', [
