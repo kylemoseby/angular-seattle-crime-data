@@ -2,16 +2,20 @@
   <!-- <div class="row" incident-detail="crimeData" timeline-id="$vizTimeline" map-id="$crimeMap" ng-hide="incidentDetail === null"> -->
   <!-- </div> -->
   <div class="row">
-    <div class="col-md-1" uib-dropdown>
-      <div id="filter-types" uib-dropdown-toggle class="btn-group">
+    <div class="col-md-1">
+      <div id="filter-types">
         <button type="button" class="btn btn-default">
           <span class="glyphicon glyphicon-filter"></span>
         </button>
       </div>
-      <ul filter-report-types="$index" crime-map-filter="$crimeMap" crime-timeline-filter="$vizTimeline" uib-dropdown-menu role="menu" aria-labelledby="filter-types">
-      </ul>
+      <div filter-report-types="$index" crime-timeline-filter="$vizTimeline" uib-dropdown-menu role="menu" aria-labelledby="filter-types">
+      </div>
     </div>
-    <div class="col-md-8">
+    <div class="col-md-2">
+      BLOCK
+      <div id="crime-reports-block" crime-reports-block crime-reports-data="crimeData"></div>
+    </div>
+    <div class="col-md-6">
       <div id="sea-crime-viz" viz-time-line="$vizTimeline" viz-time-data="crimeData" crime-viz-map="$crimeMap"></div>
     </div>
     <div class="col-md-3">

@@ -7,7 +7,7 @@
 </li>
 <li id="type-filter">
   <form id="crime-reports-block" id="crime-map-filter">
-    <div class="radio" ng-repeat="(key, val) in $index | orderObjectBy : 'count' : true">
+    <div class="radio" ng-repeat="(key, val) in $parent.$index | orderObjectBy : 'count' : true">
       <label ng-click="filterPushSplice($event)">
         <input type="checkbox" ng-checked="val.show"> {{val.offenseCategory}} <span class="badge" style="background-color: {{val.fillColor}};">&nbsp;</span>
       </label>
