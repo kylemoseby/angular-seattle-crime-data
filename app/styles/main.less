@@ -1,90 +1,89 @@
 @import "variables.less";
-
 #map-canvas,
 #sea-crime-viz {
-    height: 67vh;
-    width: 100%;
+  height: 85vh;
+  width: 100%;
 }
 
 #crime-map-filter {
-    height: 67vh;
-    width: 100%;
-    overflow: scroll;
-    display: inline-block;
+  height: 67vh;
+  width: 100%;
+  overflow: scroll;
+  display: inline-block;
 }
 
 #type-filter {
-    display: inline-block;
-    overflow: scroll;
+  display: inline-block;
+  overflow: scroll;
 }
 
 #crime-reports-block {
-    height: 50vh;
-    width: 100%;
-    svg {
-        background-coor: #777777;
-        rect {
-            cursor: pointer;
-        }
+  height: 50vh;
+  width: 100%;
+  svg {
+    background-coor: #777777;
+    rect {
+      cursor: pointer;
     }
+  }
 }
 
 .sum-svg-wrapper {
-    height: 50vh;
-    width: 100%;
+  height: 50vh;
+  width: 100%;
 }
 
 #street-view-detail {
-    height: 50vh;
-    width: 100%;
+  height: 50vh;
+  width: 100%;
 }
 
 .reportTotals {
-    display: inline-block;
-    height: 18px;
-    padding: 0;
-    color: #ffffff;
-    overflow: hidden;
+  display: inline-block;
+  height: 18px;
+  padding: 0;
+  color: #ffffff;
+  overflow: hidden;
 }
 
 .axis path,
 .axis line {
-    fill: none;
-    // stroke: #ccc0c0;
-    visibility: hidden;
-    display: none;
+  fill: none;
+  // stroke: #ccc0c0;
+  visibility: hidden;
+  display: none;
 }
 
 .axis .domain {
-    opacity: 0;
+  opacity: 0;
 }
 
 .block-label {
-    font-size: @font-size-small;
-    text-transform: lowercase;
-    fill: @gray-light;
-    stroke: @gray-light;
+  font-size: @font-size-small;
+  text-transform: lowercase;
+  fill: @gray-light;
+  stroke: @gray-light;
 }
 
 #cicle-tool-tip {
-    position: absolute;
-    text-align: center;
-    width: 15vw;
-    padding: @padding-base-vertical @padding-base-horizontal;
-    font: @font-size-base @font-family-base;
-    line-height: @line-height-computed;
-    color: #fff;
-    border: 0px;
-    border-radius: @border-radius-base;
-    pointer-events: none;
-    opacity: 0;
-    z-index: 20;
+  position: absolute;
+  text-align: center;
+  width: 15vw;
+  padding: @padding-base-vertical @padding-base-horizontal;
+  font: @font-size-base @font-family-base;
+  line-height: @line-height-computed;
+  color: #fff;
+  border: 0px;
+  border-radius: @border-radius-base;
+  pointer-events: none;
+  opacity: 0;
+  z-index: 20;
 }
 
 svg {
-    z-index: 0;
+  z-index: 0;
 }
 
 .timeline-circle {
-    cursor: pointer;
+  cursor: pointer;
 }
