@@ -2,135 +2,134 @@
 
 // Declare app level module which depends on views, and components
 angular.module('mkm.seaCrimeData')
-  .directive('crimeReportsBlock', [function() {
+  .directive('crimeReportsBlock', ['$window', function($window) {
+    console.log($window);
+    return {
+      'templateUrl': 'views/template-reports-block.html',
+      'scope': {
+        '$promise': '=crimeReportsData'
+      },
+      'link': function(scope, element) {
 
-    function link(scope, element) {
+        var $elm = element[0];
 
-      var blockID = element.attr('crime-reports-block');
+        var wrapper = d3.select($elm);
 
-      var promiseAttr = element.attr('crime-reports-data');
+        //  SVG DIMENSIONS
+        var padding = $elm.offsetWidth * 0.033;
+        var wdth = $elm.offsetWidth;
+        var hght = $elm.offsetHeight;
+        var barHght = hght - padding - 120;
 
-      var wrapper = d3.select(element[0]);
+        var svg = wrapper
+          .append('svg')
+          .attr({
+            'height': hght,
+            'width': wdth
+          });
 
-      //  SVG DIMENSIONS
-      var padding = element[0].offsetWidth * 0.025;
-      var wdth = element[0].offsetWidth;
-      var hght = element[0].offsetHeight;
-      var barHght = hght * 0.5;
+        var scaleAxisX = d3.scale.ordinal()
+          .rangeBands([padding, (wdth - padding)]);
 
-      var svg = wrapper
-        .append('svg')
-        .attr({
-          'height': hght,
-          'width': wdth
-        });
+        var scaleAxisY = d3.scale.linear()
+          .range([padding, barHght]);
 
-      var scaleAxisX = d3.scale.ordinal()
-        .rangeBands([padding, (wdth - padding)]);
+        scope.$promise.promise.then(function(data) {
 
-      var scaleAxisY = d3.scale.linear()
-        .range([padding, barHght]);
-
-      var crimeReportData = scope[promiseAttr];
-
-      crimeReportData.promise.then(function(data) {
-
-        function setTypeDetail(d) {
-          scope.$typeDetail.renderChart(d);
-        }
-
-        var _index_ = data.index;
-
-        var indexArr = [];
-
-        for (var ind in _index_) {
-          indexArr.push(_index_[ind]);
-        }
-
-        var indexSorted = indexArr.sort(function(a, b) {
-          if (a.count > b.count) {
-            return 1;
-          }
-          if (a.count < b.count) {
-            return -1;
+          function setTypeDetail(d) {
+            scope.$typeDetail.renderChart(d);
           }
 
-          return 0;
-        });
+          var _index_ = data.index;
 
-        var axisTitles = [];
+          var indexArr = [];
 
-        indexSorted.forEach(function(d) {
-          axisTitles.push((d.offenseCategory === 'VEH-THEFT-AUTO') ? 'VEH' : d.offenseCategory);
-        });
+          for (var ind in _index_) {
+            indexArr.push(_index_[ind]);
+          }
 
-        scaleAxisX.domain(axisTitles.reverse());
+          var indexSorted = indexArr.sort(function(a, b) {
+            if (a.count > b.count) {
+              return 1;
+            }
+            if (a.count < b.count) {
+              return -1;
+            }
 
-        scaleAxisY.domain([0, d3.max(indexSorted, function(d) {
-          return d.count;
-        })]);
+            return 0;
+          });
 
-        var indexRect = svg.selectAll('g.reports-index-rect')
-          .data(indexSorted)
-          .enter()
-          .append('g')
-          .attr('id', function(d) {
-            return d.offenseCategory;
-          })
-          .attr('class', 'reports-index-rect')
-          .attr('transform', 'translate(' + padding + ',50)');
+          var axisTitles = [];
 
-        indexRect.append('rect')
-          .attr('class', '')
-          .attr('transform', function(d) {
-            var scaleVal = (d.offenseCategory === 'VEH-THEFT-AUTO') ? scaleAxisX('VEH') : scaleAxisX(d.offenseCategory);
-            return 'translate(' + scaleVal + ',' + ((barHght - padding) * 2) + ') rotate(180)';
-          })
-          .attr('y', function() {
-            return barHght - padding;
-          })
-          .attr('width', scaleAxisX.rangeBand())
-          .attr('height', function(d) {
-            return scaleAxisY(d.count);
-          })
-          .attr('fill', function(d) {
-            return d.fillColor;
-          })
-          .on('click', setTypeDetail);
+          indexSorted.forEach(function(d) {
+            axisTitles.push((d.offenseCategory === 'VEH-THEFT-AUTO') ? 'VEH' : d.offenseCategory);
+          });
 
-        // CATEGORY LABELS
-        indexRect.append("text")
-          .attr("transform", function(d) {
-            var xTrans = (d.offenseCategory === 'VEH-THEFT-AUTO') ? scaleAxisX('VEH') : scaleAxisX(d.offenseCategory);
+          scaleAxisX.domain(axisTitles.reverse());
 
-            return 'translate(' + (xTrans - (scaleAxisX.rangeBand() * 0.33)) + ', ' + (barHght - padding + 9) + ') rotate(-33)';
-          })
-          .attr("text-anchor", "end")
-          .attr("class", "block-label category")
-          .text(function(d) {
-            return d.offenseCategory;
-          })
-          .on('click', setTypeDetail);
-
-        // COUNT LABELS
-        indexRect.append("text")
-          .attr("transform", function(d) {
-            var xTrans = (d.offenseCategory === 'VEH-THEFT-AUTO') ? scaleAxisX('VEH') : scaleAxisX(d.offenseCategory);
-
-            return 'translate(' + (xTrans - (scaleAxisX.rangeBand() * 0.67) - 4) + ', ' + (barHght - scaleAxisY(d.count) - padding - 2) + ')';
-          })
-          .attr("class", "block-label count")
-          .text(function(d) {
+          scaleAxisY.domain([0, d3.max(indexSorted, function(d) {
             return d.count;
-          })
-          .on('click', setTypeDetail);
+          })]);
 
+          var indexRect = svg.selectAll('g.reports-index-rect')
+            .data(indexSorted)
+            .enter()
+            .append('g')
+            .attr('id', function(d) {
+              return d.offenseCategory;
+            })
+            .attr('class', 'reports-index-rect')
+            // FIX LATER
+            .attr('transform', 'translate(' + padding + ',80)');
 
-        scope[blockID] = {
-          refreshBlocks: function() {
-            var padding = element[0].offsetWidth * 0.025;
-            var wdth = element[0].offsetWidth;
-            var hght = element[0].offsetHeight;
+          indexRect.append('rect')
+            .attr('transform', function(d) {
+              var scaleVal = (d.offenseCategory === 'VEH-THEFT-AUTO') ? scaleAxisX('VEH') : scaleAxisX(d.offenseCategory);
+              return 'translate(' + scaleVal + ',' + ((barHght - padding) * 2) + ') rotate(180)';
+            })
+            .attr('y', function() {
+              return barHght - padding;
+            })
+            .attr('width', scaleAxisX.rangeBand())
+            .attr('height', function(d) {
+              return scaleAxisY(d.count);
+            })
+            .attr('fill', function(d) {
+              return d.fillColor;
+            })
+            .on('click', setTypeDetail);
+
+          // CATEGORY LABELS
+          indexRect.append("text")
+            .attr("transform", function(d) {
+              var xTrans = (d.offenseCategory === 'VEH-THEFT-AUTO') ? scaleAxisX('VEH') : scaleAxisX(d.offenseCategory);
+
+              return 'translate(' + (xTrans - (scaleAxisX.rangeBand() * 0.33)) + ', ' + (barHght - padding + 9) + ') rotate(-33)';
+            })
+            .attr("text-anchor", "end")
+            .attr("class", "block-label category")
+            .text(function(d) {
+              return d.offenseCategory;
+            })
+            .on('click', setTypeDetail);
+
+          // COUNT LABELS
+          indexRect.append("text")
+            .attr("transform", function(d) {
+              var xTrans = (d.offenseCategory === 'VEH-THEFT-AUTO') ? scaleAxisX('VEH') : scaleAxisX(d.offenseCategory);
+
+              return 'translate(' + (xTrans - (scaleAxisX.rangeBand() * 0.67) - 4) + ', ' + (barHght - scaleAxisY(d.count) - padding - 2) + ')';
+            })
+            .attr("class", "block-label count")
+            .text(function(d) {
+              return d.count;
+            })
+            .on('click', setTypeDetail);
+
+          function _refreshBlocks() {
+            var padding = $elm.offsetWidth * 0.025;
+            var wdth = $elm.offsetWidth;
+            var hght = $elm.offsetHeight;
             var barHght = hght * 0.75;
 
             svg
@@ -180,14 +179,16 @@ angular.module('mkm.seaCrimeData')
                 return scaleAxisY(d.count);
               });
           }
-        };
 
-      });
-    }
+          scope.blockID = {
+            refreshBlocks: _refreshBlocks
+          };
 
-    return {
-      'link': link,
-      'templateUrl': 'views/template-reports-block.html'
+          angular.element($window).bind('resize', _refreshBlocks);
+
+        });
+      }
+
     };
 
   }]);

@@ -1,16 +1,22 @@
-<li>
-  <div class="btn-group btn-group-sm" role="group" aria-label="...">
-    <button type="button" ng-class="updated ? 'btn btn-primary' : 'btn btn-default'" ng-click="filterApply($event)">Apply</button>
-    <button type="button" class="btn btn-default" ng-click="filterReset($event)" ng-show="mapIndexFilter().length > 0">Reset</button>
-    <button type="button" class="btn btn-default" ng-click="filterClear($event)" ng-hide="$indexLength() === mapIndexFilter().length">Clear All</button>
-  </div>
-</li>
-<li id="type-filter">
-  <form id="crime-reports-block" id="crime-map-filter">
-    <div class="radio" ng-repeat="(key, val) in $index | orderObjectBy : 'count' : true">
-      <label ng-click="filterPushSplice($event)">
-        <input type="checkbox" ng-checked="val.show"> {{val.offenseCategory}} <span class="badge" style="background-color: {{val.fillColor}};">&nbsp;</span>
-      </label>
-    </div>
-  </form>
-</li>
+<md-menu>
+  <md-button aria-label="Filter crime data" class="md-icon-button" ng-click="$mdOpenMenu($event)">
+    <span class="glyphicon glyphicon-filter"></span>
+  </md-button>
+  <md-menu-content width="8">
+    <md-menu-item>
+      <md-button ng-click="filterApply($event)">Apply</button>
+    </md-menu-item>
+    <md-menu-item>
+      <md-button ng-click="filterReset($event)" ng-disabled="!mapIndexFilter().length > 0" md-prevent-menu-close>Reset</button>
+    </md-menu-item>
+    <md-menu-item>
+      <md-button ng-click="filterClear($event)" ng-disabled="$indexLength() === mapIndexFilter().length" md-prevent-menu-close>Clear All</button>
+    </md-menu-item>
+    <md-menu-divider></md-menu-divider>
+    <md-menu-item ng-repeat="(key, val) in filterInd | orderObjectBy : 'count' : true">
+      <md-button ng-click="filterPushSplice($event)" ng-class="{'md-primary' : val.show}" md-prevent-menu-close>
+        {{val.offenseCategory}} <span class="badge" style="background-color: {{val.fillColor}};">&nbsp;</span>
+      </md-button>
+    </md-menu-item>
+  </md-menu-content>
+</md-menu>

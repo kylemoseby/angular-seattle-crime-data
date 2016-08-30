@@ -1,7 +1,8 @@
 'use strict';
 
 angular.module('mkm.seaCrimeData', [
-    'ngRoute'
+    'ngRoute',
+    'ngMaterial'
   ])
   .service('seattleDataGov', ['$http', '$q', function($http, $q) {
 
@@ -201,108 +202,118 @@ angular.module('mkm.seaCrimeData', [
 
   }])
   .directive('filterReportTypes', [function() {
-    function link(scope, element) {
-
-      // Dynamically set property names on view
-      var filterInd = element.attr('filter-report-types');
-      var filterMap = element.attr('crime-map-filter');
-      var filterTime = element.attr('crime-timeline-filter');
-
-      // Used to update class on 'update buttons'
-      scope.updated = false;
-
-      /*
-        toggles clicked  index values 'show' attribute
-        true / false
-      */
-      scope.filterPushSplice = function($event) {
-
-        $event.cancelBubble = true;
-
-        this.val.show = !this.val.show;
-
-        scope.updated = true;
-      };
-
-      /*
-        filters any viz and maps based on current index
-      */
-      scope.filterApply = function($event) {
-
-        $event.preventDefault();
-
-        var _index = this.mapIndexFilter();
-
-        if (typeof this.mapIndexFilter === 'function') {
-          this[filterMap].update(_index);
-        }
-
-        if (typeof this[filterTime].filterData === 'function') {
-          this[filterTime].filterData(_index);
-        }
-
-        scope.updated = false;
-      };
-
-      /*
-        Sets all attributes 'show' to 'false' on index
-      */
-      scope.filterClear = function($event) {
-
-        $event.preventDefault();
-
-        $event.cancelBubble = true;
-
-        for (var key in this[filterInd]) {
-
-          this[filterInd][key].show = false;
-        }
-
-        scope.updated = false;
-      };
-
-      /*
-        Sets all attributes 'show' to 'true' on index
-      */
-      scope.filterReset = function($event) {
-
-        $event.preventDefault();
-
-        $event.cancelBubble = true;
-
-        for (var key in this[filterInd]) {
-
-          this[filterInd][key].show = true;
-        }
-
-        scope.updated = true;
-      };
-
-      scope.mapIndexFilter = function() {
-        var _index_ = this[filterInd] || {};
-
-        // Create lookup array for speed
-        var filteredArray = [];
-
-        for (var key in _index_) {
-
-          if (!_index_[key].show) {
-
-            filteredArray.push(key);
-          }
-        }
-
-        return filteredArray;
-      };
-
-      // scope.$indexLength = function() {
-      //   return (this[filterInd] === undefined || null) ? 0 : Object.keys(this[filterInd]).length;
-      // };
-    }
 
     return {
-      'link': link,
-      'templateUrl': 'views/template-crime-map-filter.html'
+      'templateUrl': 'views/template-crime-map-filter.html',
+      'scope': {
+        'filterInd': '=filterReportTypes',
+        'filterMap': '=crimeMapFilter',
+        'filterTime': '=crimeTimelineFilter'
+      },
+      'link': function(scope) {
+
+        console.log(scope);
+
+        // Used to update class on 'update buttons'
+        scope.updated = false;
+
+
+        // scope.openFilters = function($mdOpenMenu, ev) {
+        //   console.log('you got it');
+
+        //   $mdOpenMenu(ev);
+        // };
+
+        /*
+          toggles clicked  index values 'show' attribute
+          true / false
+        */
+        scope.filterPushSplice = function($event) {
+
+          $event.preventDefault();
+
+          $event.cancelBubble = true;
+
+          this.val.show = !this.val.show;
+
+          scope.updated = true;
+        };
+
+        /*
+          filters any viz and maps based on current index
+        */
+        scope.filterApply = function($event) {
+
+          $event.preventDefault();
+
+          var _index = this.mapIndexFilter();
+
+          // if (typeof this.mapIndexFilter === 'function') {
+          scope.filterMap.update(_index);
+          // }
+
+          // if (typeof scope.$parent.$vizTimeline.filterData === 'function') {
+          scope.filterTime.filterData(_index);
+          // }
+
+          scope.updated = false;
+        };
+
+        /*
+          Sets all attributes 'show' to 'false' on index
+        */
+        scope.filterClear = function($event) {
+
+          $event.preventDefault();
+
+          $event.cancelBubble = true;
+
+          for (var key in scope.filterInd) {
+
+            scope.filterInd[key].show = false;
+          }
+
+          scope.updated = false;
+        };
+
+        /*
+          Sets all attributes 'show' to 'true' on index
+        */
+        scope.filterReset = function($event) {
+
+          $event.preventDefault();
+
+          $event.cancelBubble = true;
+
+          for (var key in scope.filterInd) {
+
+            scope.filterInd[key].show = true;
+          }
+
+          scope.updated = true;
+        };
+
+        scope.mapIndexFilter = function() {
+          var _index_ = scope.filterInd || {};
+
+          // Create lookup array for speed
+          var filteredArray = [];
+
+          for (var key in _index_) {
+
+            if (!_index_[key].show) {
+
+              filteredArray.push(key);
+            }
+          }
+
+          return filteredArray;
+        };
+
+        // scope.$indexLength = function() {
+        //   return (this[filterInd] === undefined || null) ? 0 : Object.keys(this[filterInd]).length;
+        // };
+      }
     };
 
   }])
@@ -369,826 +380,9 @@ angular.module('mkm.seaCrimeData', [
     };
 
   }])
-  .directive('crimeReportsBlock', [function() {
-
-    function link(scope, element) {
-
-      var blockID = element.attr('crime-reports-block');
-
-      var promiseAttr = element.attr('crime-reports-data');
-
-      var wrapper = d3.select(element[0]);
-
-      //  SVG DIMENSIONS
-      var padding = element[0].offsetWidth * 0.025;
-      var wdth = element[0].offsetWidth;
-      var hght = element[0].offsetHeight;
-      var barHght = hght * 0.5;
-
-      var svg = wrapper
-        .append('svg')
-        .attr({
-          'height': hght,
-          'width': wdth
-        });
-
-      var scaleAxisX = d3.scale.ordinal()
-        .rangeBands([padding, (wdth - padding)]);
-
-      var scaleAxisY = d3.scale.linear()
-        .range([padding, barHght]);
-
-      var crimeReportData = scope[promiseAttr];
-
-      crimeReportData.promise.then(function(data) {
-
-        function setTypeDetail(d) {
-          scope.$typeDetail.renderChart(d);
-        }
-
-        var _index_ = data.index;
-
-        var indexArr = [];
-
-        for (var ind in _index_) {
-          indexArr.push(_index_[ind]);
-        }
-
-        var indexSorted = indexArr.sort(function(a, b) {
-          if (a.count > b.count) {
-            return 1;
-          }
-          if (a.count < b.count) {
-            return -1;
-          }
-
-          return 0;
-        });
-
-        var axisTitles = [];
-
-        indexSorted.forEach(function(d) {
-          axisTitles.push((d.offenseCategory === 'VEH-THEFT-AUTO') ? 'VEH' : d.offenseCategory);
-        });
-
-        scaleAxisX.domain(axisTitles.reverse());
-
-        scaleAxisY.domain([0, d3.max(indexSorted, function(d) {
-          return d.count;
-        })]);
-
-        var indexRect = svg.selectAll('g.reports-index-rect')
-          .data(indexSorted)
-          .enter()
-          .append('g')
-          .attr('id', function(d) {
-            return d.offenseCategory;
-          })
-          .attr('class', 'reports-index-rect')
-          .attr('transform', 'translate(' + padding + ',50)');
-
-        indexRect.append('rect')
-          .attr('class', '')
-          .attr('transform', function(d) {
-            var scaleVal = (d.offenseCategory === 'VEH-THEFT-AUTO') ? scaleAxisX('VEH') : scaleAxisX(d.offenseCategory);
-            return 'translate(' + scaleVal + ',' + ((barHght - padding) * 2) + ') rotate(180)';
-          })
-          .attr('y', function() {
-            return barHght - padding;
-          })
-          .attr('width', scaleAxisX.rangeBand())
-          .attr('height', function(d) {
-            return scaleAxisY(d.count);
-          })
-          .attr('fill', function(d) {
-            return d.fillColor;
-          })
-          .on('click', setTypeDetail);
-
-        // CATEGORY LABELS
-        indexRect.append("text")
-          .attr("transform", function(d) {
-            var xTrans = (d.offenseCategory === 'VEH-THEFT-AUTO') ? scaleAxisX('VEH') : scaleAxisX(d.offenseCategory);
-
-            return 'translate(' + (xTrans - (scaleAxisX.rangeBand() * 0.33)) + ', ' + (barHght - padding + 9) + ') rotate(-33)';
-          })
-          .attr("text-anchor", "end")
-          .attr("class", "block-label category")
-          .text(function(d) {
-            return d.offenseCategory;
-          })
-          .on('click', setTypeDetail);
-
-        // COUNT LABELS
-        indexRect.append("text")
-          .attr("transform", function(d) {
-            var xTrans = (d.offenseCategory === 'VEH-THEFT-AUTO') ? scaleAxisX('VEH') : scaleAxisX(d.offenseCategory);
-
-            return 'translate(' + (xTrans - (scaleAxisX.rangeBand() * 0.67) - 4) + ', ' + (barHght - scaleAxisY(d.count) - padding - 2) + ')';
-          })
-          .attr("class", "block-label count")
-          .text(function(d) {
-            return d.count;
-          })
-          .on('click', setTypeDetail);
-
-
-        scope[blockID] = {
-          refreshBlocks: function() {
-            var padding = element[0].offsetWidth * 0.025;
-            var wdth = element[0].offsetWidth;
-            var hght = element[0].offsetHeight;
-            var barHght = hght * 0.75;
-
-            svg
-              .attr({
-                'height': hght,
-                'width': wdth
-              });
-
-            scaleAxisX.rangeBands([padding, (wdth - padding)]);
-
-            scaleAxisY.range([padding, barHght]);
-
-            indexRect.selectAll('.block-label.category')
-              .transition()
-              .duration(100)
-              .ease('sin-in-out')
-              .attr("transform", function(d) {
-                var xTrans = (d.offenseCategory === 'VEH-THEFT-AUTO') ? scaleAxisX('VEH') : scaleAxisX(d.offenseCategory);
-
-                return 'translate(' + (xTrans - (scaleAxisX.rangeBand() * 0.33)) + ', ' + (barHght - padding + 7) + ') rotate(-50)';
-              });
-
-            indexRect.selectAll('.block-label.count')
-              .transition()
-              .duration(100)
-              .ease('sin-in-out')
-              .attr("transform", function(d) {
-                var xTrans = (d.offenseCategory === 'VEH-THEFT-AUTO') ? scaleAxisX('VEH') : scaleAxisX(d.offenseCategory);
-
-                return 'translate(' + (xTrans - (scaleAxisX.rangeBand() * 0.67) - 4) + ', ' + (barHght - scaleAxisY(d.count) - padding - 2) + ')';
-              });
-
-            indexRect.selectAll('g.reports-index-rect rect')
-              .transition()
-              .duration(100)
-              .ease('sin-in-out')
-              .attr('transform', function(d) {
-                var scaleVal = (d.offenseCategory === 'VEH-THEFT-AUTO') ? scaleAxisX('VEH') : scaleAxisX(d.offenseCategory);
-
-                return 'translate(' + scaleVal + ',' + ((barHght - padding) * 2) + ') rotate(180)';
-              })
-              .attr('y', function() {
-                return barHght - padding;
-              })
-              .attr('width', scaleAxisX.rangeBand())
-              .attr('height', function(d) {
-                return scaleAxisY(d.count);
-              });
-          }
-        };
-
-      });
-    }
-
-    return {
-      'link': link,
-      'templateUrl': 'views/template-reports-block.html'
-    };
-
-  }])
-  .directive('vizTimeLine', [function() {
-
-    function link(scope, element) {
-
-      // OPTIONALLY BIND TO MAP
-      var vizID = element.attr('viz-time-line');
-
-      var mapID = element.attr('crime-viz-map');
-
-      var promiseAttr = element.attr('viz-time-data');
-
-      var wrapper = d3.select(element[0]);
-
-      //  SVG DIMENSIONS
-      var padding = element[0].offsetWidth * 0.05;
-      var wdth = element[0].offsetWidth;
-      var hght = element[0].offsetHeight;
-
-      var svg = wrapper
-        .append('svg')
-        .attr({
-          height: hght,
-          width: wdth
-        });
-
-      var timeFormatMD = d3.time.format('%m/%d');
-
-      var timeFormatFull = d3.time.format('%A at %H:%M');
-
-      var scaleAxisX = d3.time.scale()
-        .range([0, wdth]);
-
-      var scaleAxisY = d3.time.scale()
-        .domain([new Date('Wed Dec 31 1969 00:00:00'), new Date('Wed Dec 31 1969 24:00:00')])
-        .range([padding, (hght - padding)]);
-
-      var xAxis = d3.svg.axis()
-        .orient('bottom')
-        .innerTickSize(-wdth)
-        .outerTickSize(0)
-        .tickPadding(10)
-        .tickFormat(timeFormatMD);
-
-      var yAxis = d3.svg.axis()
-        .orient('left')
-        .innerTickSize(-(hght + padding))
-        .outerTickSize(0)
-        .tickPadding(10)
-        .tickFormat(d3.time.format("%H"))
-        .ticks(d3.time.hours, 1);
-
-      var crimeReportData = scope[promiseAttr];
-
-      scope.toolTipLock = scope.toolTipLock || false;
-
-      crimeReportData.promise.then(function(data) {
-
-        var toolTipEl = d3.select('#cicle-tool-tip');
-
-        var _incidents = data.incidents;
-
-        var _index = data.index;
-
-        var dateRange = d3.extent(_incidents, function(d) {
-          return new Date(d.properties.date_reported).valueOf();
-        });
-
-
-        scaleAxisX.domain(dateRange);
-        scaleAxisX.nice(d3.time.day);
-
-        xAxis.scale(scaleAxisX);
-
-        yAxis.scale(scaleAxisY);
-
-        svg.append('g')
-          .attr('class', 'axis x')
-          .attr('transform', 'translate(' + (padding * 1.75) + ',' + (hght - 30) + ')')
-          .call(xAxis);
-
-        svg.append('g')
-          .attr('class', 'axis y')
-          .attr('transform', 'translate(' + padding + ', 0)')
-          .call(yAxis);
-
-        var reportMarks = svg.append('g')
-          .attr('id', 'reports-vz-marks')
-          .attr('transform', 'translate(' + (padding * 1.75) + ', 0)');
-
-        reportMarks.selectAll('circle')
-          .data(_incidents)
-          .enter()
-          .append('circle')
-          .attr('class', 'timeline-circle')
-          .attr('fill', function(d) {
-            //  PARENT TYPE
-            var offType = d.properties.offense_type;
-
-            var parentType = (offType.indexOf('-') === -1) ? offType : offType.slice(0, offType.indexOf('-'));
-
-            return _index[parentType].fillColor;
-          })
-          .attr('cx', plotXcirc)
-          .attr('cy', plotYcirc)
-          .attr('r', 4)
-          .on('click', function(event) {
-
-            toolTipShow(event.properties, this);
-
-            scope.toolTipLock = true;
-
-            //  PARENT TYPE
-            var offType = event.properties.offense_type;
-
-            var parentType = (offType.indexOf('-') === -1) ? offType : offType.slice(0, offType.indexOf('-'));
-
-            var _latitude = Number(event.properties.latitude);
-            var _longitude = Number(event.properties.longitude);
-
-            var uluru = {
-              'lat': _latitude,
-              'lng': _longitude
-            };
-
-            // remove old marker
-            if (scope[mapID].markers !== null) {
-              scope[mapID].markers.setMap(null);
-            }
-
-            var _marker = new google.maps.Marker({
-              'position': uluru,
-              'map': scope[mapID].$g,
-              'icon': 'images/spacer.png'
-            });
-
-            var _HTMLcontent = '<span class=\"glyphicon glyphicon-map-marker\" style=\"color: ' + scope.$index[parentType].fillColor + '\"></span>&nbsp;' + event.properties.summarized_offense_description;
-
-            var infowindow = new google.maps.InfoWindow({
-              content: _HTMLcontent
-            });
-
-            infowindow.open(scope[mapID].$g, _marker);
-
-            google.maps.event.addListener(infowindow, 'closeclick', function() {
-
-              scope.incidentDetail = null;
-
-              scope.$apply();
-
-              toolTipHide();
-            });
-
-            scope[mapID].$g.setCenter(_marker.getPosition());
-
-            // Cache marker for removal later
-            scope[mapID].$markers = infowindow;
-
-            scope.incidentDetail = event.properties;
-
-            scope.$apply();
-
-            if (scope.$detailMap !== undefined) {
-
-              var StreetView = new google.maps.Map(document.getElementById('street-view-detail'), {
-                scrollwheel: false,
-                zoomControl: false,
-                zoom: 0
-              });
-
-              var panorama = new google.maps.StreetViewPanorama(
-
-                document.getElementById('street-view-detail'), {
-                  'position': uluru,
-                  'pov': {
-                    'heading': 34,
-                    'pitch': 5
-                  },
-                  'scrollwheel': false
-                });
-
-              StreetView.setStreetView(panorama);
-            }
-          })
-          .on('mouseover', function(d) {
-            if (!scope.toolTipLock) {
-              toolTipShow(d.properties, this);
-
-              this.setAttribute('r', '8');
-            }
-          })
-          .on('mouseout', function() {
-            if (!scope.toolTipLock) {
-              toolTipHide();
-            }
-          });
-
-        function toolTipShow(data, element) {
-          try {
-            scope[mapID].$markers.close();
-          } catch (e) {}
-
-          var incident = data;
-
-          var circ = (element !== undefined) ? element :
-            reportMarks.selectAll('circle')
-            .filter(function(d) {
-              return d.properties.general_offense_number === incident.general_offense_number;
-            })[0][0];
-
-          if (circ.getAttribute('fill') !== 'transparent') {
-
-            circ.setAttribute('r', '4');
-
-            // Populate tooltop now, need height to calculate offsets
-            toolTipEl.html(timeFormatFull(new Date(incident.date_reported)) + ' / ' + incident.offense_type);
-
-            var parent = circ.parentElement;
-
-            var parentbounding = parent.getBoundingClientRect();
-
-            var bounding = circ.getBoundingClientRect();
-
-            var newWdth = bounding.left;
-
-            var newHght = bounding.top;
-
-            var toolTipHght = toolTipEl[0][0].getBoundingClientRect().height;
-
-            var offsetX = true ? (newWdth - parentbounding.left) : 0;
-
-            var offsetY = true ? (newHght - parentbounding.top + toolTipHght + 24) : 0;
-
-            toolTipEl.style('left', function() {
-                return offsetX + 'px';
-              })
-              .style('top', function() {
-                return offsetY + 'px';
-              });
-
-            toolTipEl
-              .transition()
-              .duration(200)
-              .style('opacity', 1)
-              .style('background', function() {
-                //  PARENT TYPE
-                var offType = incident.offense_type;
-
-                var parentType = (offType.indexOf('-') === -1) ? offType : offType.slice(0, offType.indexOf('-'));
-
-                return _index[parentType].fillColor;
-              })
-              .attr('transform', 'translate(' + padding + ',' + (hght - 30) + ')');
-          }
-        }
-
-        function toolTipHide() {
-          toolTipEl.transition()
-            .duration(500)
-            .style('opacity', 0);
-
-          reportMarks.selectAll('circle')
-            .transition()
-            .duration(250)
-            .attr('r', '4');
-          // .attr('opacity', 1);
-
-          scope.toolTipLock = false;
-
-          scope[mapID].$markers = null;
-
-          try {
-            scope[mapID].$markers.close();
-          } catch (e) {}
-
-          // scope.incidentDetail = _incident;
-
-          // scope.$apply();
-
-        }
-
-        // PUBLIC SCOPE METHODS
-        scope[vizID] = {
-          filterData: function(filterIndex) {
-
-            reportMarks.selectAll('circle')
-              .transition()
-              .duration(200)
-              .attr('cx', function(d) {
-                //  PARENT TYPE
-                var offType = d.properties.offense_type;
-
-                var parentType = (offType.indexOf('-') === -1) ? offType : offType.slice(0, offType.indexOf('-'));
-
-                if (filterIndex.indexOf(parentType) < 0) {
-
-                  var incidentDate = new Date(d.properties.date_reported)
-                    .toDateString();
-
-                  var _q_ = scaleAxisX(new Date(incidentDate));
-
-                  return _q_;
-
-                } else {
-
-                  return 0;
-                }
-              })
-              .attr('fill', function(d) {
-                //  PARENT TYPE
-                var offType = d.properties.offense_type;
-
-                var parentType = (offType.indexOf('-') === -1) ? offType : offType.slice(0, offType.indexOf('-'));
-
-                return (filterIndex.indexOf(parentType) < 0) ? _index[parentType].fillColor : "transparent";
-              });
-          },
-
-          refresh: function() {
-
-            var newPadding = element[0].offsetWidth * 0.05;
-            var newWdth = element[0].offsetWidth;
-            var newHght = element[0].offsetHeight;
-
-            svg
-              .attr({
-                height: newHght,
-                width: newWdth
-              });
-
-            scaleAxisX.range([newPadding, (newWdth - (newPadding * 2))]);
-
-            scaleAxisY.range([newPadding, (newHght - newPadding)]);
-
-            svg.select('g#reports-vz-marks')
-              .transition()
-              .duration(100)
-              .attr('transform', 'translate(' + (newPadding * 1.75) + ', 0)');
-
-            svg.select('.axis.x')
-              .transition()
-              .duration(100)
-              .attr('transform', 'translate(' + (newPadding * 1.75) + ',' + (newHght - 30) + ')')
-              .ease("sin-in-out")
-              .call(xAxis);
-
-            svg.select('.axis.y')
-              .transition()
-              .duration(100)
-              .ease("sin-in-out")
-              .call(yAxis);
-
-            reportMarks.selectAll('circle')
-              .transition()
-              .duration(200)
-              .attr('cx', plotXcirc)
-              .attr('cy', plotYcirc);
-          },
-
-          toolTipHide: function() {
-            toolTipHide();
-          },
-
-          toolTipShow: function(incident) {
-            toolTipShow(incident);
-          }
-        };
-      });
-
-      function plotXcirc(d) {
-        var incidentDate = new Date(d.properties.date_reported)
-          .toDateString();
-
-        var _q_ = scaleAxisX(new Date(incidentDate));
-
-        return _q_;
-      }
-
-      function plotYcirc(d) {
-        var incidentDate = new Date(d.properties.date_reported);
-
-        var incidentTime = incidentDate.toTimeString();
-
-        return scaleAxisY(new Date('Wed Dec 31 1969 ' + incidentTime));
-      }
-
-    }
-
-    return {
-      'link': link,
-      'templateUrl': 'views/template-reports-viz.html'
-    };
-
-  }])
-  .directive('mapCanvas', [function() {
-
-    function link(scope, element) {
-
-      var mapID = element.attr('map-canvas');
-      var promiseAttr = element.attr('map-promise');
-      var vizID = element.attr('map-timeline');
-
-      var crimeReportData = scope[promiseAttr];
-
-      scope[mapID] = {
-        $g: null
-      };
-
-      crimeReportData.promise
-        .then(function(data) {
-          scope.toolTipLock = scope.toolTipLock || false;
-
-          scope[mapID].markers = null;
-
-          scope.markerOver = null;
-
-          scope[mapID].refresh = function() {
-            scope[mapID].$g.fitBounds(data.mapBounds);
-          };
-
-          scope[mapID].$g = new google.maps.Map(document.getElementById('map-canvas'), {
-            'scrollwheel': false,
-            'streetViewControl': false,
-            'mapTypeControl': false,
-            'panControl': false
-          });
-
-          scope[mapID].$g.setOptions({
-            'styles': [{
-              'stylers': [{
-                'hue': '#fff'
-              }, {
-                'saturation': -100
-              }]
-            }, {
-              'featureType': 'road',
-              'elementType': 'geometry',
-              'stylers': [{
-                'lightness': 100
-              }, {
-                'visibility': 'simplified'
-              }]
-            }, {
-              'featureType': 'road',
-              'elementType': 'labels',
-              'stylers': [{
-                'visibility': 'off'
-              }]
-            }, {
-              'featureType': 'transit.line',
-              'stylers': [{
-                'visibility': 'off'
-              }]
-            }, {
-              'featureType': 'poi',
-              'stylers': [{
-                'visibility': 'off'
-              }]
-            }, {
-              'featureType': 'water',
-              'elementType': 'labels',
-              'stylers': [{
-                'visibility': 'off'
-              }]
-            }, {
-              'featureType': 'road',
-              'stylers': [{
-                'visibility': 'on'
-              }]
-            }]
-          });
-
-          function plotstyleBasic(feature) {
-            if (scope[mapID].$g !== undefined && scope[mapID].$g !== undefined) {
-
-              //  PARENT TYPE
-              var offType = feature.f.offense_type;
-
-              var parentType = (offType.indexOf('-') === -1) ? offType : offType.slice(0, offType.indexOf('-'));
-
-              var offense = scope.$index[parentType];
-
-              return {
-                icon: {
-                  'path': google.maps.SymbolPath.CIRCLE,
-                  'scale': 3,
-                  'fillColor': offense.fillColor,
-                  'fillOpacity': 1,
-                  'strokeWeight': 0
-                }
-              };
-            }
-          }
-
-          function markerClick(event) {
-            scope.toolTipLock = true;
-
-            // Map data
-            var currentFiltered = scope.mapIndexFilter();
-
-            //  PARENT TYPE
-            var offType = event.feature.f.offense_type;
-
-            var parentType = (offType.indexOf('-') === -1) ? offType : offType.slice(0, offType.indexOf('-'));
-
-            if (currentFiltered.indexOf(parentType) === -1) {
-
-              var _incident = event.feature.f;
-
-              var _latitude = Number(_incident.latitude);
-              var _longitude = Number(_incident.longitude);
-
-              var uluru = {
-                'lat': _latitude,
-                'lng': _longitude
-              };
-
-              // remove old marker
-              if (scope[mapID].markers !== null) {
-                scope[mapID].markers.setMap(null);
-              }
-
-              var _marker = new google.maps.Marker({
-                'position': uluru,
-                'map': scope[mapID].$g,
-                'icon': 'images/spacer.png'
-              });
-
-              var _HTMLcontent = '<span class=\"glyphicon glyphicon-map-marker\" style=\"color: ' + scope.$index[parentType].fillColor + '\"></span>&nbsp;' + _incident.summarized_offense_description;
-
-              var infowindow = new google.maps.InfoWindow({
-                content: _HTMLcontent
-              });
-
-              infowindow.open(scope[mapID].$g, _marker);
-
-              google.maps.event.addListener(infowindow, 'closeclick', function() {
-
-                scope.incidentDetail = null;
-
-                scope.$apply();
-
-                scope[vizID].toolTipHide();
-              });
-
-              scope[mapID].$g.setCenter(_marker.getPosition());
-
-              // Cache marker for removal later
-              scope[mapID].markers = infowindow;
-
-              scope.incidentDetail = _incident;
-
-              scope.$apply();
-
-              scope[vizID].toolTipShow(_incident);
-
-              if (scope.$detailMap !== undefined) {
-
-                var StreetView = new google.maps.Map(document.getElementById('street-view-detail'), {
-                  scrollwheel: false,
-                  zoomControl: false,
-                  zoom: 0
-                });
-
-                var panorama = new google.maps.StreetViewPanorama(
-
-                  document.getElementById('street-view-detail'), {
-                    'position': uluru,
-                    'pov': {
-                      'heading': 34,
-                      'pitch': 5
-                    },
-                    'scrollwheel': false
-                  });
-
-                StreetView.setStreetView(panorama);
-              }
-            }
-          }
-
-          scope[mapID].$g.data.addGeoJson({
-            'type': 'FeatureCollection',
-            'features': data.incidents
-          });
-
-          scope[mapID].$g.data.setStyle(plotstyleBasic);
-
-          scope[mapID].$g.data.addListener('click', function($event) {
-            markerClick($event);
-          });
-
-          scope[mapID].$g.fitBounds(data.mapBounds);
-
-          scope[mapID].update = function(indexArray) {
-            function indexSelected(feature) {
-              //  PARENT TYPE
-              var offType = feature.f.offense_type;
-
-              var parentType = (offType.indexOf('-') === -1) ? offType : offType.slice(0, offType.indexOf('-'));
-
-              var filterOffence = (indexArray.indexOf(parentType) > -1);
-
-              var offenseHex = scope.$index[parentType].fillColor;
-
-              return {
-                icon: {
-                  'path': google.maps.SymbolPath.CIRCLE,
-                  'scale': 2.75,
-                  'fillColor': filterOffence ? 'transparent' : offenseHex,
-                  'fillOpacity': filterOffence ? 0 : 1,
-                  'strokeWeight': 0,
-                  'zIndex': filterOffence ? 100 : 1
-                }
-              };
-            }
-
-            scope[mapID].$g.data.setStyle(indexSelected);
-          };
-
-        });
-    }
-
-    return {
-      'link': link,
-      'templateUrl': 'views/template-map-canvas.html'
-    };
-
-  }])
   .directive('incidentDetail', [function() {
 
     function link(scope, element) {
-      var mapID = element.attr('map-id');
       var vizID = element.attr('timeline-id');
 
       scope.incidentDetail = null;
@@ -1202,7 +396,7 @@ angular.module('mkm.seaCrimeData', [
 
       scope.closeDetail = function() {
         try {
-          scope[mapID].$markers.close();
+          scope.mapID.$markers.close();
         } catch (e) {}
 
         scope[vizID].toolTipHide();
