@@ -1,7 +1,7 @@
 @import "variables.less";
 #map-canvas,
 #sea-crime-viz {
-  height: 85vh;
+  height: 67vh;
   width: 100%;
 }
 
@@ -18,10 +18,9 @@
 }
 
 #crime-reports-block {
-  height: 85vh;
+  height: 50vh;
   width: 100%;
   svg {
-    background-coor: #777777;
     rect {
       cursor: pointer;
     }
@@ -86,4 +85,36 @@ svg {
 
 .timeline-circle {
   cursor: pointer;
+}
+
+path.line {
+  fill: none;
+  stroke: #666;
+  stroke-width: 1.5px;
+}
+
+path.area {
+  fill: #e7e7e7;
+}
+
+.axis {
+  shape-rendering: crispEdges;
+}
+
+.x.axis line {
+  stroke: #fff;
+}
+
+.x.axis .minor {
+  stroke-opacity: .5;
+}
+
+.x.axis path {
+  display: none;
+}
+
+.y.axis line,
+.y.axis path {
+  fill: none;
+  stroke: #000;
 }
