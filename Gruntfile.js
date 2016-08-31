@@ -390,7 +390,7 @@ module.exports = function(grunt) {
         src: '{,*/}*.css'
       },
       source: {
-        dest: 'main/',
+        dest: 'source/',
         flatten: true,
         expand: true,
         src: [
@@ -405,7 +405,7 @@ module.exports = function(grunt) {
 
           var fileXtn = id_ext.slice(id_ext.indexOf('.'), id_ext.lenth);
 
-          return dest + 'seattle-crime-reports' + fileStr + fileXtn;
+          return dest + 'seattle-crime-reports-' + fileStr + fileXtn;
         }
       }
     },
