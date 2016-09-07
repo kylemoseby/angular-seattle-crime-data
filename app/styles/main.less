@@ -1,10 +1,6 @@
 @import "variables.less";
-#map-canvas,
-#sea-crime-viz {
-  height: 67vh;
-  width: 100%;
-}
-
+@import "crime-timeline.less";
+@import "crime-map.less";
 #crime-map-filter {
   height: 67vh;
   width: 100%;
@@ -45,76 +41,3 @@
   overflow: hidden;
 }
 
-.axis path,
-.axis line {
-  fill: none;
-  // stroke: #ccc0c0;
-  visibility: hidden;
-  display: none;
-}
-
-.axis .domain {
-  opacity: 0;
-}
-
-.block-label {
-  font-size: @font-size-small;
-  text-transform: lowercase;
-  fill: @gray-light;
-  stroke: @gray-light;
-}
-
-#cicle-tool-tip {
-  position: absolute;
-  text-align: center;
-  width: 15vw;
-  padding: @padding-base-vertical @padding-base-horizontal;
-  font: @font-size-base @font-family-base;
-  line-height: @line-height-computed;
-  color: #fff;
-  border: 0px;
-  border-radius: @border-radius-base;
-  pointer-events: none;
-  opacity: 0;
-  z-index: 20;
-}
-
-svg {
-  z-index: 0;
-}
-
-.timeline-circle {
-  cursor: pointer;
-}
-
-path.line {
-  fill: none;
-  stroke: #666;
-  stroke-width: 1.5px;
-}
-
-path.area {
-  fill: #e7e7e7;
-}
-
-.axis {
-  shape-rendering: crispEdges;
-}
-
-.x.axis line {
-  stroke: #fff;
-}
-
-.x.axis .minor {
-  stroke-opacity: .5;
-}
-
-.x.axis path {
-  display: none;
-}
-
-.y.axis line,
-.y.axis path {
-  fill: none;
-  stroke: #000;
-}

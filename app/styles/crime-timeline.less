@@ -2,99 +2,78 @@
   height: 67vh;
   width: 100%;
 }
+
+
 .axis path,
 .axis line {
   fill: none;
+  // stroke: #ccc0c0;
   visibility: hidden;
   display: none;
 }
+
 .axis .domain {
   opacity: 0;
 }
+
 .block-label {
-  font-size: 12px;
+  font-size: @font-size-small;
   text-transform: lowercase;
-  fill: #777777;
-  stroke: #777777;
+  fill: @gray-light;
+  stroke: @gray-light;
 }
+
 #cicle-tool-tip {
   position: absolute;
   text-align: center;
   width: 15vw;
-  padding: 6px 12px;
-  font: 14px "Helvetica Neue", Helvetica, Arial, sans-serif;
-  line-height: 20px;
+  padding: @padding-base-vertical @padding-base-horizontal;
+  font: @font-size-base @font-family-base;
+  line-height: @line-height-computed;
   color: #fff;
   border: 0px;
-  border-radius: 4px;
+  border-radius: @border-radius-base;
   pointer-events: none;
   opacity: 0;
   z-index: 20;
 }
+
 svg {
   z-index: 0;
 }
+
 .timeline-circle {
   cursor: pointer;
 }
+
 path.line {
   fill: none;
   stroke: #666;
   stroke-width: 1.5px;
 }
+
 path.area {
   fill: #e7e7e7;
 }
+
 .axis {
   shape-rendering: crispEdges;
 }
+
 .x.axis line {
   stroke: #fff;
 }
+
 .x.axis .minor {
   stroke-opacity: .5;
 }
+
 .x.axis path {
   display: none;
 }
+
 .y.axis line,
 .y.axis path {
   fill: none;
   stroke: #000;
-}
-#map-canvas {
-  height: 67vh;
-  width: 100%;
-}
-#crime-map-filter {
-  height: 67vh;
-  width: 100%;
-  overflow: scroll;
-  display: inline-block;
-}
-#type-filter {
-  display: inline-block;
-  overflow: scroll;
-}
-#crime-reports-block {
-  height: 50vh;
-  width: 100%;
-}
-#crime-reports-block svg rect {
-  cursor: pointer;
-}
-.sum-svg-wrapper {
-  height: 50vh;
-  width: 100%;
-}
-#street-view-detail {
-  height: 50vh;
-  width: 100%;
-}
-.reportTotals {
-  display: inline-block;
-  height: 18px;
-  padding: 0;
-  color: #ffffff;
-  overflow: hidden;
 }
