@@ -1,7 +1,6 @@
 'use strict';
 
 angular.module('mkm.seaCrimeData', [
-    'ngRoute',
     'ngMaterial'
   ])
   .service('seattleDataGov', ['$http', '$q', function($http, $q) {
