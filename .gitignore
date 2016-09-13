@@ -8,3 +8,7 @@ app/images
 /other_components
 app/scripts/api_key.js
 portfolio/
+
+app/.DS_Store
+
+.DS_Store

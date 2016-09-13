@@ -3,6 +3,10 @@
   "description": "Directives that load interactive visualizations using data from seattle.data.gov",
   "version": "1.0.0",
   "homepage": "https://github.com/angular/angular-seatle-crime-data",
+  "main": [
+    "source/seattle-crime-reports-scripts.js",
+    "source/seattle-crime-map-main.css"
+  ],
   "license": "MIT",
   "private": true,
   "dependencies": {
@@ -16,9 +20,11 @@
     "angular-material": "^1.1.0"
   },
   "resolutions": {
-    "angular": "1.5.8"
+    "angular": "1.5.8",
+    "angular-route": "^1.5.8"
   },
   "devDependencies": {
+    "angular-codepen": "git@github.com:kylemoseby/angular-codepen.git",
     "bootstrap": "^3.3.7"
   }
 }

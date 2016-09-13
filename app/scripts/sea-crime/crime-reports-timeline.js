@@ -110,7 +110,6 @@ angular.module('mkm.seaCrimeData')
           var dateRange = d3.extent(_incidents, function(d) {
 
             return new Date(d.properties.date_reported);
-
           });
 
           scaleAxisX.domain(dateRange);
@@ -120,7 +119,7 @@ angular.module('mkm.seaCrimeData')
 
           svg.append('g')
             .attr('class', 'axis x')
-            .attr('transform', 'translate(0,' + (hght - 30) + ')')
+            .attr('transform', 'translate(80,' + (hght - 30) + ')')
             .call(xAxis);
 
           svg.append('g')
@@ -130,7 +129,7 @@ angular.module('mkm.seaCrimeData')
 
           var reportMarks = svg.append('g')
             .attr('id', 'reports-vz-marks')
-            .attr('transform', 'translate(0, 0)');
+            .attr('transform', 'translate(80, 0)');
 
           /*   FUNCTIONS FOR CIRCLES   */
           function setCircStyle(currentState, d) {
@@ -392,18 +391,15 @@ angular.module('mkm.seaCrimeData')
 
             svg.select('g#reports-vz-marks')
               .transition()
-              .duration(100)
-              .attr('transform', 'translate(0, 0)');
+              .duration(100);
 
             svg.select('.axis.x')
               .transition()
               .duration(100)
-              .attr('transform', 'translate(0,' + (newHght - 30) + ')')
               .ease("sin-in-out")
               .call(xAxis);
 
             svg.select('.axis.y')
-              .attr('transform', 'translate(50, 0)')
               .transition()
               .duration(100)
               .ease("sin-in-out")

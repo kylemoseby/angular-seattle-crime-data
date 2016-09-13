@@ -42,7 +42,7 @@ module.exports = function(grunt) {
         tasks: ['jshint:test', 'karma']
       },
       styles: {
-        files: ['<%= yeoman.app %>/styles/{,*/}*.less'],
+        files: ['<%= yeoman.app %>/less/{,*/}*.less'],
         // {,*/}*.css
         tasks: ['less']
       },
@@ -136,7 +136,7 @@ module.exports = function(grunt) {
           paths: [""]
         },
         files: {
-          "app/app.css": "<%= yeoman.app %>/styles/main.less"
+          "app/app.css": "<%= yeoman.app %>/less/main.less"
         }
       }
     },
@@ -383,17 +383,30 @@ module.exports = function(grunt) {
           src: ['generated/*']
         }]
       },
-      source: {
-        expand: true,
-        cwd: '<%= yeoman.app %>/styles',
-        dest: '.tmp/styles/',
-        src: '{,*/}*.css'
-      },
       styles: {
         expand: true,
         cwd: '<%= yeoman.app %>/styles',
         dest: '.tmp/styles/',
         src: '{,*/}*.css'
+      },
+      source: {
+        dest: 'source/',
+        flatten: true,
+        expand: true,
+        src: [
+          '<%= yeoman.dist %>/scripts/scripts.*.js',
+          '<%= yeoman.dist %>/styles/main.*.css'
+        ],
+        rename: function(dest, src) {
+
+          var fileStr = src.slice(0, src.indexOf('.'));
+
+          var id_ext = src.slice(src.indexOf('.') + 1, src.length);
+
+          var fileXtn = id_ext.slice(id_ext.indexOf('.'), id_ext.lenth);
+
+          return dest + 'seattle-crime-reports-' + fileStr + fileXtn;
+        }
       }
     },
 
@@ -466,7 +479,7 @@ module.exports = function(grunt) {
     'filerev',
     'usemin',
     'htmlmin',
-    // 'copy:source'
+    'copy:source'
   ]);
 
   grunt.registerTask('default', [
@@ -475,4 +488,5 @@ module.exports = function(grunt) {
     'connect:livereload',
     'watch'
   ]);
+
 };
