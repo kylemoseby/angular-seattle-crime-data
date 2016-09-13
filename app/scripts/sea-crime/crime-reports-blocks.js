@@ -3,12 +3,15 @@
 // Declare app level module which depends on views, and components
 angular.module('mkm.seaCrimeData')
   .directive('crimeReportsBlock', ['$window', function($window) {
-    console.log($window);
+
     return {
+
       'templateUrl': 'views/template-reports-block.html',
+
       'scope': {
         '$promise': '=crimeReportsData'
       },
+
       'link': function(scope, element) {
 
         var $elm = element[0];
