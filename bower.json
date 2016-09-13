@@ -20,9 +20,11 @@
     "angular-material": "^1.1.0"
   },
   "resolutions": {
-    "angular": "1.5.8"
+    "angular": "1.5.8",
+    "angular-route": "^1.5.8"
   },
   "devDependencies": {
+    "angular-codepen": "git@github.com:kylemoseby/angular-codepen.git",
     "bootstrap": "^3.3.7"
   }
 }

@@ -11,15 +11,11 @@ angular.module('mkm.seaCrimeData').directive('filterReportTypes', [function() {
     },
     'link': function(scope) {
 
-      console.log(scope);
-
       // Used to update class on 'update buttons'
       scope.updated = false;
 
 
       // scope.openFilters = function($mdOpenMenu, ev) {
-      //   console.log('you got it');
-
       //   $mdOpenMenu(ev);
       // };
 
