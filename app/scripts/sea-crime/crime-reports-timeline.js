@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('mkm.seaCrimeData')
-  .directive('vizTimeLine', ['$window', function($window) {
+  .directive('vizTimeLine', ['$window', '$mdPanel', function($window, $mdPanel) {
 
     return {
 
@@ -15,25 +15,7 @@ angular.module('mkm.seaCrimeData')
 
       link: function(scope, element) {
 
-        /*
-            Calulates padding based on parent element width and height
-        */
-
-        function radiusCalc(_el_) {
-
-          var elWdth = _el_.offsetWidth;
-          var rad = 8;
-
-          if (elWdth > 600) {
-            rad = 16;
-          } else if (elWdth > 1280) {
-            rad = 20;
-          }
-
-          return rad;
-        }
-
-        function paddingCalc(_el_) {
+        function padByWidth(_el_) {
 
           var elWdth = _el_.offsetWidth;
           var pad = 3;
@@ -47,22 +29,26 @@ angular.module('mkm.seaCrimeData')
           return pad;
         }
 
+        var $panel = $mdPanel;
+
         var elm = element[0];
 
         var wrapper = d3.select(elm);
 
         //  SVG DIMENSIONS
-        var padding = paddingCalc(elm);
+        var padding = padByWidth(elm);
 
         var wdth = elm.offsetWidth;
         var hght = elm.offsetHeight;
 
-        var padRange = {
+        var addPadding = {
           x: function(_wdth_) {
+            // Add 60 pixels on right side for axis/labels
             return [padding + 60, _wdth_ - padding];
           },
           y: function(_hght_) {
-            return [padding, _hght_ - padding - 36];
+            // Add 60 pixels on bottom for axis/labels
+            return [padding + 10, _hght_ - padding - 36];
           }
         };
 
@@ -70,24 +56,25 @@ angular.module('mkm.seaCrimeData')
           .append('svg')
           .attr({
             height: hght,
-            width: wdth
+            width: wdth,
+            class: 'seattle-crime-timeline'
           });
 
+        var toolTip = d3.select("body").append("div")
+          .attr("class", "cicle-tool-tip")
+          .style("opacity", 0);
+
         var scaleAxisX = d3.time.scale()
-          .range(padRange.x(wdth));
+          .range(addPadding.x(wdth));
 
         var scaleAxisY = d3.time.scale.utc()
-          .domain([new Date('Wed Dec 31 1969 00:00:00 GMT-0800 (PST)'), new Date('Wed Dec 31 1969 23:59:00 GMT-0800 (PST)')])
-          .range(padRange.y(hght));
+          .domain([new Date('Wed Dec 31 1969 00:00:00 GMT-0800 (PST)'), new Date('Wed Dec 31 1969 24:00:00 GMT-0800 (PST)')])
+          .range(addPadding.y(hght));
 
         var xAxis = d3.svg.axis()
           .orient('bottom')
           .ticks(d3.time.day, 1)
-          .innerTickSize(-wdth)
-          .outerTickSize(0)
-          .tickPadding(10)
-          .tickFormat(d3.time
-            .format('%a %m/%d'));
+          .tickFormat(d3.time.format('%a %m/%d'));
 
         var yAxis = d3.svg.axis()
           .orient('left')
@@ -95,21 +82,19 @@ angular.module('mkm.seaCrimeData')
           .outerTickSize(0)
           .tickPadding(10)
           .tickFormat(d3.time.format("%H:%M"))
-          .ticks(d3.time.hours, 3);
+          .ticks(d3.time.hours, 1);
 
         scope.toolTipLock = scope.toolTipLock || false;
 
         scope.promiseAttr.promise.then(function(data) {
 
-          var toolTipEl = d3.select('#cicle-tool-tip');
-
           var _incidents = data.incidents;
 
           var _index = data.index;
 
-          var dateRange = d3.extent(_incidents, function(d) {
+          var dateRange = d3.extent(_incidents, function(d, i) {
 
-            return new Date(d.properties.date_reported);
+            return (i === 0) ? d3.time.day.floor(new Date(d.properties.date_reported)) : new Date(d.properties.date_reported);
           });
 
           scaleAxisX.domain(dateRange);
@@ -117,19 +102,6 @@ angular.module('mkm.seaCrimeData')
           xAxis.scale(scaleAxisX);
           yAxis.scale(scaleAxisY);
 
-          svg.append('g')
-            .attr('class', 'axis x')
-            .attr('transform', 'translate(80,' + (hght - 30) + ')')
-            .call(xAxis);
-
-          svg.append('g')
-            .attr('class', 'axis y')
-            .attr('transform', 'translate(50, 0)')
-            .call(yAxis);
-
-          var reportMarks = svg.append('g')
-            .attr('id', 'reports-vz-marks')
-            .attr('transform', 'translate(80, 0)');
 
           /*   FUNCTIONS FOR CIRCLES   */
           function setCircStyle(currentState, d) {
@@ -162,11 +134,11 @@ angular.module('mkm.seaCrimeData')
           }
 
           function plotXcirc(d) {
-
             var incidentDate = new Date(d.properties.date_reported);
 
             var timeFormat = d3.time.format('%x');
 
+            // return scaleAxisX(new Date(incidentDate));
             return scaleAxisX(new Date(timeFormat(incidentDate)));
           }
 
@@ -179,69 +151,47 @@ angular.module('mkm.seaCrimeData')
             return scaleAxisY(new Date('Wed Dec 31 1969 ' + incidentTime));
           }
 
-          function toolTipShow(data, element) {
-            try {
-              scope.mapID.$markers.close();
-            } catch (e) {}
+          function toolTipShow(data) {
 
             var incident = data;
 
-            var circ = (element !== undefined) ? element :
-              reportMarks.selectAll('circle')
-              .filter(function(d) {
-                return d.properties.general_offense_number === incident.general_offense_number;
-              })[0][0];
+            // reportMarks.selectAll('circle')
+            //   .filter(function(d) {
+            //     return d.properties.general_offense_number === incident.general_offense_number;
+            //   })[0][0];
 
-            if (circ.getAttribute('fill') !== 'transparent') {
+            // if (element.getAttribute('fill') !== 'transparent') {
 
-              var timeFormatFull = d3.time.format('%A at %H:%M');
+            var timeFormatFull = d3.time.format('%H:%M %p');
 
-              var parent = circ.parentElement;
+            // Populate tooltop now, need height to calculate offsets
+            toolTip.html(timeFormatFull(new Date(incident.date_reported)) + ' / ' + incident.offense_type);
 
-              var parentbounding = parent.getBoundingClientRect();
+            toolTip.style('left', function() {
+                return (d3.event.pageX + 30) + "px";
+              })
+              .style('top', function() {
+                return (d3.event.pageY - 28) + "px";
+              });
 
-              var bounding = circ.getBoundingClientRect();
+            toolTip
+              .transition()
+              .duration(200)
+              .style('opacity', 1)
+              .style('background', function() {
+                //  PARENT TYPE
+                var offType = incident.offense_type;
 
-              var newWdth = bounding.left;
+                var parentType = (offType.indexOf('-') === -1) ? offType : offType.slice(0, offType.indexOf('-'));
 
-              var newHght = bounding.top;
-
-              var toolTipHght = toolTipEl[0][0].getBoundingClientRect().height;
-
-              var offsetX = true ? (newWdth - parentbounding.left) : 0;
-
-              var offsetY = true ? (newHght - parentbounding.top + toolTipHght + 24) : 0;
-
-              // circ.setAttribute('r', '4');
-
-              // Populate tooltop now, need height to calculate offsets
-              toolTipEl.html(timeFormatFull(new Date(incident.date_reported)) + ' / ' + incident.offense_type);
-
-              toolTipEl.style('left', function() {
-                  return offsetX + 'px';
-                })
-                .style('top', function() {
-                  return offsetY + 'px';
-                });
-
-              toolTipEl
-                .transition()
-                .duration(200)
-                .style('opacity', 1)
-                .style('background', function() {
-                  //  PARENT TYPE
-                  var offType = incident.offense_type;
-
-                  var parentType = (offType.indexOf('-') === -1) ? offType : offType.slice(0, offType.indexOf('-'));
-
-                  return _index[parentType].fillColor;
-                })
-                .attr('transform', 'translate(' + padding + ',' + (hght - 30) + ')');
-            }
+                return _index[parentType].fillColor;
+              })
+              .attr('transform', 'translate(' + padding + ',' + (hght - 30) + ')');
+            // }
           }
 
           function toolTipHide() {
-            toolTipEl.transition()
+            toolTip.transition()
               .duration(500)
               .style('opacity', 0);
 
@@ -265,100 +215,74 @@ angular.module('mkm.seaCrimeData')
           }
           /*   END FUNCTIONS FOR CIRCLES   */
 
+          var axXoffset = 10;
+
+          var reportMarks = svg.append('g')
+            .attr('transform', 'translate(' + axXoffset + ', 0)')
+            .attr('id', 'reports-vz-marks');
+
+
+          function crimeReportDetail($scope, mdPanelRef, incidentDetail) {
+            console.log($scope);
+            console.log(mdPanelRef);
+            console.log(incidentDetail);
+
+            $scope.incidentDetail = incidentDetail;
+          }
+
+          var radius = 5;
+
           reportMarks.selectAll('circle')
             .data(_incidents)
             .enter()
             .append('circle')
+            .attr('cx', plotXcirc)
+            .attr('cy', plotYcirc)
+            .attr('r', radius)
             .attr('class', 'timeline-circle')
             .attr('style', function(d) {
               return setCircStyle('initial', d);
             })
-            .attr('cx', plotXcirc)
-            .attr('cy', plotYcirc)
-            .attr('r', radiusCalc(element))
             .on('click', function(event) {
 
-              toolTipShow(event.properties, this);
+              var position = $panel.newPanelPosition()
+                .absolute()
+                .center();
 
-              scope.toolTipLock = true;
+              console.log('you got it');
 
-              //  PARENT TYPE
-              var offType = event.properties.offense_type;
-
-              var parentType = (offType.indexOf('-') === -1) ? offType : offType.slice(0, offType.indexOf('-'));
-
-              var _latitude = Number(event.properties.latitude);
-              var _longitude = Number(event.properties.longitude);
-
-              var uluru = {
-                'lat': _latitude,
-                'lng': _longitude
-              };
-
-              // remove old marker
-              if (scope.mapID.markers !== null) {
-                scope.mapID.markers.setMap(null);
-              }
-
-              var _marker = new google.maps.Marker({
-                'position': uluru,
-                'map': scope.mapID.$g,
-                'icon': 'images/spacer.png'
+              /* OPEN THE PANEL */
+              $panel.open({
+                attachTo: angular.element(document.body),
+                controller: crimeReportDetail,
+                controllerAs: 'ctrl',
+                disableParentScroll: true,
+                templateUrl: 'views/template-incident-detail.html',
+                hasBackdrop: true,
+                panelClass: 'crime-report-detail',
+                position: position,
+                trapFocus: true,
+                zIndex: 150,
+                clickOutsideToClose: true,
+                escapeToClose: true,
+                focusOnOpen: true,
+                targetEvent: event,
+                locals: {
+                  incidentDetail: event.properties
+                }
               });
-
-              var _HTMLcontent = '<span class=\"glyphicon glyphicon-map-marker\" style=\"color: ' + scope.$index[parentType].fillColor + '\"></span>&nbsp;' + event.properties.summarized_offense_description;
-
-              var infowindow = new google.maps.InfoWindow({
-                content: _HTMLcontent
-              });
-
-              infowindow.open(scope.mapID.$g, _marker);
-
-              google.maps.event.addListener(infowindow, 'closeclick', function() {
-
-                scope.incidentDetail = null;
-
-                scope.$apply();
-
-                toolTipHide();
-              });
-
-              scope.mapID.$g.setCenter(_marker.getPosition());
-
-              // Cache marker for removal later
-              scope.mapID.$markers = infowindow;
 
               scope.incidentDetail = event.properties;
 
-              scope.$apply();
-
-              if (scope.$detailMap !== undefined) {
-
-                var StreetView = new google.maps.Map(document.getElementById('street-view-detail'), {
-                  scrollwheel: false,
-                  zoomControl: false,
-                  zoom: 0
-                });
-
-                var panorama = new google.maps.StreetViewPanorama(
-
-                  document.getElementById('street-view-detail'), {
-                    'position': uluru,
-                    'pov': {
-                      'heading': 34,
-                      'pitch': 5
-                    },
-                    'scrollwheel': false
-                  });
-
-                StreetView.setStreetView(panorama);
-              }
+              // scope.$apply();
             })
             .on('mouseover', function(d) {
 
               if (!scope.toolTipLock) {
 
                 this.setAttribute('style', setCircStyle('mouseover', d));
+
+                this.setAttribute('r', radius * 2);
 
                 toolTipShow(d.properties, this);
               }
@@ -368,10 +292,21 @@ angular.module('mkm.seaCrimeData')
 
                 this.setAttribute('style', setCircStyle('mouseout', d));
 
-                toolTipHide();
+                this.setAttribute('r', radius);
 
+                toolTipHide();
               }
             });
+
+          svg.append('g')
+            .attr('class', 'axis x')
+            .attr('transform', 'translate(' + axXoffset + ',' + (hght - 30) + ')') // LABELS AT BOTTOM
+            .call(xAxis);
+
+          svg.append('g')
+            .attr('class', 'axis y')
+            .attr('transform', 'translate(50, 0)') // BRINGS DATES OFF SCREEN
+            .call(yAxis);
 
           function _refreshTimeLine() {
 
@@ -384,9 +319,9 @@ angular.module('mkm.seaCrimeData')
                 width: newWdth
               });
 
-            scaleAxisX.range(padRange.x(newWdth));
+            scaleAxisX.range(addPadding.x(newWdth));
 
-            scaleAxisY.range(padRange.y(newHght));
+            scaleAxisY.range(addPadding.y(newHght));
 
 
             svg.select('g#reports-vz-marks')
@@ -414,6 +349,7 @@ angular.module('mkm.seaCrimeData')
 
           // PUBLIC SCOPE METHODS
           scope.vizID = {
+
             filterData: function(filterIndex) {
 
               reportMarks.selectAll('circle')
