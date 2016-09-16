@@ -29,7 +29,7 @@ angular.module('mkm.seaCrimeData')
           return pad;
         }
 
-        var $panel = $mdPanel;
+        scope.$panel = $mdPanel;
 
         var elm = element[0];
 
@@ -223,11 +223,16 @@ angular.module('mkm.seaCrimeData')
 
 
           function crimeReportDetail($scope, mdPanelRef, incidentDetail) {
-            console.log($scope);
-            console.log(mdPanelRef);
-            console.log(incidentDetail);
 
             $scope.incidentDetail = incidentDetail;
+
+            $scope.closeDetail = function() {
+
+              this.incidentDetail = null;
+
+              mdPanelRef.close();
+            };
+
           }
 
           var radius = 5;
@@ -245,14 +250,12 @@ angular.module('mkm.seaCrimeData')
             })
             .on('click', function(event) {
 
-              var position = $panel.newPanelPosition()
+              var position = scope.$panel.newPanelPosition()
                 .absolute()
                 .center();
 
-              console.log('you got it');
-
               /* OPEN THE PANEL */
-              $panel.open({
+              scope.$panel.open({
                 attachTo: angular.element(document.body),
                 controller: crimeReportDetail,
                 controllerAs: 'ctrl',
@@ -270,6 +273,29 @@ angular.module('mkm.seaCrimeData')
                 locals: {
                   incidentDetail: event.properties
                 }
+              }).finally(function() {
+
+                var StreetView = new google.maps.Map(document.getElementById('street-view-detail'), {
+                  scrollwheel: false,
+                  zoomControl: false,
+                  zoom: 0
+                });
+
+                var panorama = new google.maps.StreetViewPanorama(
+                  document.getElementById('street-view-detail'), {
+                    'position': {
+                      'lat': Number(event.properties.latitude),
+                      'lng': Number(event.properties.longitude)
+                    },
+                    'pov': {
+                      'heading': 34,
+                      'pitch': 5
+                    },
+                    'scrollwheel': false
+                  });
+
+                StreetView.setStreetView(panorama);
+
               });
 
               scope.incidentDetail = event.properties;

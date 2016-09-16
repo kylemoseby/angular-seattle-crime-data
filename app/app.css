@@ -77,11 +77,8 @@ path {
   overflow: scroll;
 }
 #crime-reports-block {
-  height: 50vh;
+  height: 75vh;
   width: 100%;
-}
-#crime-reports-block svg rect {
-  cursor: pointer;
 }
 #map-canvas {
   height: 67vh;
