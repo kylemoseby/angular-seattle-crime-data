@@ -2,7 +2,7 @@
 
 // Declare app level module which depends on views, and components
 angular.module('mkm.seaCrimeData')
-  .directive('crimeReportsBlock', ['$window', function($window) {
+  .directive('crimeReportsBlock', ['$window', '$mdPanel', function($window, $mdPanel) {
 
     return {
 
@@ -15,6 +15,8 @@ angular.module('mkm.seaCrimeData')
       'link': function(scope, element) {
 
         var $elm = element[0];
+
+        scope.$panel = $mdPanel;
 
         var wrapper = d3.select($elm);
 
@@ -38,10 +40,6 @@ angular.module('mkm.seaCrimeData')
           .range([padding, barHght]);
 
         scope.$promise.promise.then(function(data) {
-
-          function setTypeDetail(d) {
-            scope.$typeDetail.renderChart(d);
-          }
 
           var _index_ = data.index;
 
@@ -100,7 +98,42 @@ angular.module('mkm.seaCrimeData')
             .attr('fill', function(d) {
               return d.fillColor;
             })
-            .on('click', setTypeDetail);
+            .on('click', function(d) {
+
+              var position = scope.$panel.newPanelPosition()
+                .absolute()
+                .center();
+
+              /* OPEN THE PANEL */
+              scope.$panel
+                .open({
+                  attachTo: angular.element(document.body),
+                  controllerAs: 'ctrl',
+                  disableParentScroll: true,
+                  templateUrl: 'views/template-report-type-detail.html',
+                  hasBackdrop: true,
+                  panelClass: 'report-type-detail',
+                  position: position,
+                  trapFocus: true,
+                  zIndex: 150,
+                  clickOutsideToClose: true,
+                  escapeToClose: true,
+                  focusOnOpen: true,
+                  targetEvent: event,
+                  locals: {
+                    reportType: d
+                  },
+                  controller: function($scope, mdPanelRef, reportType) {
+
+                    $scope.reportType = reportType;
+
+                    $scope.closeDetail = function() {
+                      mdPanelRef.close();
+                    };
+                  }
+                })
+                .finally();
+            });
 
           // CATEGORY LABELS
           indexRect.append("text")
@@ -113,8 +146,7 @@ angular.module('mkm.seaCrimeData')
             .attr("class", "block-label category")
             .text(function(d) {
               return d.offenseCategory;
-            })
-            .on('click', setTypeDetail);
+            });
 
           // COUNT LABELS
           indexRect.append("text")
@@ -126,8 +158,7 @@ angular.module('mkm.seaCrimeData')
             .attr("class", "block-label count")
             .text(function(d) {
               return d.count;
-            })
-            .on('click', setTypeDetail);
+            });
 
           function _refreshBlocks() {
             var padding = $elm.offsetWidth * 0.025;

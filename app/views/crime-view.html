@@ -1,4 +1,4 @@
-<div layout="row" layout-wrap>
+<div layout="row" layout-wrap layout-padding>
   <!-- INTRO -->
   <div flex="100">
     <h1>Seattle Crime Reports</h1>
@@ -7,8 +7,8 @@
   </div>
   <!-- // INTRO -->
   <!-- TIMELINE -->
-  <div flex="100">
-    <div filter-report-types="$index" crime-timeline-filter="$vizTimeline"></div>
+  <div flex="100" flex-gt-md="50">
+    <!-- <div filter-report-types="$index" crime-timeline-filter="$vizTimeline"></div> -->
     <div id="sea-crime-viz" viz-time-line="$vizTimeline" viz-time-data="crimeData" crime-viz-map="$crimeMap"></div>
   </div>
   <!-- // TIMELINE -->
