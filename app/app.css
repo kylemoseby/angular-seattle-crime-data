@@ -39,6 +39,10 @@
   height: 100vh;
   width: 100vw;
 }
+.crime-report-detail #street-view-detail {
+  height: 50vh;
+  width: 100%;
+}
 svg.seattle-crime-timeline {
   z-index: 0;
 }

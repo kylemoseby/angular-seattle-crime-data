@@ -100,8 +100,6 @@ angular.module('mkm.seaCrimeData')
             })
             .on('click', function(d) {
 
-              console.log(d);
-
               var position = scope.$panel.newPanelPosition()
                 .absolute()
                 .center();
@@ -129,11 +127,12 @@ angular.module('mkm.seaCrimeData')
 
                     $scope.reportType = reportType;
 
+                    $scope.closeDetail = function() {
+                      mdPanelRef.close();
+                    };
                   }
                 })
-                .finally(function() {
-                  console.log('fin');
-                });
+                .finally();
             });
 
           // CATEGORY LABELS

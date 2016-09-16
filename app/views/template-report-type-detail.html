@@ -1,5 +1,8 @@
 <h2>{{reportType.offenseCategory}}  {{reportType.fillColor}}</h2>
 <div class="count">{{reportType.count}}</div>
 <ul>
-  <li ng-repeat="value in reportType.children">{{value}}</li>
+  <li ng-repeat="child in reportType.children">{{child.$type}} {{child.count}}</li>
 </ul>
+<button type="button" class="btn btn-primary" ng-click="closeDetail()">
+  <span class="glyphicon glyphicon-remove"></span> Close Detail
+</button>
