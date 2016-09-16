@@ -232,7 +232,6 @@ angular.module('mkm.seaCrimeData')
 
               mdPanelRef.close();
             };
-
           }
 
           var radius = 5;
@@ -295,6 +294,9 @@ angular.module('mkm.seaCrimeData')
                   });
 
                 StreetView.setStreetView(panorama);
+
+                // promise resolved with GEOJSON
+
 
               });
 
