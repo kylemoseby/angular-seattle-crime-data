@@ -13,10 +13,6 @@ angular.module('mkm.seaCrimeData')
       },
       'link': function link($scope) {
 
-        $scope.mapID = {
-          $g: null
-        };
-
         $scope.toolTipLock = $scope.toolTipLock || false;
 
         var markers = null;
@@ -190,21 +186,27 @@ angular.module('mkm.seaCrimeData')
         };
 
         $scope.mapRefresh = function() {
-          $map.fitBounds(data.mapBounds);
+          $map.fitBounds($scope.mapBounds);
         };
 
         angular.element($window).bind('resize', function() {
 
-          $map.fitBounds(data.mapBounds);
+          $map.fitBounds($scope.mapBounds);
 
         });
 
         if ($scope.$promise.promise !== undefined) {
+
           $scope.$promise.promise
             .then(function(data) {
+
               mapAddGEOJSON(data.incidents);
 
               $map.fitBounds(data.mapBounds);
+
+              $scope.reports = data.incidents;
+
+              $scope.mapBounds = data.mapBounds;
 
             });
         }

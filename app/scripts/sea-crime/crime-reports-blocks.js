@@ -20,6 +20,8 @@ angular.module('mkm.seaCrimeData')
 
         var wrapper = d3.select($elm);
 
+        console.log($elm);
+
         //  SVG DIMENSIONS
         var padding = $elm.offsetWidth * 0.033;
         var wdth = $elm.offsetWidth;
@@ -42,6 +44,8 @@ angular.module('mkm.seaCrimeData')
         scope.$promise.promise.then(function(data) {
 
           var _index_ = data.index;
+
+          // FIX LATER - too many loops for getting an object to Array
 
           var indexArr = [];
 

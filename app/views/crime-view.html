@@ -6,25 +6,20 @@
     <p><a href="https://github.com/kylemoseby/angular-seattle-crime-data" target="_blank">GitHub Repo <span class="icon-github"></span></a></p>
   </div>
   <!-- // INTRO -->
+  <!-- GOOGLE MAP -->
+  <div flex="100">
+    <div map-canvas="$crimeMap" map-promise="crimeData" map-timeline="$vizTimeline"></div>
+  </div>
+  <!-- // GOOGLE MAP -->
+  <!-- BAR CHART -->
+  <div flex="100" flex-gt-md="40">
+    <div id="crime-reports-block" crime-reports-block crime-reports-data="crimeData"></div>
+  </div>
+  <!-- // BAR CHART -->
   <!-- TIMELINE -->
   <div flex="100" flex-gt-md="50">
     <!-- <div filter-report-types="$index" crime-timeline-filter="$vizTimeline"></div> -->
     <div id="sea-crime-viz" viz-time-line="$vizTimeline" viz-time-data="crimeData" crime-viz-map="$crimeMap"></div>
   </div>
   <!-- // TIMELINE -->
-  <!-- BAR CHART -->
-  <div flex="100" flex-gt-md="40" hide-sm hide-xs>
-    <div id="crime-reports-block" crime-reports-block crime-reports-data="crimeData"></div>
-  </div>
-  <!-- // BAR CHART -->
-  <!-- GOOGLE MAP -->
-  <div flex="100" flex-md="40" flex-gt-md="20">
-    <div map-canvas="$crimeMap" map-promise="crimeData" map-timeline="$vizTimeline"></div>
-  </div>
-  <!-- // GOOGLE MAP -->
-  <!-- INCIDENT DETAIL -->
-  <div flex>
-    <div crime-reports-summary="$typeDetail" summary-index="$index"></div>
-  </div>
-  <!-- // INCIDENT DETAIL -->
 </div>

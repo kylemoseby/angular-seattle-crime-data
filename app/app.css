@@ -63,6 +63,7 @@ path {
   stroke-width: 1;
   shape-rendering: crispEdges;
   stroke-dasharray: 2, 2;
+  width: 100%;
 }
 .axis.x path,
 .axis.x line {

@@ -74,13 +74,12 @@ angular.module('mkm.seaCrimeData')
         var xAxis = d3.svg.axis()
           .orient('bottom')
           .ticks(d3.time.day, 1)
+          .tickSize(-(hght), 0, 0)
           .tickFormat(d3.time.format('%a %m/%d'));
 
         var yAxis = d3.svg.axis()
           .orient('left')
-          .innerTickSize(-(hght + padding))
-          .outerTickSize(0)
-          .tickPadding(10)
+          .tickSize(-(wdth), 0, 0)
           .tickFormat(d3.time.format("%H:%M"))
           .ticks(d3.time.hours, 1);
 
@@ -95,6 +94,7 @@ angular.module('mkm.seaCrimeData')
           var dateRange = d3.extent(_incidents, function(d, i) {
 
             return (i === 0) ? d3.time.day.floor(new Date(d.properties.date_reported)) : new Date(d.properties.date_reported);
+            // return d3.time.day.round(new Date(d.properties.date_reported));
           });
 
           scaleAxisX.domain(dateRange);
