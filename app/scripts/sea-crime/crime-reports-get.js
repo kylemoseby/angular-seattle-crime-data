@@ -13,22 +13,17 @@ angular.module('mkm.seaCrimeData', [
         // url: 'scripts/sea-crime/7ais-f98f.json'
     });
 
+    var $fillColor = d3.scale.category20();
+
     function getIncidentParent(report) {
       return (report.indexOf('-') === -1) ?
         report :
         report.slice(0, report.indexOf('-'));
     }
 
-    function processIncidentData(data, index) {
+    function processIncidentData(data) {
 
       var _plots_ = [];
-
-      var $fillColor = d3.scale.category20()
-        .domain(index
-          .map(function(d) {
-            return d.key;
-          }));
-
 
       for (var i = data.length - 1; i >= 0; i--) {
         /*
@@ -66,23 +61,31 @@ angular.module('mkm.seaCrimeData', [
 
     function buildIndex(data) {
 
-      return d3.nest()
+      var $indxOffType = d3.nest()
         .key(function(d) {
-
           try {
-
             return getIncidentParent(d.offense_type);
-
           } catch (e) {
-
             console.log(e);
             console.log(d);
-
           }
         })
         .entries(data);
-    }
 
+      $fillColor.domain($indxOffType
+        .map(function(d) {
+          return d.key;
+        })
+        .reverse());
+
+      return $indxOffType.map(function(d) {
+
+        d.fillColor = $fillColor(d.key);
+
+        return d;
+
+      });
+    }
 
     /*
       Promise is resolved with data from returned from _http
@@ -100,7 +103,10 @@ angular.module('mkm.seaCrimeData', [
 
         _promise.resolve({
           'incidents': processedData.reports,
-          'index': $index,
+          'index': $index.sort(function(a, b) {
+              return d3.ascending(a.values.length, b.values.length);
+            })
+            .reverse(),
           'mapBounds': _mapBounds
         });
       });

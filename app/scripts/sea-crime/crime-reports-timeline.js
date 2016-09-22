@@ -89,8 +89,6 @@ angular.module('mkm.seaCrimeData')
 
           var _incidents = data.incidents;
 
-          var _index = data.index;
-
           var dateRange = d3.extent(_incidents, function(d, i) {
 
             return (i === 0) ? d3.time.day.floor(new Date(d.properties.date_reported)) : new Date(d.properties.date_reported);
@@ -106,7 +104,7 @@ angular.module('mkm.seaCrimeData')
           /*   FUNCTIONS FOR CIRCLES   */
           function setCircStyle(currentState, d) {
 
-            var colour = d.fillColor;
+            var colour = d.properties.fillColor;
 
             switch (currentState) {
 
@@ -175,8 +173,8 @@ angular.module('mkm.seaCrimeData')
               .transition()
               .duration(200)
               .style('opacity', 1)
-              .style('background', function(d) {
-                return d.fillColor;
+              .style('background', function() {
+                return incident.fillColor;
               })
               .attr('transform', 'translate(' + padding + ',' + (hght - 30) + ')');
             // }
@@ -398,11 +396,13 @@ angular.module('mkm.seaCrimeData')
                 })
                 .attr('fill', function(d) {
                   //  PARENT TYPE
-                  var offType = d.properties.offense_type;
+                  // var offType = d.properties.offense_type;
 
-                  var parentType = (offType.indexOf('-') === -1) ? offType : offType.slice(0, offType.indexOf('-'));
+                  // var parentType = (offType.indexOf('-') === -1) ? offType : offType.slice(0, offType.indexOf('-'));
 
-                  return (filterIndex.indexOf(parentType) < 0) ? _index[parentType].fillColor : "transparent";
+                  // return (filterIndex.indexOf(parentType) < 0) ? _index[parentType].fillColor : "transparent";
+
+                  return d.properties.fillColor;
                 });
             },
 

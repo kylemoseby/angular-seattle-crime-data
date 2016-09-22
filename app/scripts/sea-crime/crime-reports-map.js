@@ -79,7 +79,7 @@ angular.module('mkm.seaCrimeData')
         });
 
         function plotstyleBasic(feature) {
-          console.log(feature);
+
           return {
             icon: {
               'path': google.maps.SymbolPath.CIRCLE,
