@@ -2,7 +2,7 @@
 
 
 angular.module('mkm.seaCrimeData')
-  .directive('mapCanvas', ['$window', function($window) {
+  .directive('mapCanvas', ['$window', '$mdPanel', function($window, $mdPanel) {
 
     return {
       'templateUrl': 'views/template-map-canvas.html',
@@ -25,6 +25,8 @@ angular.module('mkm.seaCrimeData')
           'mapTypeControl': false,
           'panControl': false
         });
+
+        $scope.$panel = $mdPanel;
 
         function mapAddGEOJSON(reports) {
 
@@ -135,29 +137,111 @@ angular.module('mkm.seaCrimeData')
             'icon': 'images/spacer.png'
           });
 
+          console.log(_incident);
+
+          // Uses class from boostreap list-instyled
+
+          var infoWindDate = d3.time.format('%a, %x at %H:%M%p');
+
           var infowindow = new google.maps.InfoWindow({
-            content: '<span class=\"glyphicon glyphicon-map-marker\" style=\"color: ' +
-              $scope.$parent.$index[parentType].fillColor +
-              '\"></span>&nbsp;' + _incident.summarized_offense_description
+            content: '<ul class=\"list-unstyled\">' +
+              '<li>' + _incident.summarized_offense_description +
+              '<span class=\"glyphicon glyphicon-map-marker\" style=\"color: ' + $scope.$parent.$index[parentType].fillColor + '\"></span></li>' +
+              '<li>' + infoWindDate(new Date(_incident.date_reported)) + '</li>' +
+              '<li>' + _incident.hundred_block_location + '</li>' +
+              '<li><button id="map-info-btn" type="button" class="btn btn-secondary btn-sm btn-block">More info.</button></li>' +
+              '</ul>'
           });
 
           infowindow.open($map, _marker);
 
           google.maps.event.addListener(infowindow, 'closeclick', function() {});
 
+          google.maps.event.addListener(infowindow, 'domready', function() {
+            console.log('windows');
+
+            function crimeReportDetail($scope, mdPanelRef, incidentDetail) {
+
+              $scope.incidentDetail = incidentDetail;
+
+              $scope.closeDetail = function() {
+
+                this.incidentDetail = null;
+
+                mdPanelRef.close();
+              };
+            }
+
+            var infoWinBtn = d3.select("#map-info-btn");
+
+            infoWinBtn.on('click', function() {
+
+              var position = $scope.$panel.newPanelPosition()
+                .absolute()
+                .center();
+
+              /* OPEN THE PANEL */
+              $scope.$panel.open({
+                attachTo: angular.element(document.body),
+                controller: crimeReportDetail,
+                controllerAs: 'ctrl',
+                disableParentScroll: true,
+                templateUrl: 'views/template-incident-detail.html',
+                hasBackdrop: true,
+                panelClass: 'crime-report-detail',
+                position: position,
+                trapFocus: true,
+                zIndex: 150,
+                clickOutsideToClose: true,
+                escapeToClose: true,
+                focusOnOpen: true,
+                targetEvent: event,
+                locals: {
+                  incidentDetail: _incident
+                }
+              }).finally(function() {
+
+                var StreetView = new google.maps.Map(document.getElementById('street-view-detail'), {
+                  scrollwheel: false,
+                  zoomControl: false,
+                  zoom: 0
+                });
+
+                var panorama = new google.maps.StreetViewPanorama(
+                  document.getElementById('street-view-detail'), {
+                    'position': {
+                      'lat': Number(_incident.latitude),
+                      'lng': Number(_incident.longitude)
+                    },
+                    'pov': {
+                      'heading': 34,
+                      'pitch': 5
+                    },
+                    'scrollwheel': false
+                  });
+
+                StreetView.setStreetView(panorama);
+
+                // promise resolved with GEOJSON
+
+              });
+
+              $scope.incidentDetail = _incident;
+
+            });
+
+          });
+
           $map.setCenter(_marker.getPosition());
 
           // Cache marker for removal later
           markers = infowindow;
-
           // }
         }
 
         $map.data.setStyle(plotstyleBasic);
 
-        $map.data.addListener('click', function($event) {
-          markerClick($event);
-        });
+        $map.data.addListener('click', markerClick);
 
         $scope.mapUpdate = function(indexArray) {
           function indexSelected(feature) {

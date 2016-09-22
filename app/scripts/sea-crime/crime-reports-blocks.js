@@ -20,8 +20,6 @@ angular.module('mkm.seaCrimeData')
 
         var wrapper = d3.select($elm);
 
-        console.log($elm);
-
         //  SVG DIMENSIONS
         var padding = $elm.offsetWidth * 0.033;
         var wdth = $elm.offsetWidth;
