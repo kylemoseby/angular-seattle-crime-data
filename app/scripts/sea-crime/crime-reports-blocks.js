@@ -71,7 +71,7 @@ angular.module('mkm.seaCrimeData')
           scaleAxisX.domain(axisTitles.reverse());
 
           scaleAxisY.domain([0, d3.max(indexSorted, function(d) {
-            return d.count;
+            return d.values.length;
           })]);
 
           var indexRect = svg.selectAll('g.reports-index-rect')
@@ -95,7 +95,7 @@ angular.module('mkm.seaCrimeData')
             })
             .attr('width', scaleAxisX.rangeBand())
             .attr('height', function(d) {
-              return scaleAxisY(d.count);
+              return scaleAxisY(d.values.length);
             })
             .attr('fill', function(d) {
               return d.fillColor;
@@ -155,11 +155,11 @@ angular.module('mkm.seaCrimeData')
             .attr("transform", function(d) {
               var xTrans = (d.offenseCategory === 'VEH-THEFT-AUTO') ? scaleAxisX('VEH') : scaleAxisX(d.offenseCategory);
 
-              return 'translate(' + (xTrans - (scaleAxisX.rangeBand() * 0.67) - 4) + ', ' + (barHght - scaleAxisY(d.count) - padding - 2) + ')';
+              return 'translate(' + (xTrans - (scaleAxisX.rangeBand() * 0.67) - 4) + ', ' + (barHght - scaleAxisY(d.values.length) - padding - 2) + ')';
             })
             .attr("class", "block-label count")
             .text(function(d) {
-              return d.count;
+              return d.values.length;
             });
 
           function _refreshBlocks() {
@@ -195,7 +195,7 @@ angular.module('mkm.seaCrimeData')
               .attr("transform", function(d) {
                 var xTrans = (d.offenseCategory === 'VEH-THEFT-AUTO') ? scaleAxisX('VEH') : scaleAxisX(d.offenseCategory);
 
-                return 'translate(' + (xTrans - (scaleAxisX.rangeBand() * 0.67) - 4) + ', ' + (barHght - scaleAxisY(d.count) - padding - 2) + ')';
+                return 'translate(' + (xTrans - (scaleAxisX.rangeBand() * 0.67) - 4) + ', ' + (barHght - scaleAxisY(d.values.length) - padding - 2) + ')';
               });
 
             indexRect.selectAll('g.reports-index-rect rect')
@@ -212,7 +212,7 @@ angular.module('mkm.seaCrimeData')
               })
               .attr('width', scaleAxisX.rangeBand())
               .attr('height', function(d) {
-                return scaleAxisY(d.count);
+                return scaleAxisY(d.values.length);
               });
           }
 

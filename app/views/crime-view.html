@@ -4,11 +4,16 @@
     <h1>Seattle Crime Reports</h1>
     <p>The following examples all use data that can be found at <a href="https://data.seattle.gov/Public-Safety/Seattle-Police-Department-Police-Report-Incident/7ais-f98f" target="_blank">data.seattle.gov</a>.</p>
     <p><a href="https://github.com/kylemoseby/angular-seattle-crime-data" target="_blank">GitHub Repo <span class="icon-github"></span></a></p>
+    <!-- WARGING IF DATA THROWS ANY ERRORS -->
+    <div class="alert alert-warning" role="alert">
+      Please note that some report data might be incomplete. To view the raw data please go to the datasource, or conact
+    </div>
+    <!-- // WARGING IF DATA THROWS ANY ERRORS -->
   </div>
   <!-- // INTRO -->
   <!-- GOOGLE MAP -->
   <div flex="100">
-    <div map-canvas="$crimeMap" map-promise="crimeData" map-timeline="$vizTimeline"></div>
+    <map-canvas map-promise="crimeData"></map-canvas>
   </div>
   <!-- // GOOGLE MAP -->
   <!-- BAR CHART -->

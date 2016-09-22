@@ -106,10 +106,7 @@ angular.module('mkm.seaCrimeData')
           /*   FUNCTIONS FOR CIRCLES   */
           function setCircStyle(currentState, d) {
 
-            var offType = d.properties.offense_type;
-            var parentType = (offType.indexOf('-') === -1) ? offType : offType.slice(0, offType.indexOf('-'));
-
-            var colour = _index[parentType].fillColor;
+            var colour = d.fillColor;
 
             switch (currentState) {
 
@@ -178,13 +175,8 @@ angular.module('mkm.seaCrimeData')
               .transition()
               .duration(200)
               .style('opacity', 1)
-              .style('background', function() {
-                //  PARENT TYPE
-                var offType = incident.offense_type;
-
-                var parentType = (offType.indexOf('-') === -1) ? offType : offType.slice(0, offType.indexOf('-'));
-
-                return _index[parentType].fillColor;
+              .style('background', function(d) {
+                return d.fillColor;
               })
               .attr('transform', 'translate(' + padding + ',' + (hght - 30) + ')');
             // }
@@ -384,6 +376,7 @@ angular.module('mkm.seaCrimeData')
                 .transition()
                 .duration(200)
                 .attr('cx', function(d) {
+
                   //  PARENT TYPE
                   var offType = d.properties.offense_type;
 

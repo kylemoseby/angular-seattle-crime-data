@@ -71,6 +71,15 @@ path {
   stroke: transparent;
   stroke-width: 0;
 }
+.map-report-detail {
+  background: #fff;
+  height: 100vh;
+  width: 100%;
+}
+.map-report-detail #report-map {
+  height: 33vh;
+  width: 100%;
+}
 #crime-reports-block svg rect {
   cursor: pointer;
 }
@@ -93,9 +102,10 @@ path {
   height: 75vh;
   width: 100%;
 }
-#map-canvas {
+map-canvas {
   height: 67vh;
   width: 100%;
+  display: block;
 }
 #sea-crime-viz {
   height: 75vh;

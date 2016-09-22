@@ -1,39 +1,43 @@
-<div map-promise="crimeData"></div>
-<div class="col-md-5 col-md-offset-1">
-  <div class="table-responsive">
-    <table class="table">
-      <thead>
-        <tr>
-          <td>Date Reported</td>
-          <td>Address</td>
-          <td>District Sector</td>
-          <td>Census Tract</td>
-          <td>General Offense Number</td>
-          <td>Offense Type</td>
-          <td>Offense Code</td>
-          <td>Description</td>
-          <td>Zone/Beat</td>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>{{incidentDetail.date_reported | date:'medium'}}</td>
-          <td>{{incidentDetail.hundred_block_location}}</td>
-          <td>{{incidentDetail.district_sector}}</td>
-          <td>{{incidentDetail.census_tract_2000}}</td>
-          <td>{{incidentDetail.general_offense_number}}</td>
-          <td>{{incidentDetail.offense_type}}</td>
-          <td>{{incidentDetail.offense_code}}</td>
-          <td>{{incidentDetail.summarized_offense_description}}</td>
-          <td>{{incidentDetail.zone_beat}}</td>
-        </tr>
-      </tbody>
-    </table>
+<div layout="column">
+  <div flex>
+    <div class="table-responsive">
+      <table class="table">
+        <thead>
+          <tr>
+            <td>Date Reported</td>
+            <td>Address</td>
+            <td>District Sector</td>
+            <td>Census Tract</td>
+            <td>General Offense Number</td>
+            <td>Offense Type</td>
+            <td>Offense Code</td>
+            <td>Description</td>
+            <td>Zone/Beat</td>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>{{incidentDetail.date_reported | date:'medium'}}</td>
+            <td>{{incidentDetail.hundred_block_location}}</td>
+            <td>{{incidentDetail.district_sector}}</td>
+            <td>{{incidentDetail.census_tract_2000}}</td>
+            <td>{{incidentDetail.general_offense_number}}</td>
+            <td>{{incidentDetail.offense_type}}</td>
+            <td>{{incidentDetail.offense_code}}</td>
+            <td>{{incidentDetail.summarized_offense_description}}</td>
+            <td>{{incidentDetail.zone_beat}}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
   </div>
-</div>
-<div class="col-md-5">
-  <div id="street-view-detail"></div>
-  <button type="button" class="btn btn-primary" ng-click="closeDetail()">
-    <span class="glyphicon glyphicon-remove"></span> Close Detail
-  </button>
+  <div flex>
+    <!-- <div id="street-view-detail"></div> -->
+  </div>
+  <div flex>
+    <map-canvas id="report-map" crime-report="incidentDetail"></map-canvas>
+    <button type="button" class="btn btn-primary" ng-click="closeDetail()">
+      <span class="glyphicon glyphicon-remove"></span> Close Detail
+    </button>
+  </div>
 </div>

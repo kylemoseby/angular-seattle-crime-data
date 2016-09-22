@@ -6,6 +6,7 @@ angular.module('mkm.crimeDemo', [
     'mkm.seaCrimeData'
   ])
   .config(['$routeProvider', function($routeProvider) {
+
     $routeProvider
       .when('/seattle-crime-map', {
         'templateUrl': 'views/crime-view.html',
@@ -14,6 +15,7 @@ angular.module('mkm.crimeDemo', [
       .otherwise({
         redirectTo: '/seattle-crime-map'
       });
+
   }])
   .controller('CrimeMapCtrl', ['$scope', 'seattleDataGov', function($scope, seattleDataGov) {
 
@@ -25,6 +27,7 @@ angular.module('mkm.crimeDemo', [
         $scope.$index = data.index;
 
         $scope.$reports = data.incidents;
+
       });
 
   }]);
