@@ -61,8 +61,7 @@ angular.module('mkm.seaCrimeData')
           });
 
         var toolTip = d3.select("body").append("div")
-          .attr("class", "cicle-tool-tip")
-          .style("opacity", 0);
+          .classed('cicle-tool-tip', true);
 
         var scaleAxisX = d3.time.scale()
           .range(addPadding.x(wdth));
@@ -146,7 +145,7 @@ angular.module('mkm.seaCrimeData')
             return scaleAxisY(new Date('Wed Dec 31 1969 ' + incidentTime));
           }
 
-          function toolTipShow(data) {
+          function _toolTipShow(data) {
 
             var incident = data;
 
@@ -160,16 +159,26 @@ angular.module('mkm.seaCrimeData')
             var timeFormatFull = d3.time.format('%H:%M %p');
 
             // Populate tooltop now, need height to calculate offsets
-            toolTip.html(timeFormatFull(new Date(incident.date_reported)) + ' / ' + incident.offense_type);
-
-            toolTip.style('left', function() {
-                return (d3.event.pageX + 30) + "px";
+            toolTip
+              .html(timeFormatFull(new Date(incident.date_reported)) + ' / ' + incident.offense_type)
+              .style('left', function() {
+                if (d3.event.offsetX > wdth * 0.5) {
+                  // RIGHT of screen
+                  return (d3.event.pageX - 330) + "px";
+                } else {
+                  // LEFT of screen
+                  return (d3.event.pageX + 24) + "px";
+                }
               })
               .style('top', function() {
-                return (d3.event.pageY - 28) + "px";
-              });
-
-            toolTip
+                return (d3.event.pageY - 21) + "px";
+              })
+              .classed({
+                // LEFT of screen
+                'left-side': d3.event.offsetX < wdth * 0.5,
+                // RIGHT of screen
+                'rght-side': d3.event.offsetX > wdth * 0.5
+              })
               .transition()
               .duration(200)
               .style('opacity', 1)
@@ -302,7 +311,7 @@ angular.module('mkm.seaCrimeData')
 
                 this.setAttribute('r', radius * 2);
 
-                toolTipShow(d.properties, this);
+                _toolTipShow(d.properties, this);
               }
             })
             .on('mouseout', function(d) {
@@ -395,13 +404,6 @@ angular.module('mkm.seaCrimeData')
                   }
                 })
                 .attr('fill', function(d) {
-                  //  PARENT TYPE
-                  // var offType = d.properties.offense_type;
-
-                  // var parentType = (offType.indexOf('-') === -1) ? offType : offType.slice(0, offType.indexOf('-'));
-
-                  // return (filterIndex.indexOf(parentType) < 0) ? _index[parentType].fillColor : "transparent";
-
                   return d.properties.fillColor;
                 });
             },
@@ -413,7 +415,7 @@ angular.module('mkm.seaCrimeData')
             },
 
             toolTipShow: function(incident) {
-              toolTipShow(incident);
+              _toolTipShow(incident);
             }
           };
 

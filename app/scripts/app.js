@@ -8,16 +8,16 @@ angular.module('mkm.crimeDemo', [
   .config(['$routeProvider', function($routeProvider) {
 
     $routeProvider
-      .when('/seattle-crime-map', {
+      .when('/seattle-crime-reports', {
         'templateUrl': 'views/crime-view.html',
-        'controller': 'CrimeMapCtrl'
+        'controller': 'CrimeReportrsCtrl'
       })
       .otherwise({
-        redirectTo: '/seattle-crime-map'
+        redirectTo: '/seattle-crime-reports'
       });
 
   }])
-  .controller('CrimeMapCtrl', ['$scope', 'seattleDataGov', function($scope, seattleDataGov) {
+  .controller('CrimeReportrsCtrl', ['$scope', 'seattleDataGov', function($scope, seattleDataGov) {
 
     $scope.crimeData = seattleDataGov;
 

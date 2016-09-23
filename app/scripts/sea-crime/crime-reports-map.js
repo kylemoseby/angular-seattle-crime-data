@@ -18,7 +18,8 @@ angular.module('mkm.seaCrimeData')
           'scrollwheel': false,
           'streetViewControl': false,
           'mapTypeControl': false,
-          'panControl': false
+          'panControl': false,
+          'maxZoom': 17
         });
 
         var $index = {};
@@ -83,7 +84,20 @@ angular.module('mkm.seaCrimeData')
           return {
             icon: {
               'path': google.maps.SymbolPath.CIRCLE,
-              'scale': 3,
+              'scale': 4,
+              'fillColor': feature.f.fillColor,
+              'fillOpacity': 1,
+              'strokeWeight': 0
+            }
+          };
+        }
+
+        function plotstyleDetail(feature) {
+
+          return {
+            icon: {
+              'path': google.maps.SymbolPath.CIRCLE,
+              'scale': 6,
               'fillColor': feature.f.fillColor,
               'fillOpacity': 1,
               'strokeWeight': 0
@@ -117,8 +131,9 @@ angular.module('mkm.seaCrimeData')
 
           var infowindow = new google.maps.InfoWindow({
             content: '<ul class=\"list-unstyled\">' +
-              '<li>' + _incident.summarized_offense_description +
-              '<span class=\"glyphicon glyphicon-map-marker\" style=\"color: ' + _incident.fillColor + '\"></span></li>' +
+              '<li><span class=\"glyphicon glyphicon-map-marker\" style=\"color: ' +
+              _incident.fillColor + '\"></span></li>' +
+              _incident.summarized_offense_description +
               '<li>' + infoWindDate(new Date(_incident.date_reported)) + '</li>' +
               '<li>' + _incident.hundred_block_location + '</li>' +
               '<li><button id="map-info-btn" type="button" class="btn btn-secondary btn-sm btn-block">More info.</button></li>' +
@@ -131,7 +146,7 @@ angular.module('mkm.seaCrimeData')
 
           google.maps.event.addListener(infowindow, 'domready', function() {
 
-            function crimeReportDetail($scope, mdPanelRef, incidentDetail) {
+            function reportMapDetail($scope, mdPanelRef, incidentDetail) {
 
               $scope.incidentDetail = incidentDetail;
 
@@ -154,7 +169,7 @@ angular.module('mkm.seaCrimeData')
               /* OPEN THE PANEL */
               $scope.$panel.open({
                 attachTo: angular.element(document.body),
-                controller: crimeReportDetail,
+                controller: reportMapDetail,
                 controllerAs: 'ctrl',
                 disableParentScroll: true,
                 templateUrl: 'views/template-incident-detail.html',
@@ -186,8 +201,9 @@ angular.module('mkm.seaCrimeData')
                     },
                     'pov': {
                       'heading': 34,
-                      'pitch': 5
+                      'pitch': 1
                     },
+                    'zoom': 0,
                     'scrollwheel': false
                   });
 
@@ -279,10 +295,6 @@ angular.module('mkm.seaCrimeData')
 
           if (!isNaN(_longitude) && !isNaN(_latitude)) {
 
-            var _mapBounds = new google.maps.LatLngBounds();
-
-            _mapBounds.extend(new google.maps.LatLng(_latitude, _longitude));
-
             mapAddGEOJSON([{
               'type': 'Feature',
               'geometry': {
@@ -292,7 +304,13 @@ angular.module('mkm.seaCrimeData')
               'properties': report
             }]);
 
-            $map.data.setStyle(plotstyleBasic);
+            $map.data.setStyle(plotstyleDetail);
+
+            var detailBounds = new google.maps.LatLngBounds();
+
+            detailBounds.extend(new google.maps.LatLng(_latitude, _longitude));
+
+            $map.fitBounds(detailBounds);
 
           }
         }

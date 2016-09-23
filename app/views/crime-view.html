@@ -5,23 +5,24 @@
     <p>The following examples all use data that can be found at <a href="https://data.seattle.gov/Public-Safety/Seattle-Police-Department-Police-Report-Incident/7ais-f98f" target="_blank">data.seattle.gov</a>.</p>
     <p><a href="https://github.com/kylemoseby/angular-seattle-crime-data" target="_blank">GitHub Repo <span class="icon-github"></span></a></p>
     <!-- WARGING IF DATA THROWS ANY ERRORS -->
-    <div class="alert alert-warning" role="alert">
-      Please note that some report data might be incomplete. To view the raw data please go to the datasource, or conact
-    </div>
+    <!-- <div class="alert alert-warning" role="alert">
+  Please note that some report data might be incomplete. To view the raw data please go to the datasource, or conact
+</div>
+ -->
     <!-- // WARGING IF DATA THROWS ANY ERRORS -->
   </div>
   <!-- // INTRO -->
+  <!-- GOOGLE MAP -->
+  <div flex="100">
+    <map-canvas map-promise="crimeData"></map-canvas>
+  </div>
+  <!-- // GOOGLE MAP -->
   <!-- TIMELINE -->
   <div flex="100" flex-gt-md="50">
     <!-- <div filter-report-types="$index" crime-timeline-filter="$vizTimeline"></div> -->
     <div id="sea-crime-viz" viz-time-line="$vizTimeline" viz-time-data="crimeData" crime-viz-map="$crimeMap"></div>
   </div>
   <!-- // TIMELINE -->
-  <!-- GOOGLE MAP -->
-  <div flex="100">
-    <map-canvas map-promise="crimeData"></map-canvas>
-  </div>
-  <!-- // GOOGLE MAP -->
   <!-- BAR CHART -->
   <div flex="100" flex-gt-md="40">
     <div id="crime-reports-block" crime-reports-block crime-reports-data="crimeData"></div>

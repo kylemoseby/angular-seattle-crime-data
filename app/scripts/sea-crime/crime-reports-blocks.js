@@ -109,7 +109,9 @@ angular.module('mkm.seaCrimeData')
                     $scope.reportType = reportType;
 
                     $scope.closeDetail = function() {
+
                       mdPanelRef.close();
+
                     };
                   }
                 })
