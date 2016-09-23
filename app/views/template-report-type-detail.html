@@ -1,8 +1,44 @@
-<h2>{{reportType.offenseCategory}}  {{reportType.fillColor}}</h2>
-<div class="count">{{reportType.count}}</div>
-<ul>
-  <li ng-repeat="child in reportType.children">{{child.$type}} {{child.count}}</li>
-</ul>
-<button type="button" class="btn btn-primary" ng-click="closeDetail()">
-  <span class="glyphicon glyphicon-remove"></span> Close Detail
-</button>
+<div layout="row" layout-wrap layout-padding layout-margin>
+  <div flex="100">
+    <button type="button" class="btn btn-primary" ng-click="closeDetail()">
+      <span class="glyphicon glyphicon-remove"></span> Close Detail
+    </button>
+    <h2>{{reportType.key}}  {{reportType.fillColor}}</h2>
+    <div class="count">{{reportType.values.length}}</div>
+  </div>
+  <report-type-day flex="100" report-data="dataTypeDay"></report-type-day>
+  <report-type-child flex="100" report-data="dataTypeChild"></report-type-child>
+  <report-zone-beat flex="100" report-data="dataZoneBeat"></report-zone-beat>
+  <div flex="100">
+    <div class="table-responsive">
+      <table class="table">
+        <thead>
+          <tr>
+            <td>Date Reported</td>
+            <td>Address</td>
+            <td>District Sector</td>
+            <td>Census Tract</td>
+            <td>General Offense Number</td>
+            <td>Offense Type</td>
+            <td>Offense Code</td>
+            <td>Description</td>
+            <td>Zone/Beat</td>
+          </tr>
+        </thead>
+        <tbody>
+          <tr ng-repeat="report in reportType.values">
+            <td>{{report.date_reported | date:'medium'}}</td>
+            <td>{{report.hundred_block_location}}</td>
+            <td>{{report.district_sector}}</td>
+            <td>{{report.census_tract_2000}}</td>
+            <td>{{report.general_offense_number}}</td>
+            <td>{{report.offense_type}}</td>
+            <td>{{report.offense_code}}</td>
+            <td>{{report.summarized_offense_description}}</td>
+            <td>{{report.zone_beat}}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

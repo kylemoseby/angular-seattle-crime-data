@@ -108,6 +108,28 @@ angular.module('mkm.seaCrimeData')
 
                     $scope.reportType = reportType;
 
+                    $scope.dataTypeDay = d3.nest()
+                      .key(function(d) {
+                        var byDay = d3.time.format('%x');
+                        return byDay(new Date(d.date_reported));
+                      })
+                      .entries(reportType.values);
+
+                    $scope.dataTypeChild = d3.nest()
+                      .key(function(d) {
+                        return d.offense_type;
+                      })
+                      .entries(reportType.values);
+
+                    $scope.dataZoneBeat = d3.nest()
+                      .key(function(d) {
+                        return d.district_sector;
+                      })
+                      .key(function(d) {
+                        return d.zone_beat;
+                      })
+                      .entries(reportType.values);
+
                     $scope.closeDetail = function() {
 
                       mdPanelRef.close();
@@ -115,7 +137,7 @@ angular.module('mkm.seaCrimeData')
                     };
                   }
                 })
-                .finally();
+                .finally(function() {});
             });
 
           // CATEGORY LABELS
@@ -207,5 +229,150 @@ angular.module('mkm.seaCrimeData')
       }
 
     };
+  }])
+  .directive('reportTypeDay', [function() {
+    return {
+      // name: '',
+      // priority: 1,
+      // terminal: true,
+      scope: {
+        'reports': '=reportData'
+      }, // {} = isolate, true = child, false/undefined = no change
+      // controller: function($scope, $element, $attrs, $transclude) {},
+      // require: 'ngModel', // Array = multiple requires, ? = optional, ^ = check parent elements
+      // restrict: 'A', // E = Element, A = Attribute, C = Class, M = Comment
+      // template: '',
+      // templateUrl: '',
+      // replace: true,
+      // transclude: true,
+      // compile: function(tElement, tAttrs, function transclude(function(scope, cloneLinkingFn){ return function linking(scope, elm, attrs){}})),
+      link: function($scope, element) {
 
+        var $elm = element[0];
+
+        var wrapper = d3.select($elm);
+
+        var days = wrapper.selectAll('div')
+          .data($scope.reports)
+          .enter()
+          .append('div')
+          .text(function(d) {
+            return d.key;
+          });
+
+        days.selectAll('div')
+          .data(function(d) {
+            return d.values;
+          })
+          .enter()
+          .append('div')
+          .classed({ 'report-days': true })
+          .text(function() {
+            return 'd';
+          });
+      }
+    };
+  }])
+  .directive('reportTypeChild', [function() {
+    // Runs during compile
+    return {
+      // name: '',
+      // priority: 1,
+      // terminal: true,
+      scope: {
+        'reports': '=reportData'
+      }, // {} = isolate, true = child, false/undefined = no change
+      // controller: function($scope, $element, $attrs, $transclude) {},
+      // require: 'ngModel', // Array = multiple requires, ? = optional, ^ = check parent elements
+      // restrict: 'A', // E = Element, A = Attribute, C = Class, M = Comment
+      // template: '',
+      // templateUrl: '',
+      // replace: true,
+      // transclude: true,
+      // compile: function(tElement, tAttrs, function transclude(function(scope, cloneLinkingFn){ return function linking(scope, elm, attrs){}})),
+      link: function($scope, element) {
+        var $elm = element[0];
+
+        var wrapper = d3.select($elm);
+
+        var days = wrapper.selectAll('div')
+          .data($scope.reports)
+          .enter()
+          .append('div')
+          .text(function(d) {
+            return d.key.slice(d.key.indexOf('-') + 1, d.key.length);
+          });
+
+        days.selectAll('div')
+          .data(function(d) {
+            return d.values;
+          })
+          .enter()
+          .append('div')
+          .classed({ 'report-types': true })
+          .text(function() {
+            return 'd';
+          });
+      }
+    };
+  }])
+  .directive('reportZoneBeat', [function() {
+    // Runs during compile
+    return {
+      // name: '',
+      // priority: 1,
+      // terminal: true,
+      scope: {
+        'reports': '=reportData'
+      }, // {} = isolate, true = child, false/undefined = no change
+      // controller: function($scope, $element, $attrs, $transclude) {},
+      // require: 'ngModel', // Array = multiple requires, ? = optional, ^ = check parent elements
+      // restrict: 'A', // E = Element, A = Attribute, C = Class, M = Comment
+      // template: '',
+      // templateUrl: '',
+      // replace: true,
+      // transclude: true,
+      // compile: function(tElement, tAttrs, function transclude(function(scope, cloneLinkingFn){ return function linking(scope, elm, attrs){}})),
+      link: function($scope, element) {
+
+        var zoneColor = d3.scale.category20b()
+          .domain(d3.map($scope.reports, function(d) {
+            return d.key;
+          }).keys());
+
+        var $elm = element[0];
+
+        var wrapper = d3.select($elm);
+
+        var districts = wrapper.selectAll('div')
+          .data($scope.reports)
+          .enter()
+          .append('div')
+          .classed('report-districts', true);
+
+        var zones = districts.selectAll('div')
+          .data(function(d) {
+            return d.values;
+          })
+          .enter()
+          .append('div')
+          .classed({ 'report-zones': true })
+          .style('background', function(d) {
+            console.log(d);
+            return zoneColor(d.values[0].district_sector);
+          });
+
+        var zoneReports = zones.selectAll('div')
+          .data(function(d) {
+            console.log(d);
+            return d.values;
+          })
+          .enter()
+          .append('div')
+          .classed({ 'zone-reports': true })
+          .text(function(d) {
+            return d.zone_beat;
+          });
+      }
+    };
   }]);

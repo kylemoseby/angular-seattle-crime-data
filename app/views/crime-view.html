@@ -12,6 +12,11 @@
     <!-- // WARGING IF DATA THROWS ANY ERRORS -->
   </div>
   <!-- // INTRO -->
+  <!-- BAR CHART -->
+  <div flex="100" flex-gt-md="40">
+    <div id="crime-reports-block" crime-reports-block crime-reports-data="crimeData"></div>
+  </div>
+  <!-- // BAR CHART -->
   <!-- GOOGLE MAP -->
   <div flex="100">
     <map-canvas map-promise="crimeData"></map-canvas>
@@ -23,9 +28,4 @@
     <div id="sea-crime-viz" viz-time-line="$vizTimeline" viz-time-data="crimeData" crime-viz-map="$crimeMap"></div>
   </div>
   <!-- // TIMELINE -->
-  <!-- BAR CHART -->
-  <div flex="100" flex-gt-md="40">
-    <div id="crime-reports-block" crime-reports-block crime-reports-data="crimeData"></div>
-  </div>
-  <!-- // BAR CHART -->
 </div>

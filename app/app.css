@@ -100,6 +100,24 @@ path {
   height: 100vh;
   width: 100vw;
 }
+report-type-day .report-days {
+  display: inline-block;
+}
+report-type-child .report-types {
+  display: inline-block;
+}
+report-zone-beat .report-zones,
+report-zone-beat .zone-reports {
+  display: inline-block;
+}
+report-zone-beat .report-zones {
+  margin-right: 3px;
+}
+report-zone-beat .report-zones .zone-reports {
+  color: #fff;
+  padding: 2px;
+  margin-right: 2px;
+}
 #crime-map-filter {
   height: 67vh;
   width: 100%;
