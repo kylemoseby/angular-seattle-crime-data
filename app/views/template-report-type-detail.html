@@ -3,11 +3,13 @@
     <button type="button" class="btn btn-primary" ng-click="closeDetail()">
       <span class="glyphicon glyphicon-remove"></span> Close Detail
     </button>
-    <h2>{{reportType.key}}  {{reportType.fillColor}}</h2>
-    <div class="count">{{reportType.values.length}}</div>
+    <h2>{{reportType.key}}  <span class="badge" ng-style="{ background: reportType.fillColor}">{{reportType.values.length}}</span></h2>
   </div>
+  <h3>Reports per day</h3>
   <report-type-day flex="100" report-data="dataTypeDay"></report-type-day>
+  <h3>Reports per subtype</h3>
   <report-type-child flex="100" report-data="dataTypeChild"></report-type-child>
+  <h3>Reports per zone</h3>
   <report-zone-beat flex="100" report-data="dataZoneBeat"></report-zone-beat>
   <div flex="100">
     <div class="table-responsive">

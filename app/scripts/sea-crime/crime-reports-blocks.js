@@ -105,7 +105,7 @@ angular.module('mkm.seaCrimeData')
                     reportType: d
                   },
                   controller: function($scope, mdPanelRef, reportType) {
-
+                    console.log(reportType);
                     $scope.reportType = reportType;
 
                     $scope.dataTypeDay = d3.nest()
@@ -230,49 +230,6 @@ angular.module('mkm.seaCrimeData')
 
     };
   }])
-  .directive('reportTypeDay', [function() {
-    return {
-      // name: '',
-      // priority: 1,
-      // terminal: true,
-      scope: {
-        'reports': '=reportData'
-      }, // {} = isolate, true = child, false/undefined = no change
-      // controller: function($scope, $element, $attrs, $transclude) {},
-      // require: 'ngModel', // Array = multiple requires, ? = optional, ^ = check parent elements
-      // restrict: 'A', // E = Element, A = Attribute, C = Class, M = Comment
-      // template: '',
-      // templateUrl: '',
-      // replace: true,
-      // transclude: true,
-      // compile: function(tElement, tAttrs, function transclude(function(scope, cloneLinkingFn){ return function linking(scope, elm, attrs){}})),
-      link: function($scope, element) {
-
-        var $elm = element[0];
-
-        var wrapper = d3.select($elm);
-
-        var days = wrapper.selectAll('div')
-          .data($scope.reports)
-          .enter()
-          .append('div')
-          .text(function(d) {
-            return d.key;
-          });
-
-        days.selectAll('div')
-          .data(function(d) {
-            return d.values;
-          })
-          .enter()
-          .append('div')
-          .classed({ 'report-days': true })
-          .text(function() {
-            return 'd';
-          });
-      }
-    };
-  }])
   .directive('reportTypeChild', [function() {
     // Runs during compile
     return {
@@ -358,13 +315,12 @@ angular.module('mkm.seaCrimeData')
           .append('div')
           .classed({ 'report-zones': true })
           .style('background', function(d) {
-            console.log(d);
             return zoneColor(d.values[0].district_sector);
           });
 
-        var zoneReports = zones.selectAll('div')
+        // var zoneReports = zones.selectAll('div')
+        zones.selectAll('div')
           .data(function(d) {
-            console.log(d);
             return d.values;
           })
           .enter()

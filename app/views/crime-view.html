@@ -12,6 +12,19 @@
     <!-- // WARGING IF DATA THROWS ANY ERRORS -->
   </div>
   <!-- // INTRO -->
+  <!-- TYPE DETAIL -->
+  <div layout="row" layout-wrap layout-padding layout-margin>
+    <div flex="100">
+      <h2>{{reportType.key}}  <span class="badge" ng-style="{ background: reportType.fillColor}">{{reportType.values.length}}</span></h2>
+    </div>
+    <h3>Reports per day</h3>
+    <report-type-day flex="100" report-data="dataTypeDay"></report-type-day>
+    <h3>Reports per subtype</h3>
+    <report-type-child flex="100" report-data="dataTypeChild"></report-type-child>
+    <h3>Reports per zone</h3>
+    <report-zone-beat flex="100" report-data="dataZoneBeat"></report-zone-beat>
+  </div>
+  <!-- // TYPE DETAIL -->
   <!-- BAR CHART -->
   <div flex="100" flex-gt-md="40">
     <div id="crime-reports-block" crime-reports-block crime-reports-data="crimeData"></div>
