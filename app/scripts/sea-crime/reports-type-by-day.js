@@ -8,7 +8,8 @@ angular.module('mkm.seaCrimeData')
       // priority: 1,
       // terminal: true,
       scope: {
-        'reports': '=reportData'
+        'reports': '=reportData',
+        'reportCount': '=reportCount'
       }, // {} = isolate, true = child, false/undefined = no change
       // controller: function($scope, $element, $attrs, $transclude) {},
       // require: 'ngModel', // Array = multiple requires, ? = optional, ^ = check parent elements
@@ -24,17 +25,14 @@ angular.module('mkm.seaCrimeData')
 
         var wrapper = d3.select($elm);
 
-        console.log($scope.reports);
-
-        var reportsLngth = $scope.reports.length;
+        var total = $scope.reportCount;
 
         var days = wrapper.selectAll('div')
           .data($scope.reports)
           .enter()
           .append('div')
           .style('width', function(d) {
-            console.log(d);
-            return d.values.length / reportsLngth;
+            return Math.floor((d.values.length / total) * 100) + '%';
           })
           .text(function(d) {
             return d.key + ' Count: ' + d.values.length;

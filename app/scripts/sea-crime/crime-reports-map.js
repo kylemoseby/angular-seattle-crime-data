@@ -14,7 +14,7 @@ angular.module('mkm.seaCrimeData')
 
         $scope.markerOver = null;
 
-        var $map = new google.maps.Map($element[0], {
+        var $map = new google.maps.Map($element.children('.map-canvas')[0], {
           'scrollwheel': false,
           'streetViewControl': false,
           'mapTypeControl': false,
@@ -22,9 +22,18 @@ angular.module('mkm.seaCrimeData')
           'maxZoom': 17
         });
 
-        var $index = {};
+        $scope.$index = {};
+
+        $scope.reportFilter = [];
 
         $scope.$panel = $mdPanel;
+
+        // function getIncidentParent(report) {
+        //   return (report.indexOf('-') === -1) ?
+        //     report :
+        //     report.slice(0, report.indexOf('-'));
+        // }
+
 
         function mapAddGEOJSON(reports) {
 
@@ -226,33 +235,6 @@ angular.module('mkm.seaCrimeData')
 
         $map.data.addListener('click', markerClick);
 
-        $scope.mapUpdate = function(indexArray) {
-
-          function indexSelected(feature) {
-            //  PARENT TYPE
-            var offType = feature.f.offense_type;
-
-            var parentType = (offType.indexOf('-') === -1) ? offType : offType.slice(0, offType.indexOf('-'));
-
-            var filterOffence = (indexArray.indexOf(parentType) > -1);
-
-            var offenseHex = $scope.$parent.$index[parentType].fillColor;
-
-            return {
-              icon: {
-                'path': google.maps.SymbolPath.CIRCLE,
-                'scale': 2.75,
-                'fillColor': filterOffence ? 'transparent' : offenseHex,
-                'fillOpacity': filterOffence ? 0 : 1,
-                'strokeWeight': 0,
-                'zIndex': filterOffence ? 100 : 1
-              }
-            };
-          }
-
-          $map.data.setStyle(indexSelected);
-        };
-
         $scope.mapRefresh = function() {
           $map.fitBounds($scope.mapBounds);
         };
@@ -260,8 +242,95 @@ angular.module('mkm.seaCrimeData')
         angular.element($window).bind('resize', function() {
 
           $map.fitBounds($scope.mapBounds);
-
         });
+
+        /*
+            FILTER STUFF
+          toggles clicked  index values 'show' attribute
+          true / false
+        */
+
+        $scope.filterToggleType = function($event) {
+
+          $event.preventDefault();
+
+          $event.cancelBubble = true;
+
+          var toggleKey = $scope.reportFilter.indexOf(this.val.key);
+
+          if (toggleKey < -1) {
+
+            $scope.reportFilter.push(this.val.key);
+
+          } else {
+
+            $scope.reportFilter.splice(toggleKey, 1);
+
+          }
+
+          $scope.updated = true;
+
+        };
+
+        $scope.filterAll = function($event) {
+
+          $event.preventDefault();
+
+          $event.cancelBubble = true;
+
+          $scope.reportFilter = [];
+
+          for (var i = $scope.$index.length - 1; i >= 0; i--) {
+
+            $scope.reportFilter.push($scope.$index[i].key);
+
+          }
+
+          $scope.updated = true;
+
+        };
+
+        /*
+          filters any viz and maps based on current index
+        */
+        $scope.filterApply = function($event) {
+
+          $event.preventDefault();
+
+          $map.data.setStyle(function(feature) {
+            //  PARENT TYPE
+            var offType = feature.f.offense_type;
+
+            var parentType = (offType.indexOf('-') === -1) ? offType : offType.slice(0, offType.indexOf('-'));
+
+            var filterOffence = ($scope.reportFilter.indexOf(parentType) > -1);
+
+            return {
+              icon: {
+                'path': google.maps.SymbolPath.CIRCLE,
+                'scale': 2.75,
+                'fillColor': filterOffence ? 'transparent' : feature.f.fillColor,
+                'fillOpacity': filterOffence ? 0 : 1,
+                'strokeWeight': 0,
+                'zIndex': filterOffence ? 100 : 1
+              }
+            };
+          });
+        };
+
+        /*
+          Sets all attributes 'show' to 'true' on index
+        */
+        $scope.filterReset = function($event) {
+
+          $event.preventDefault();
+
+          $event.cancelBubble = true;
+
+          $scope.reportFilter = [];
+
+          $scope.updated = false;
+        };
 
         /*
             INITIATE FROM A PROMISE
@@ -275,7 +344,7 @@ angular.module('mkm.seaCrimeData')
 
               $map.fitBounds(data.mapBounds);
 
-              $index = data.index;
+              $scope.$index = data.index;
 
               $scope.reports = data.incidents;
 

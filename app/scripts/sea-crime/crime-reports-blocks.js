@@ -105,7 +105,7 @@ angular.module('mkm.seaCrimeData')
                     reportType: d
                   },
                   controller: function($scope, mdPanelRef, reportType) {
-                    console.log(reportType);
+
                     $scope.reportType = reportType;
 
                     $scope.dataTypeDay = d3.nest()
