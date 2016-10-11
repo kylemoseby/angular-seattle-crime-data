@@ -8,9 +8,7 @@ angular.module('mkm.seaCrimeData')
       templateUrl: 'views/template-reports-viz.html',
       scope: {
         vizID: '=vizTimeLine',
-        mapID: '=crimeVizMap',
         promiseAttr: '=vizTimeData'
-
       },
 
       link: function(scope, element) {
@@ -30,6 +28,8 @@ angular.module('mkm.seaCrimeData')
         }
 
         scope.$panel = $mdPanel;
+
+        scope.reportFilter = [];
 
         var elm = element[0];
 
@@ -88,6 +88,8 @@ angular.module('mkm.seaCrimeData')
 
           var _incidents = data.incidents;
 
+          scope.$index = data.index;
+
           var dateRange = d3.extent(_incidents, function(d, i) {
 
             return (i === 0) ? d3.time.day.floor(new Date(d.properties.date_reported)) : new Date(d.properties.date_reported);
@@ -98,7 +100,6 @@ angular.module('mkm.seaCrimeData')
 
           xAxis.scale(scaleAxisX);
           yAxis.scale(scaleAxisY);
-
 
           /*   FUNCTIONS FOR CIRCLES   */
           function setCircStyle(currentState, d) {
@@ -190,6 +191,7 @@ angular.module('mkm.seaCrimeData')
           }
 
           function toolTipHide() {
+
             toolTip.transition()
               .duration(500)
               .style('opacity', 0);
@@ -294,14 +296,10 @@ angular.module('mkm.seaCrimeData')
 
                 StreetView.setStreetView(panorama);
 
-                // promise resolved with GEOJSON
-
-
               });
 
               scope.incidentDetail = event.properties;
 
-              // scope.$apply();
             })
             .on('mouseover', function(d) {
 
@@ -375,49 +373,108 @@ angular.module('mkm.seaCrimeData')
           }
 
           // PUBLIC SCOPE METHODS
-          scope.vizID = {
+          scope.filterData = function(filterIndex) {
 
-            filterData: function(filterIndex) {
+            reportMarks.selectAll('circle')
+              .transition()
+              .duration(200)
+              .attr('cx', function(d) {
 
-              reportMarks.selectAll('circle')
-                .transition()
-                .duration(200)
-                .attr('cx', function(d) {
+                //  PARENT TYPE
+                var offType = d.properties.offense_type;
 
-                  //  PARENT TYPE
-                  var offType = d.properties.offense_type;
+                var parentType = (offType.indexOf('-') === -1) ? offType : offType.slice(0, offType.indexOf('-'));
 
-                  var parentType = (offType.indexOf('-') === -1) ? offType : offType.slice(0, offType.indexOf('-'));
+                if (filterIndex.indexOf(parentType) < 0) {
 
-                  if (filterIndex.indexOf(parentType) < 0) {
+                  var incidentDate = new Date(d.properties.date_reported)
+                    .toDateString();
 
-                    var incidentDate = new Date(d.properties.date_reported)
-                      .toDateString();
+                  var _q_ = scaleAxisX(new Date(incidentDate));
 
-                    var _q_ = scaleAxisX(new Date(incidentDate));
+                  return _q_;
 
-                    return _q_;
+                } else {
 
-                  } else {
-
-                    return -12000000000000000000;
-                  }
-                })
-                .attr('fill', function(d) {
-                  return d.properties.fillColor;
-                });
-            },
-
-            refresh: _refreshTimeLine,
-
-            toolTipHide: function() {
-              toolTipHide();
-            },
-
-            toolTipShow: function(incident) {
-              _toolTipShow(incident);
-            }
+                  return -12000000000000000000;
+                }
+              })
+              .attr('fill', function(d) {
+                return d.properties.fillColor;
+              });
           };
+
+          /*
+              FILTER STUFF
+            toggles clicked  index values 'show' attribute
+            true / false
+          */
+
+          scope.filterToggleType = function($event) {
+
+            $event.preventDefault();
+
+            $event.cancelBubble = true;
+
+            var toggleKey = scope.reportFilter.indexOf(this.val.key);
+
+            if (toggleKey === -1) {
+
+              scope.reportFilter.push(this.val.key);
+
+            } else {
+
+              scope.reportFilter.splice(toggleKey, 1);
+
+            }
+
+            scope.updated = true;
+
+          };
+
+          scope.filterAll = function($event) {
+
+            $event.preventDefault();
+
+            $event.cancelBubble = true;
+
+            scope.reportFilter = [];
+
+            for (var i = scope.$index.length - 1; i >= 0; i--) {
+
+              scope.reportFilter.push(scope.$index[i].key);
+
+            }
+
+            scope.updated = true;
+
+          };
+
+          /*
+            Sets all attributes 'show' to 'true' on index
+          */
+          scope.filterReset = function($event) {
+
+            $event.preventDefault();
+
+            $event.cancelBubble = true;
+
+            scope.reportFilter = [];
+
+            scope.updated = false;
+          };
+
+
+
+          // refresh: _refreshTimeLine,
+
+          // toolTipHide: function() {
+          //   toolTipHide();
+          // },
+
+          // toolTipShow: function(incident) {
+          //   _toolTipShow(incident);
+          // }
 
           angular.element($window).bind('resize', function() {
             _refreshTimeLine();
@@ -426,5 +483,4 @@ angular.module('mkm.seaCrimeData')
         });
       }
     };
-
   }]);

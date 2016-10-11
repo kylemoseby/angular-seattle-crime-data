@@ -9,8 +9,8 @@ angular.module('mkm.seaCrimeData', [
 
     var _http = $http({
       'method': 'GET',
-      // 'url': 'https://data.seattle.gov/resource/7ais-f98f.json'
-      url: 'scripts/sea-crime/7ais-f98f.json'
+      'url': 'https://data.seattle.gov/resource/7ais-f98f.json'
+        // url: 'scripts/sea-crime/7ais-f98f.json'
     });
 
     var $fillColor = d3.scale.category20();
