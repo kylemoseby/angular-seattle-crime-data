@@ -12,8 +12,6 @@ angular.module('mkm.seaCrimeData')
       },
       'link': function(scope) {
 
-        console.log(scope);
-
         // Used to update class on 'update buttons'
         scope.updated = false;
 

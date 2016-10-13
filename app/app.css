@@ -48,7 +48,7 @@
   width: 100vw;
 }
 .crime-report-detail #street-view-detail {
-  height: 50vh;
+  height: 67vh;
   width: 100%;
 }
 svg.seattle-crime-timeline {
@@ -80,7 +80,7 @@ path {
   stroke-width: 0;
 }
 map-canvas .map-canvas {
-  height: 100vh;
+  height: 67vh;
   width: 100%;
 }
 .map-report-detail {
@@ -89,11 +89,11 @@ map-canvas .map-canvas {
   width: 100%;
 }
 .map-report-detail #report-map {
-  height: 80vh;
+  height: 67vh;
   width: 100%;
 }
 .map-report-detail #street-view-detail {
-  height: 80vh;
+  height: 67vh;
   width: 100%;
 }
 md-menu-content {

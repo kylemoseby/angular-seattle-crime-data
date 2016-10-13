@@ -1,3 +1,10 @@
+<!-- TYPE DETAIL -->
+<!-- <div layout="row" layout-wrap layout-padding layout-margin>
+  <div ng-include="views/template-report-type-detail.html" flex="100">
+  </div>
+</div>
+ -->
+<!-- // TYPE DETAIL -->
 <div layout="row" layout-wrap layout-padding>
   <!-- INTRO -->
   <div flex="100">
@@ -12,6 +19,11 @@
     <!-- // WARNING IF DATA THROWS ANY ERRORS -->
   </div>
   <!-- // INTRO -->
+  <!-- BAR CHART -->
+  <div flex="100" flex-gt-lg="50">
+    <div id="crime-reports-block" crime-reports-block crime-reports-data="crimeData"></div>
+  </div>
+  <!-- // BAR CHART -->
   <!-- TIMELINE -->
   <div flex="100" flex-gt-md="50">
     <div id="sea-crime-viz" viz-time-line="$vizTimeline" viz-time-data="crimeData" crime-viz-map="$crimeMap"></div>
@@ -22,22 +34,4 @@
     <map-canvas map-promise="crimeData"></map-canvas>
   </div>
   <!-- // GOOGLE MAP -->
-  <!-- BAR CHART -->
-  <div flex="100" flex-gt-lg="50">
-    <div id="crime-reports-block" crime-reports-block crime-reports-data="crimeData"></div>
-  </div>
-  <!-- // BAR CHART -->
 </div>
-<!-- TYPE DETAIL -->
-<div layout="row" layout-wrap layout-padding layout-margin>
-  <div flex="100">
-    <h2>{{reportType.key}}  <span class="badge" ng-style="{ background: reportType.fillColor}">{{reportType.values.length}}</span></h2>
-  </div>
-  <h3>Reports per day</h3>
-  <report-type-day flex="100" report-count="reportType.values.length" report-data="dataTypeDay"></report-type-day>
-  <h3>Reports per subtype</h3>
-  <report-type-child flex="100" report-count="reportType.values.length" report-data="dataTypeChild"></report-type-child>
-  <h3>Reports per zone</h3>
-  <report-zone-beat flex="100" report-count="reportType.values.length" report-data="dataZoneBeat"></report-zone-beat>
-</div>
-<!-- // TYPE DETAIL -->

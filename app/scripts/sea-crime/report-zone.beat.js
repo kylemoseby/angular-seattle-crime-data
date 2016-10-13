@@ -2,14 +2,14 @@
 
 // Declare app level module which depends on views, and components
 angular.module('mkm.seaCrimeData')
-  .directive('reportTypeDay', [function() {
+  .directive('reportZoneBeat', [function() {
+    // Runs during compile
     return {
       // name: '',
       // priority: 1,
       // terminal: true,
       scope: {
-        'reports': '=reportData',
-        'reportCount': '=reportCount'
+        'reports': '=reportData'
       }, // {} = isolate, true = child, false/undefined = no change
       // controller: function($scope, $element, $attrs, $transclude) {},
       // require: 'ngModel', // Array = multiple requires, ? = optional, ^ = check parent elements
@@ -21,26 +21,42 @@ angular.module('mkm.seaCrimeData')
       // compile: function(tElement, tAttrs, function transclude(function(scope, cloneLinkingFn){ return function linking(scope, elm, attrs){}})),
       link: function($scope, element) {
 
+        var zoneColor = d3.scale.category20b()
+          .domain(d3.map($scope.reports, function(d) {
+            return d.key;
+          }).keys());
+
         var $elm = element[0];
 
         var wrapper = d3.select($elm);
 
-        var total = $scope.reportCount;
-
-        wrapper.selectAll('div')
+        var districts = wrapper.selectAll('div')
           .data($scope.reports)
           .enter()
           .append('div')
-          .text(function(d) {
-            return d.key + ' Count: ' + d.values.length;
+          .classed('report-districts', true);
+
+        var zones = districts.selectAll('div')
+          .data(function(d) {
+            return d.values;
           })
+          .enter()
           .append('div')
-          .style('height', '5vh')
-          .style('width', function(d) {
-            return Math.ceil((d.values.length / total) * 100) + '%';
-          })
+          .classed({ 'report-zones': true })
           .style('background', function(d) {
-            return d.values[0].fillColor;
+            return zoneColor(d.values[0].district_sector);
+          });
+
+        // var zoneReports = zones.selectAll('div')
+        zones.selectAll('div')
+          .data(function(d) {
+            return d.values;
+          })
+          .enter()
+          .append('div')
+          .classed({ 'zone-reports': true })
+          .text(function(d) {
+            return d.zone_beat;
           });
       }
     };
