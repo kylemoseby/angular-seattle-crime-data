@@ -60,34 +60,29 @@
 svg.seattle-crime-timeline {
   // background: azure;
   z-index: 0;
-}
-
-.timeline-circle {
-  cursor: pointer;
-}
-
-path {
-  stroke: steelblue;
-  stroke-width: 2;
-  fill: none;
-}
-
-.axis.y path {
-  display: none;
-}
-
-.axis.y line {
-  fill: none;
-  stroke: grey;
-  stroke-width: 1;
-  shape-rendering: crispEdges;
-  stroke-dasharray: 2, 2;
-  width: 100%;
-}
-
-.axis.x path,
-.axis.x line {
-  fill: none;
-  stroke: transparent;
-  stroke-width: 0;
+  .timeline-circle {
+    cursor: pointer;
+  }
+  path {
+    stroke: steelblue;
+    stroke-width: 2;
+    fill: none;
+  }
+  .axis.y path {
+    display: none;
+  }
+  .axis.y line {
+    fill: none;
+    stroke: grey;
+    stroke-width: 1;
+    shape-rendering: crispEdges;
+    stroke-dasharray: 2, 8;
+    width: 100%;
+  }
+  .axis.x path,
+  .axis.x line {
+    fill: none;
+    stroke: transparent;
+    stroke-width: 0;
+  }
 }

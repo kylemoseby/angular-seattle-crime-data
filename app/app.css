@@ -54,27 +54,27 @@
 svg.seattle-crime-timeline {
   z-index: 0;
 }
-.timeline-circle {
+svg.seattle-crime-timeline .timeline-circle {
   cursor: pointer;
 }
-path {
+svg.seattle-crime-timeline path {
   stroke: steelblue;
   stroke-width: 2;
   fill: none;
 }
-.axis.y path {
+svg.seattle-crime-timeline .axis.y path {
   display: none;
 }
-.axis.y line {
+svg.seattle-crime-timeline .axis.y line {
   fill: none;
   stroke: grey;
   stroke-width: 1;
   shape-rendering: crispEdges;
-  stroke-dasharray: 2, 2;
+  stroke-dasharray: 2, 8;
   width: 100%;
 }
-.axis.x path,
-.axis.x line {
+svg.seattle-crime-timeline .axis.x path,
+svg.seattle-crime-timeline .axis.x line {
   fill: none;
   stroke: transparent;
   stroke-width: 0;
@@ -107,6 +107,10 @@ md-menu-content {
   height: 100vh;
   width: 100vw;
 }
+.report-type-detail .sub-types {
+  display: inline-block;
+  width: 50%;
+}
 report-type-day .report-days {
   display: inline-block;
   height: 18px;
@@ -127,26 +131,18 @@ report-zone-beat .report-zones .zone-reports {
   padding: 2px;
   margin-right: 2px;
 }
-#crime-map-filter {
-  height: 67vh;
-  width: 100%;
-  overflow: scroll;
-  display: inline-block;
-}
-#type-filter {
-  display: inline-block;
-  overflow: scroll;
-}
 #crime-reports-block {
-  height: 75vh;
+  height: 40vh;
   width: 100%;
 }
 map-canvas {
-  height: 67vh;
+  height: 50vh;
   width: 100%;
+  max-width: 50vh;
   display: block;
 }
-#sea-crime-viz {
+#sea-crime-viz,
+.crime-report-timeline {
   height: 75vh;
   width: 100%;
 }

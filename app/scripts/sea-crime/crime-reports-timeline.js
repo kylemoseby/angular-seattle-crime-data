@@ -31,7 +31,7 @@ angular.module('mkm.seaCrimeData')
 
         scope.reportFilter = [];
 
-        var elm = element[0];
+        var elm = element.children('.crime-report-timeline')[0];
 
         var wrapper = d3.select(elm);
 
@@ -39,7 +39,7 @@ angular.module('mkm.seaCrimeData')
         var padding = padByWidth(elm);
 
         var wdth = elm.offsetWidth;
-        var hght = elm.offsetHeight;
+        var hght = elm.offsetHeight - 40;
 
         var addPadding = {
           x: function(_wdth_) {
@@ -235,7 +235,7 @@ angular.module('mkm.seaCrimeData')
             };
           }
 
-          var radius = 5;
+          var radius = 7;
 
           reportMarks.selectAll('circle')
             .data(_incidents)

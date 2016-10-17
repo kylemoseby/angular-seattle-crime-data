@@ -28,13 +28,6 @@ angular.module('mkm.seaCrimeData')
 
         $scope.$panel = $mdPanel;
 
-        // function getIncidentParent(report) {
-        //   return (report.indexOf('-') === -1) ?
-        //     report :
-        //     report.slice(0, report.indexOf('-'));
-        // }
-
-
         function mapAddGEOJSON(reports) {
 
           $map.data.addGeoJson({
