@@ -44,7 +44,7 @@ angular.module('mkm.seaCrimeData')
         var addPadding = {
           x: function(_wdth_) {
             // Add 60 pixels on right side for axis/labels
-            return [padding + 60, _wdth_ - padding];
+            return [padding + 60, _wdth_ - 40];
           },
           y: function(_hght_) {
             // Add 60 pixels on bottom for axis/labels
@@ -74,7 +74,7 @@ angular.module('mkm.seaCrimeData')
           .orient('bottom')
           .ticks(d3.time.day, 1)
           .tickSize(-(hght), 0, 0)
-          .tickFormat(d3.time.format('%a %m/%d'));
+          .tickFormat(d3.time.format('%m/%d'));
 
         var yAxis = d3.svg.axis()
           .orient('left')
@@ -463,8 +463,6 @@ angular.module('mkm.seaCrimeData')
 
             scope.updated = false;
           };
-
-
 
           // refresh: _refreshTimeLine,
 

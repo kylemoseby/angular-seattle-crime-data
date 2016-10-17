@@ -141,26 +141,27 @@ angular.module('mkm.seaCrimeData')
             });
 
           // CATEGORY LABELS
-          indexRect.append("text")
-            .attr("transform", function(d) {
+          indexRect.append('text')
+            .attr('transform', function(d) {
               var xTrans = (d.key === 'VEH-THEFT-AUTO') ? scaleAxisX('VEH') : scaleAxisX(d.key);
 
               return 'translate(' + (xTrans - (scaleAxisX.rangeBand() * 0.33)) + ', ' + (barHght - padding + 9) + ') rotate(-33)';
             })
-            .attr("text-anchor", "end")
-            .attr("class", "block-label category")
+            .attr('text-anchor', 'end')
+            .attr('class', 'block-label category')
             .text(function(d) {
               return d.key;
             });
 
           // COUNT LABELS
-          indexRect.append("text")
-            .attr("transform", function(d) {
+          indexRect.append('text')
+            .attr('transform', function(d) {
               var xTrans = (d.key === 'VEH-THEFT-AUTO') ? scaleAxisX('VEH') : scaleAxisX(d.key);
 
-              return 'translate(' + (xTrans - (scaleAxisX.rangeBand() * 0.67) - 4) + ', ' + (barHght - scaleAxisY(d.values.length) - padding - 2) + ')';
+              return 'translate(' + (xTrans - (scaleAxisX.rangeBand() * 0.5)) + ', ' + (barHght - scaleAxisY(d.values.length) - padding - 6) + ')';
             })
-            .attr("class", "block-label count")
+            .attr('class', 'block-label count')
+            .attr('text-anchor', 'middle')
             .text(function(d) {
               return d.values.length;
             });
@@ -198,7 +199,7 @@ angular.module('mkm.seaCrimeData')
               .attr("transform", function(d) {
                 var xTrans = (d.key === 'VEH-THEFT-AUTO') ? scaleAxisX('VEH') : scaleAxisX(d.key);
 
-                return 'translate(' + (xTrans - (scaleAxisX.rangeBand() * 0.67) - 4) + ', ' + (barHght - scaleAxisY(d.values.length) - padding - 2) + ')';
+                return 'translate(' + (xTrans - (scaleAxisX.rangeBand() * 0.5)) + ', ' + (barHght - scaleAxisY(d.values.length) - padding - 6) + ')';
               });
 
             indexRect.selectAll('g.reports-index-rect rect')
