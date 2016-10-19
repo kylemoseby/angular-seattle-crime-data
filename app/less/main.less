@@ -1,56 +1,25 @@
 @import "variables.less";
 @import "crime-timeline.less";
 @import "crime-map.less";
-#crime-map-filter {
-  height: 67vh;
-  width: 100%;
-  overflow: scroll;
-  display: inline-block;
-}
-
-#type-filter {
-  display: inline-block;
-  overflow: scroll;
-}
-
+@import "crime-block.less";
+// HEIGHT AND WIDTHS
 // BAR CHART
 #crime-reports-block {
-  height: 50vh;
+  height: 40vh;
   width: 100%;
-  svg {
-    rect {
-      cursor: pointer;
-    }
-  }
 }
 
 // CRIME MAP
-#map-canvas {
-  height: 67vh;
+map-canvas {
+  height: 50vh;
   width: 100%;
+  max-width: 50vh;
+  display: block;
 }
 
 // TIMELINE
-#sea-crime-viz {
-  height: 67vh;
+#sea-crime-viz,
+.crime-report-timeline {
+  height: 75vh;
   width: 100%;
 }
-
-.sum-svg-wrapper {
-  height: 50vh;
-  width: 100%;
-}
-
-#street-view-detail {
-  height: 50vh;
-  width: 100%;
-}
-
-.reportTotals {
-  display: inline-block;
-  height: 18px;
-  padding: 0;
-  color: #ffffff;
-  overflow: hidden;
-}
-

@@ -14,20 +14,18 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
   <!-- build:css(.) styles/vendor.css -->
-  <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.css" />
   <link rel="stylesheet" href="bower_components/angular-material/angular-material.css" />
+  <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.css" />
   <!-- bower:css -->
   <!-- endbower -->
   <!-- endbuild -->
   <!-- build:css(.tmp) styles/main.css -->
+  <link rel="stylesheet" href="icomoon/style.css" />
   <link rel="stylesheet" href="app.css">
   <!-- endbuild -->
 </head>
 
 <body ng-app="mkm.crimeDemo">
-  <ul class="menu">
-    <!-- <li><a href="#/view1">view1</a></li> -->
-  </ul>
   <!--[if lt IE 7]>
       <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
   <![endif]-->
@@ -35,7 +33,7 @@
   <!-- In production use:
   <script src="//ajax.googleapis.com/ajax/libs/angularjs/x.x.x/angular.min.js"></script>
   -->
-  <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDWg2nWuw9Fc2RrufSxT3T_z3BCnci6sA0"></script>
+  <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCUoQBYmNXt-dcHE-oqFKED_loQKhmCeVY"></script>
   <script src="https://d3js.org/d3.v3.min.js"></script>
   <!-- build:js(.) scripts/vendor.js -->
   <!-- bower:js -->
@@ -61,6 +59,9 @@
   <script src="scripts/sea-crime/crime-reports-summary.js"></script>
   <script src="scripts/sea-crime/crime-incident-detail.js"></script>
   <script src="scripts/sea-crime/filter-order-object.js"></script>
+  <script src="scripts/sea-crime/reports-type-by-day.js"></script>
+  <script src="scripts/sea-crime/reports-type-child.js"></script>
+  <script src="scripts/sea-crime/report-zone.beat.js"></script>
   <script src="scripts/app.js"></script>
   <!-- endbuild -->
 </body>

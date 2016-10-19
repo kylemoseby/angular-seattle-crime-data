@@ -2,7 +2,7 @@
 
 // Declare app level module which depends on views, and components
 angular.module('mkm.seaCrimeData')
-  .directive('crimeReportsBlock', ['$window', function($window) {
+  .directive('crimeReportsBlock', ['$window', '$mdPanel', function($window, $mdPanel) {
 
     return {
 
@@ -15,6 +15,8 @@ angular.module('mkm.seaCrimeData')
       'link': function(scope, element) {
 
         var $elm = element[0];
+
+        scope.$panel = $mdPanel;
 
         var wrapper = d3.select($elm);
 
@@ -39,47 +41,24 @@ angular.module('mkm.seaCrimeData')
 
         scope.$promise.promise.then(function(data) {
 
-          function setTypeDetail(d) {
-            scope.$typeDetail.renderChart(d);
-          }
-
           var _index_ = data.index;
 
-          var indexArr = [];
-
-          for (var ind in _index_) {
-            indexArr.push(_index_[ind]);
-          }
-
-          var indexSorted = indexArr.sort(function(a, b) {
-            if (a.count > b.count) {
-              return 1;
-            }
-            if (a.count < b.count) {
-              return -1;
-            }
-
-            return 0;
-          });
-
-          var axisTitles = [];
-
-          indexSorted.forEach(function(d) {
-            axisTitles.push((d.offenseCategory === 'VEH-THEFT-AUTO') ? 'VEH' : d.offenseCategory);
+          var axisTitles = _index_.map(function(d) {
+            return (d.key === 'VEH-THEFT-AUTO') ? 'VEH' : d.key;
           });
 
           scaleAxisX.domain(axisTitles.reverse());
 
-          scaleAxisY.domain([0, d3.max(indexSorted, function(d) {
-            return d.count;
+          scaleAxisY.domain([0, d3.max(_index_, function(d) {
+            return d.values.length;
           })]);
 
           var indexRect = svg.selectAll('g.reports-index-rect')
-            .data(indexSorted)
+            .data(_index_)
             .enter()
             .append('g')
             .attr('id', function(d) {
-              return d.offenseCategory;
+              return d.key;
             })
             .attr('class', 'reports-index-rect')
             // FIX LATER
@@ -87,7 +66,7 @@ angular.module('mkm.seaCrimeData')
 
           indexRect.append('rect')
             .attr('transform', function(d) {
-              var scaleVal = (d.offenseCategory === 'VEH-THEFT-AUTO') ? scaleAxisX('VEH') : scaleAxisX(d.offenseCategory);
+              var scaleVal = (d.key === 'VEH-THEFT-AUTO') ? scaleAxisX('VEH') : scaleAxisX(d.key);
               return 'translate(' + scaleVal + ',' + ((barHght - padding) * 2) + ') rotate(180)';
             })
             .attr('y', function() {
@@ -95,39 +74,97 @@ angular.module('mkm.seaCrimeData')
             })
             .attr('width', scaleAxisX.rangeBand())
             .attr('height', function(d) {
-              return scaleAxisY(d.count);
+              return scaleAxisY(d.values.length);
             })
             .attr('fill', function(d) {
               return d.fillColor;
             })
-            .on('click', setTypeDetail);
+            .on('click', function(d) {
+
+              var position = scope.$panel.newPanelPosition()
+                .absolute()
+                .center();
+
+              /* OPEN THE PANEL */
+              scope.$panel
+                .open({
+                  attachTo: angular.element(document.body),
+                  controllerAs: 'ctrl',
+                  disableParentScroll: true,
+                  templateUrl: 'views/template-report-type-detail.html',
+                  hasBackdrop: true,
+                  panelClass: 'report-type-detail',
+                  position: position,
+                  trapFocus: true,
+                  zIndex: 150,
+                  clickOutsideToClose: true,
+                  escapeToClose: true,
+                  focusOnOpen: true,
+                  targetEvent: event,
+                  locals: {
+                    reportType: d
+                  },
+                  controller: function($scope, mdPanelRef, reportType) {
+
+                    $scope.reportType = reportType;
+
+                    $scope.dataTypeDay = d3.nest()
+                      .key(function(d) {
+                        var byDay = d3.time.format('%x');
+                        return byDay(new Date(d.date_reported));
+                      })
+                      .entries(reportType.values);
+
+                    $scope.dataTypeChild = d3.nest()
+                      .key(function(d) {
+                        return d.offense_type;
+                      })
+                      .entries(reportType.values);
+
+                    $scope.dataZoneBeat = d3.nest()
+                      .key(function(d) {
+                        return d.district_sector;
+                      })
+                      .key(function(d) {
+                        return d.zone_beat;
+                      })
+                      .entries(reportType.values);
+
+                    $scope.closeDetail = function() {
+
+                      mdPanelRef.close();
+
+                    };
+                  }
+                })
+                .finally(function() {});
+            });
 
           // CATEGORY LABELS
-          indexRect.append("text")
-            .attr("transform", function(d) {
-              var xTrans = (d.offenseCategory === 'VEH-THEFT-AUTO') ? scaleAxisX('VEH') : scaleAxisX(d.offenseCategory);
+          indexRect.append('text')
+            .attr('transform', function(d) {
+              var xTrans = (d.key === 'VEH-THEFT-AUTO') ? scaleAxisX('VEH') : scaleAxisX(d.key);
 
               return 'translate(' + (xTrans - (scaleAxisX.rangeBand() * 0.33)) + ', ' + (barHght - padding + 9) + ') rotate(-33)';
             })
-            .attr("text-anchor", "end")
-            .attr("class", "block-label category")
+            .attr('text-anchor', 'end')
+            .attr('class', 'block-label category')
             .text(function(d) {
-              return d.offenseCategory;
-            })
-            .on('click', setTypeDetail);
+              return d.key;
+            });
 
           // COUNT LABELS
-          indexRect.append("text")
-            .attr("transform", function(d) {
-              var xTrans = (d.offenseCategory === 'VEH-THEFT-AUTO') ? scaleAxisX('VEH') : scaleAxisX(d.offenseCategory);
+          indexRect.append('text')
+            .attr('transform', function(d) {
+              var xTrans = (d.key === 'VEH-THEFT-AUTO') ? scaleAxisX('VEH') : scaleAxisX(d.key);
 
-              return 'translate(' + (xTrans - (scaleAxisX.rangeBand() * 0.67) - 4) + ', ' + (barHght - scaleAxisY(d.count) - padding - 2) + ')';
+              return 'translate(' + (xTrans - (scaleAxisX.rangeBand() * 0.5)) + ', ' + (barHght - scaleAxisY(d.values.length) - padding - 6) + ')';
             })
-            .attr("class", "block-label count")
+            .attr('class', 'block-label count')
+            .attr('text-anchor', 'middle')
             .text(function(d) {
-              return d.count;
-            })
-            .on('click', setTypeDetail);
+              return d.values.length;
+            });
 
           function _refreshBlocks() {
             var padding = $elm.offsetWidth * 0.025;
@@ -150,7 +187,7 @@ angular.module('mkm.seaCrimeData')
               .duration(100)
               .ease('sin-in-out')
               .attr("transform", function(d) {
-                var xTrans = (d.offenseCategory === 'VEH-THEFT-AUTO') ? scaleAxisX('VEH') : scaleAxisX(d.offenseCategory);
+                var xTrans = (d.key === 'VEH-THEFT-AUTO') ? scaleAxisX('VEH') : scaleAxisX(d.key);
 
                 return 'translate(' + (xTrans - (scaleAxisX.rangeBand() * 0.33)) + ', ' + (barHght - padding + 7) + ') rotate(-50)';
               });
@@ -160,9 +197,9 @@ angular.module('mkm.seaCrimeData')
               .duration(100)
               .ease('sin-in-out')
               .attr("transform", function(d) {
-                var xTrans = (d.offenseCategory === 'VEH-THEFT-AUTO') ? scaleAxisX('VEH') : scaleAxisX(d.offenseCategory);
+                var xTrans = (d.key === 'VEH-THEFT-AUTO') ? scaleAxisX('VEH') : scaleAxisX(d.key);
 
-                return 'translate(' + (xTrans - (scaleAxisX.rangeBand() * 0.67) - 4) + ', ' + (barHght - scaleAxisY(d.count) - padding - 2) + ')';
+                return 'translate(' + (xTrans - (scaleAxisX.rangeBand() * 0.5)) + ', ' + (barHght - scaleAxisY(d.values.length) - padding - 6) + ')';
               });
 
             indexRect.selectAll('g.reports-index-rect rect')
@@ -170,7 +207,7 @@ angular.module('mkm.seaCrimeData')
               .duration(100)
               .ease('sin-in-out')
               .attr('transform', function(d) {
-                var scaleVal = (d.offenseCategory === 'VEH-THEFT-AUTO') ? scaleAxisX('VEH') : scaleAxisX(d.offenseCategory);
+                var scaleVal = (d.key === 'VEH-THEFT-AUTO') ? scaleAxisX('VEH') : scaleAxisX(d.key);
 
                 return 'translate(' + scaleVal + ',' + ((barHght - padding) * 2) + ') rotate(180)';
               })
@@ -179,7 +216,7 @@ angular.module('mkm.seaCrimeData')
               })
               .attr('width', scaleAxisX.rangeBand())
               .attr('height', function(d) {
-                return scaleAxisY(d.count);
+                return scaleAxisY(d.values.length);
               });
           }
 
@@ -193,5 +230,4 @@ angular.module('mkm.seaCrimeData')
       }
 
     };
-
   }]);
