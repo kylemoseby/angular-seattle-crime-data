@@ -53,7 +53,7 @@ angular.module('mkm.seaCrimeData')
             return d.values.length;
           })]);
 
-          var indexRect = svg.selectAll('g.reports-index-rect')
+          var rectGroup = svg.selectAll('g.reports-index-rect')
             .data(_index_)
             .enter()
             .append('g')
@@ -64,7 +64,7 @@ angular.module('mkm.seaCrimeData')
             // FIX LATER
             .attr('transform', 'translate(' + padding + ',80)');
 
-          indexRect.append('rect')
+          var rect = rectGroup.append('rect')
             .attr('transform', function(d) {
               var scaleVal = (d.key === 'VEH-THEFT-AUTO') ? scaleAxisX('VEH') : scaleAxisX(d.key);
               return 'translate(' + scaleVal + ',' + ((barHght - padding) * 2) + ') rotate(180)';
@@ -141,7 +141,7 @@ angular.module('mkm.seaCrimeData')
             });
 
           // CATEGORY LABELS
-          indexRect.append('text')
+          var labelCatg = rectGroup.append('text')
             .attr('transform', function(d) {
               var xTrans = (d.key === 'VEH-THEFT-AUTO') ? scaleAxisX('VEH') : scaleAxisX(d.key);
 
@@ -154,11 +154,11 @@ angular.module('mkm.seaCrimeData')
             });
 
           // COUNT LABELS
-          indexRect.append('text')
+          var labelCnt = rectGroup.append('text')
             .attr('transform', function(d) {
               var xTrans = (d.key === 'VEH-THEFT-AUTO') ? scaleAxisX('VEH') : scaleAxisX(d.key);
 
-              return 'translate(' + (xTrans - (scaleAxisX.rangeBand() * 0.5)) + ', ' + (barHght - scaleAxisY(d.values.length) - padding - 6) + ')';
+              return 'translate(' + (xTrans - (scaleAxisX.rangeBand() * 0.5)) + ', ' + (barHght - scaleAxisY(d.values.length) - padding - 5) + ')';
             })
             .attr('class', 'block-label count')
             .attr('text-anchor', 'middle')
@@ -167,10 +167,11 @@ angular.module('mkm.seaCrimeData')
             });
 
           function _refreshBlocks() {
-            var padding = $elm.offsetWidth * 0.025;
-            var wdth = $elm.offsetWidth;
-            var hght = $elm.offsetHeight;
-            var barHght = hght * 0.75;
+
+            padding = $elm.offsetWidth * 0.033;
+            wdth = $elm.offsetWidth;
+            hght = $elm.offsetHeight;
+            barHght = hght - padding - 120;
 
             svg
               .attr({
@@ -182,7 +183,7 @@ angular.module('mkm.seaCrimeData')
 
             scaleAxisY.range([padding, barHght]);
 
-            indexRect.selectAll('.block-label.category')
+            labelCatg
               .transition()
               .duration(100)
               .ease('sin-in-out')
@@ -192,7 +193,7 @@ angular.module('mkm.seaCrimeData')
                 return 'translate(' + (xTrans - (scaleAxisX.rangeBand() * 0.33)) + ', ' + (barHght - padding + 7) + ') rotate(-50)';
               });
 
-            indexRect.selectAll('.block-label.count')
+            labelCnt
               .transition()
               .duration(100)
               .ease('sin-in-out')
@@ -202,7 +203,7 @@ angular.module('mkm.seaCrimeData')
                 return 'translate(' + (xTrans - (scaleAxisX.rangeBand() * 0.5)) + ', ' + (barHght - scaleAxisY(d.values.length) - padding - 6) + ')';
               });
 
-            indexRect.selectAll('g.reports-index-rect rect')
+            rect
               .transition()
               .duration(100)
               .ease('sin-in-out')

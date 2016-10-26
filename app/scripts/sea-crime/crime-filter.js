@@ -14,11 +14,6 @@ angular.module('mkm.seaCrimeData').directive('filterReportTypes', [function() {
       // Used to update class on 'update buttons'
       scope.updated = false;
 
-
-      // scope.openFilters = function($mdOpenMenu, ev) {
-      //   $mdOpenMenu(ev);
-      // };
-
       /*
         toggles clicked  index values 'show' attribute
         true / false
@@ -43,13 +38,9 @@ angular.module('mkm.seaCrimeData').directive('filterReportTypes', [function() {
 
         var _index = this.mapIndexFilter();
 
-        // if (typeof this.mapIndexFilter === 'function') {
         scope.filterMap.update(_index);
-        // }
 
-        // if (typeof scope.$parent.$vizTimeline.filterData === 'function') {
         scope.filterTime.filterData(_index);
-        // }
 
         scope.updated = false;
       };
@@ -104,10 +95,6 @@ angular.module('mkm.seaCrimeData').directive('filterReportTypes', [function() {
 
         return filteredArray;
       };
-
-      // scope.$indexLength = function() {
-      //   return (this[filterInd] === undefined || null) ? 0 : Object.keys(this[filterInd]).length;
-      // };
     }
   };
 

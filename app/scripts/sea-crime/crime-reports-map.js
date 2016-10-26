@@ -221,7 +221,6 @@ angular.module('mkm.seaCrimeData')
 
           $map.setCenter(_marker.getPosition());
 
-          // }
         }
 
         $map.data.setStyle(plotstyleBasic);
@@ -233,7 +232,6 @@ angular.module('mkm.seaCrimeData')
         };
 
         angular.element($window).bind('resize', function() {
-
           $map.fitBounds($scope.mapBounds);
         });
 
@@ -252,13 +250,9 @@ angular.module('mkm.seaCrimeData')
           var toggleKey = $scope.reportFilter.indexOf(this.val.key);
 
           if (toggleKey < -1) {
-
             $scope.reportFilter.push(this.val.key);
-
           } else {
-
             $scope.reportFilter.splice(toggleKey, 1);
-
           }
 
           $scope.updated = true;

@@ -7,48 +7,34 @@ angular.module('mkm.seaCrimeData')
 
       templateUrl: 'views/template-reports-viz.html',
       scope: {
-        vizID: '=vizTimeLine',
         promiseAttr: '=vizTimeData'
       },
 
       link: function(scope, element) {
-
-        function padByWidth(_el_) {
-
-          var elWdth = _el_.offsetWidth;
-          var pad = 3;
-
-          if (elWdth > 600) {
-            pad = 16;
-          } else if (elWdth > 1280) {
-            pad = 24;
-          }
-
-          return pad;
-        }
 
         scope.$panel = $mdPanel;
 
         scope.reportFilter = [];
 
         var elm = element.children('.crime-report-timeline')[0];
-
         var wrapper = d3.select(elm);
 
         //  SVG DIMENSIONS
-        var padding = padByWidth(elm);
+        var padding = 10;
 
         var wdth = elm.offsetWidth;
-        var hght = elm.offsetHeight - 40;
+        var hght = elm.offsetHeight;
 
-        var addPadding = {
+        var calcPadding = {
+
           x: function(_wdth_) {
             // Add 60 pixels on right side for axis/labels
             return [padding + 60, _wdth_ - 40];
           },
+
           y: function(_hght_) {
             // Add 60 pixels on bottom for axis/labels
-            return [padding + 10, _hght_ - padding - 36];
+            return [padding + 10, _hght_ - padding - 30];
           }
         };
 
@@ -64,11 +50,11 @@ angular.module('mkm.seaCrimeData')
           .classed('cicle-tool-tip', true);
 
         var scaleAxisX = d3.time.scale()
-          .range(addPadding.x(wdth));
+          .range(calcPadding.x(wdth));
 
         var scaleAxisY = d3.time.scale.utc()
           .domain([new Date('Wed Dec 31 1969 00:00:00 GMT-0800 (PST)'), new Date('Wed Dec 31 1969 24:00:00 GMT-0800 (PST)')])
-          .range(addPadding.y(hght));
+          .range(calcPadding.y(hght));
 
         var xAxis = d3.svg.axis()
           .orient('bottom')
@@ -128,6 +114,9 @@ angular.module('mkm.seaCrimeData')
             }
           }
 
+          /*
+              Returns X coordinate for a circle representing one police report
+          */
           function plotXcirc(d) {
             var incidentDate = new Date(d.properties.date_reported);
 
@@ -136,7 +125,9 @@ angular.module('mkm.seaCrimeData')
             // return scaleAxisX(new Date(incidentDate));
             return scaleAxisX(new Date(timeFormat(incidentDate)));
           }
-
+          /*
+              Returns Y coordinate for a circle representing one polie report
+           */
           function plotYcirc(d) {
 
             var timeFormat = d3.time.format('%X');
@@ -149,13 +140,6 @@ angular.module('mkm.seaCrimeData')
           function _toolTipShow(data) {
 
             var incident = data;
-
-            // reportMarks.selectAll('circle')
-            //   .filter(function(d) {
-            //     return d.properties.general_offense_number === incident.general_offense_number;
-            //   })[0][0];
-
-            // if (element.getAttribute('fill') !== 'transparent') {
 
             var timeFormatFull = d3.time.format('%H:%M %p');
 
@@ -186,7 +170,7 @@ angular.module('mkm.seaCrimeData')
               .style('background', function() {
                 return incident.fillColor;
               })
-              .attr('transform', 'translate(' + padding + ',' + (hght - 30) + ')');
+              .attr('transform', 'translate(' + padding + ',' + calcPadding(hght) + ')');
             // }
           }
 
@@ -199,29 +183,16 @@ angular.module('mkm.seaCrimeData')
             reportMarks.selectAll('circle')
               .transition()
               .duration(250);
-            // .attr('r', '4');
-            // .attr('opacity', 1);
 
             scope.toolTipLock = false;
 
-            // scope.mapID.$markers = null;
-
             try {
+
               scope.mapID.$markers.close();
             } catch (e) {}
-
-            // scope.incidentDetail = _incident;
-
-            // scope.$apply();
           }
+
           /*   END FUNCTIONS FOR CIRCLES   */
-
-          var axXoffset = 10;
-
-          var reportMarks = svg.append('g')
-            .attr('transform', 'translate(' + axXoffset + ', 0)')
-            .attr('id', 'reports-vz-marks');
-
 
           function crimeReportDetail($scope, mdPanelRef, incidentDetail) {
 
@@ -235,9 +206,67 @@ angular.module('mkm.seaCrimeData')
             };
           }
 
+          function reportDetailShow(event) {
+
+            var position = scope.$panel.newPanelPosition()
+              .absolute()
+              .center();
+
+            /* OPEN THE PANEL */
+            scope.$panel.open({
+              attachTo: angular.element(document.body),
+              controller: crimeReportDetail,
+              controllerAs: 'ctrl',
+              disableParentScroll: true,
+              templateUrl: 'views/template-incident-detail.html',
+              hasBackdrop: true,
+              panelClass: 'crime-report-detail',
+              position: position,
+              trapFocus: true,
+              zIndex: 150,
+              clickOutsideToClose: true,
+              escapeToClose: true,
+              focusOnOpen: true,
+              targetEvent: event,
+              locals: {
+                incidentDetail: event.properties
+              }
+            }).finally(function() {
+
+              var StreetView = new google.maps.Map(document.getElementById('street-view-detail'), {
+                scrollwheel: false,
+                zoomControl: false,
+                zoom: 0
+              });
+
+              var panorama = new google.maps.StreetViewPanorama(
+                document.getElementById('street-view-detail'), {
+                  'position': {
+                    'lat': Number(event.properties.latitude),
+                    'lng': Number(event.properties.longitude)
+                  },
+                  'pov': {
+                    'heading': 34,
+                    'pitch': 5
+                  },
+                  'scrollwheel': false
+                });
+
+              StreetView.setStreetView(panorama);
+
+            });
+
+            scope.incidentDetail = event.properties;
+          }
+
+          var axXoffset = 10;
           var radius = 7;
 
-          reportMarks.selectAll('circle')
+          var reportMarks = svg.append('g')
+            .attr('transform', 'translate(' + axXoffset + ', 0)')
+            .attr('id', 'reports-vz-marks');
+
+          var circles = reportMarks.selectAll('circle')
             .data(_incidents)
             .enter()
             .append('circle')
@@ -248,59 +277,7 @@ angular.module('mkm.seaCrimeData')
             .attr('style', function(d) {
               return setCircStyle('initial', d);
             })
-            .on('click', function(event) {
-
-              var position = scope.$panel.newPanelPosition()
-                .absolute()
-                .center();
-
-              /* OPEN THE PANEL */
-              scope.$panel.open({
-                attachTo: angular.element(document.body),
-                controller: crimeReportDetail,
-                controllerAs: 'ctrl',
-                disableParentScroll: true,
-                templateUrl: 'views/template-incident-detail.html',
-                hasBackdrop: true,
-                panelClass: 'crime-report-detail',
-                position: position,
-                trapFocus: true,
-                zIndex: 150,
-                clickOutsideToClose: true,
-                escapeToClose: true,
-                focusOnOpen: true,
-                targetEvent: event,
-                locals: {
-                  incidentDetail: event.properties
-                }
-              }).finally(function() {
-
-                var StreetView = new google.maps.Map(document.getElementById('street-view-detail'), {
-                  scrollwheel: false,
-                  zoomControl: false,
-                  zoom: 0
-                });
-
-                var panorama = new google.maps.StreetViewPanorama(
-                  document.getElementById('street-view-detail'), {
-                    'position': {
-                      'lat': Number(event.properties.latitude),
-                      'lng': Number(event.properties.longitude)
-                    },
-                    'pov': {
-                      'heading': 34,
-                      'pitch': 5
-                    },
-                    'scrollwheel': false
-                  });
-
-                StreetView.setStreetView(panorama);
-
-              });
-
-              scope.incidentDetail = event.properties;
-
-            })
+            .on('click', reportDetailShow)
             .on('mouseover', function(d) {
 
               if (!scope.toolTipLock) {
@@ -313,6 +290,7 @@ angular.module('mkm.seaCrimeData')
               }
             })
             .on('mouseout', function(d) {
+
               if (!scope.toolTipLock) {
 
                 this.setAttribute('style', setCircStyle('mouseout', d));
@@ -323,12 +301,12 @@ angular.module('mkm.seaCrimeData')
               }
             });
 
-          svg.append('g')
+          var axisX = svg.append('g')
             .attr('class', 'axis x')
-            .attr('transform', 'translate(' + axXoffset + ',' + (hght - 30) + ')') // LABELS AT BOTTOM
+            .attr('transform', 'translate(' + axXoffset + ',' + (hght - 20) + ')') // LABELS AT BOTTOM
             .call(xAxis);
 
-          svg.append('g')
+          var axisY = svg.append('g')
             .attr('class', 'axis y')
             .attr('transform', 'translate(50, 0)') // BRINGS DATES OFF SCREEN
             .call(yAxis);
@@ -344,35 +322,34 @@ angular.module('mkm.seaCrimeData')
                 width: newWdth
               });
 
-            scaleAxisX.range(addPadding.x(newWdth));
+            scaleAxisX.range(calcPadding.x(newWdth));
 
-            scaleAxisY.range(addPadding.y(newHght));
+            scaleAxisY.range(calcPadding.y(newHght));
 
-
-            svg.select('g#reports-vz-marks')
-              .transition()
-              .duration(100);
-
-            svg.select('.axis.x')
+            axisX
               .transition()
               .duration(100)
               .ease("sin-in-out")
+              .attr('transform', 'translate(' + axXoffset + ',' + (newHght - 20) + ')')
               .call(xAxis);
 
-            svg.select('.axis.y')
+            axisY
               .transition()
               .duration(100)
               .ease("sin-in-out")
+              .attr('transform', 'translate(50, 0)')
               .call(yAxis);
 
-            reportMarks.selectAll('circle')
+            circles
               .transition()
               .duration(200)
               .attr('cx', plotXcirc)
               .attr('cy', plotYcirc);
           }
 
-          // PUBLIC SCOPE METHODS
+          /*
+              PUBLIC SCOPE METHODS // FILTER TIMELINE
+          */
           scope.filterData = function(filterIndex) {
 
             reportMarks.selectAll('circle')
@@ -409,7 +386,6 @@ angular.module('mkm.seaCrimeData')
             toggles clicked  index values 'show' attribute
             true / false
           */
-
           scope.filterToggleType = function($event) {
 
             $event.preventDefault();
@@ -429,7 +405,6 @@ angular.module('mkm.seaCrimeData')
             }
 
             scope.updated = true;
-
           };
 
           scope.filterAll = function($event) {
@@ -447,7 +422,6 @@ angular.module('mkm.seaCrimeData')
             }
 
             scope.updated = true;
-
           };
 
           /*
@@ -463,16 +437,6 @@ angular.module('mkm.seaCrimeData')
 
             scope.updated = false;
           };
-
-          // refresh: _refreshTimeLine,
-
-          // toolTipHide: function() {
-          //   toolTipHide();
-          // },
-
-          // toolTipShow: function(incident) {
-          //   _toolTipShow(incident);
-          // }
 
           angular.element($window).bind('resize', function() {
             _refreshTimeLine();
