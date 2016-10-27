@@ -30,7 +30,8 @@ angular.module('mkm.seaCrimeData')
 
         var node = svg.selectAll(".node")
           .data(bubble.nodes($scope.reports))
-          .enter().append("g")
+          .enter()
+          .append("g")
           .attr("class", "node")
           .attr("transform", function(d) {
             if (!isNaN(d.x && d.y)) {
@@ -46,13 +47,15 @@ angular.module('mkm.seaCrimeData')
           });
 
         node.append("circle")
-          .attr("r", function(d) {
+          .attr("r", function() {
             return 10;
           })
           .style("fill", function(d) {
             return d.fillColor;
           });
-        d3.select(this.frameElement).style("height", diameter + "px");
+
+        d3.select(this.frameElement)
+          .style("height", diameter + "px");
 
       }
     };

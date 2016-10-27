@@ -44,7 +44,7 @@ angular.module('mkm.seaCrimeData')
           .enter()
           .append('div')
           .classed({ 'zone-reports': true })
-          .text(function() {
+          .text(function(d) {
             return d.zone_beat;
           });
       }

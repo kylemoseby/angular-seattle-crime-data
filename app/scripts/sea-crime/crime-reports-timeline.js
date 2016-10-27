@@ -79,7 +79,6 @@ angular.module('mkm.seaCrimeData')
           var dateRange = d3.extent(_incidents, function(d, i) {
 
             return (i === 0) ? d3.time.day.floor(new Date(d.properties.date_reported)) : new Date(d.properties.date_reported);
-            // return d3.time.day.round(new Date(d.properties.date_reported));
           });
 
           scaleAxisX.domain(dateRange);
@@ -122,7 +121,6 @@ angular.module('mkm.seaCrimeData')
 
             var timeFormat = d3.time.format('%x');
 
-            // return scaleAxisX(new Date(incidentDate));
             return scaleAxisX(new Date(timeFormat(incidentDate)));
           }
           /*
@@ -170,8 +168,7 @@ angular.module('mkm.seaCrimeData')
               .style('background', function() {
                 return incident.fillColor;
               })
-              .attr('transform', 'translate(' + padding + ',' + calcPadding(hght) + ')');
-            // }
+              .attr('transform', 'translate(' + padding + ',' + hght + ')');
           }
 
           function toolTipHide() {
@@ -186,10 +183,6 @@ angular.module('mkm.seaCrimeData')
 
             scope.toolTipLock = false;
 
-            try {
-
-              scope.mapID.$markers.close();
-            } catch (e) {}
           }
 
           /*   END FUNCTIONS FOR CIRCLES   */
@@ -438,6 +431,7 @@ angular.module('mkm.seaCrimeData')
             scope.updated = false;
           };
 
+          // REFORMAT ON WINDOW RESIZE
           angular.element($window).bind('resize', function() {
             _refreshTimeLine();
           });

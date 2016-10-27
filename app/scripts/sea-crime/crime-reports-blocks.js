@@ -81,7 +81,8 @@ angular.module('mkm.seaCrimeData')
             })
             .on('click', function(d) {
 
-              var position = scope.$panel.newPanelPosition()
+              var position = scope.$panel
+                .newPanelPosition()
                 .absolute()
                 .center();
 

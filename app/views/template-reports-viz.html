@@ -5,13 +5,13 @@
   </md-button>
   <md-menu-content width="12">
     <md-menu-item>
-      <md-button ng-click="filterData(reportFilter)">Apply</button>
+      <md-button ng-click="filterData(reportFilter)">Apply</md-button>
     </md-menu-item>
     <md-menu-item>
-      <md-button ng-click="filterReset($event)" ng-disabled="reportFilter.length === 0" md-prevent-menu-close>Reset</button>
+      <md-button ng-click="filterReset($event)" ng-disabled="reportFilter.length === 0" md-prevent-menu-close>Reset</md-button>
     </md-menu-item>
     <md-menu-item>
-      <md-button ng-click="filterAll($event)" ng-disabled="reportFilter === []" md-prevent-menu-close>Clear All</button>
+      <md-button ng-click="filterAll($event)" ng-disabled="reportFilter === []" md-prevent-menu-close>Clear All</md-button>
     </md-menu-item>
     <md-menu-divider></md-menu-divider>
     <md-menu-item ng-repeat="(key, val) in $index">

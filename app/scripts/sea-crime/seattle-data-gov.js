@@ -64,8 +64,9 @@ angular.module('mkm.seaCrimeData', [
       var $indxOffType = d3.nest()
         .key(function(d) {
           try {
+
             return getIncidentParent(d.offense_type);
-            // return d.offense_type;
+
           } catch (e) {
             console.log(e);
             console.log(d);

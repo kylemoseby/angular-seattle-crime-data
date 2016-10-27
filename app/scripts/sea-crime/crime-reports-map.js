@@ -1,6 +1,5 @@
 'use strict';
 
-
 angular.module('mkm.seaCrimeData')
   .directive('mapCanvas', ['$window', '$mdPanel', function($window, $mdPanel) {
 
@@ -220,7 +219,6 @@ angular.module('mkm.seaCrimeData')
           });
 
           $map.setCenter(_marker.getPosition());
-
         }
 
         $map.data.setStyle(plotstyleBasic);
@@ -230,10 +228,6 @@ angular.module('mkm.seaCrimeData')
         $scope.mapRefresh = function() {
           $map.fitBounds($scope.mapBounds);
         };
-
-        angular.element($window).bind('resize', function() {
-          $map.fitBounds($scope.mapBounds);
-        });
 
         /*
             FILTER STUFF
@@ -249,14 +243,13 @@ angular.module('mkm.seaCrimeData')
 
           var toggleKey = $scope.reportFilter.indexOf(this.val.key);
 
-          if (toggleKey < -1) {
+          if (toggleKey === -1) {
             $scope.reportFilter.push(this.val.key);
           } else {
             $scope.reportFilter.splice(toggleKey, 1);
           }
 
           $scope.updated = true;
-
         };
 
         $scope.filterAll = function($event) {
@@ -274,7 +267,6 @@ angular.module('mkm.seaCrimeData')
           }
 
           $scope.updated = true;
-
         };
 
         /*
@@ -318,6 +310,11 @@ angular.module('mkm.seaCrimeData')
 
           $scope.updated = false;
         };
+
+        // REFORMAT ON WINDOW RESIZE
+        angular.element($window).bind('resize', function() {
+          $map.fitBounds($scope.mapBounds);
+        });
 
         /*
             INITIATE FROM A PROMISE
