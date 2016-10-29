@@ -11,8 +11,6 @@ angular.module('mkm.seaCrimeData')
       },
       link: function link($scope, $element) {
 
-        $scope.markerOver = null;
-
         var $map = new google.maps.Map($element.children('.map-canvas')[0], {
           'scrollwheel': false,
           'streetViewControl': false,
@@ -20,6 +18,10 @@ angular.module('mkm.seaCrimeData')
           'panControl': false,
           'maxZoom': 17
         });
+
+        var infowindow = null;
+
+        $scope.markerOver = null;
 
         $scope.$index = {};
 
@@ -108,8 +110,6 @@ angular.module('mkm.seaCrimeData')
 
         function markerClick(event) {
 
-          // if (currentFiltered.indexOf(parentType) === -1) {
-
           var _incident = event.feature.f;
 
           var _latitude = Number(_incident.latitude);
@@ -130,7 +130,11 @@ angular.module('mkm.seaCrimeData')
 
           var infoWindDate = d3.time.format('%a, %x at %H:%M%p');
 
-          var infowindow = new google.maps.InfoWindow({
+          if (infowindow !== null) {
+            infowindow.close();
+          }
+
+          infowindow = new google.maps.InfoWindow({
             content: '<ul class=\"list-unstyled\">' +
               '<li><span class=\"glyphicon glyphicon-map-marker\" style=\"color: ' +
               _incident.fillColor + '\"></span></li>' +
