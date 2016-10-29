@@ -188,14 +188,14 @@ angular.module('mkm.seaCrimeData')
                 }
               }).finally(function() {
 
-                var StreetView = new google.maps.Map(document.getElementById('street-view-detail'), {
+                var StreetView = new google.maps.Map(angular.element('.map-report-detail #street-view-detail')[0], {
                   scrollwheel: false,
                   zoomControl: false,
                   zoom: 0
                 });
 
                 var panorama = new google.maps.StreetViewPanorama(
-                  document.getElementById('street-view-detail'), {
+                  angular.element('.map-report-detail #street-view-detail')[0], {
                     'position': {
                       'lat': Number(_incident.latitude),
                       'lng': Number(_incident.longitude)
@@ -234,7 +234,6 @@ angular.module('mkm.seaCrimeData')
           toggles clicked  index values 'show' attribute
           true / false
         */
-
         $scope.filterToggleType = function($event) {
 
           $event.preventDefault();
@@ -311,11 +310,6 @@ angular.module('mkm.seaCrimeData')
           $scope.updated = false;
         };
 
-        // REFORMAT ON WINDOW RESIZE
-        angular.element($window).bind('resize', function() {
-          $map.fitBounds($scope.mapBounds);
-        });
-
         /*
             INITIATE FROM A PROMISE
         */
@@ -333,6 +327,11 @@ angular.module('mkm.seaCrimeData')
               $scope.reports = data.incidents;
 
               $scope.mapBounds = data.mapBounds;
+
+              // REFORMAT ON WINDOW RESIZE
+              angular.element($window).bind('resize', function() {
+                $map.fitBounds($scope.mapBounds);
+              });
 
             });
         }
@@ -365,6 +364,10 @@ angular.module('mkm.seaCrimeData')
 
             $map.fitBounds(detailBounds);
 
+            // REFORMAT ON WINDOW RESIZE
+            angular.element($window).bind('resize', function() {
+              $map.fitBounds(detailBounds);
+            });
           }
         }
       }

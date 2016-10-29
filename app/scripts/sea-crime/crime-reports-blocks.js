@@ -39,12 +39,22 @@ angular.module('mkm.seaCrimeData')
         var scaleAxisY = d3.scale.linear()
           .range([padding, barHght]);
 
+        /*
+          Necessary because of the way parent child relationships are stored in SPD Data
+          VEH-THEFT-AUTO appears to be it's own distint topice, but all the other
+          parent child relationsips are designated by the '-' as far as I can tell
+          -mkm
+        */
+        function checkVehKey(reportKey) {
+          return (reportKey === 'VEH-THEFT-AUTO') ? 'VEH' : reportKey;
+        }
+
         scope.$promise.promise.then(function(data) {
 
           var _index_ = data.index;
 
           var axisTitles = _index_.map(function(d) {
-            return (d.key === 'VEH-THEFT-AUTO') ? 'VEH' : d.key;
+            return checkVehKey(d.key);
           });
 
           scaleAxisX.domain(axisTitles.reverse());
@@ -66,7 +76,7 @@ angular.module('mkm.seaCrimeData')
 
           var rect = rectGroup.append('rect')
             .attr('transform', function(d) {
-              var scaleVal = (d.key === 'VEH-THEFT-AUTO') ? scaleAxisX('VEH') : scaleAxisX(d.key);
+              var scaleVal = scaleAxisX(checkVehKey(d.key));
               return 'translate(' + scaleVal + ',' + ((barHght - padding) * 2) + ') rotate(180)';
             })
             .attr('y', function() {
@@ -144,7 +154,7 @@ angular.module('mkm.seaCrimeData')
           // CATEGORY LABELS
           var labelCatg = rectGroup.append('text')
             .attr('transform', function(d) {
-              var xTrans = (d.key === 'VEH-THEFT-AUTO') ? scaleAxisX('VEH') : scaleAxisX(d.key);
+              var xTrans = scaleAxisX(checkVehKey(d.key));
 
               return 'translate(' + (xTrans - (scaleAxisX.rangeBand() * 0.33)) + ', ' + (barHght - padding + 9) + ') rotate(-33)';
             })
@@ -157,7 +167,7 @@ angular.module('mkm.seaCrimeData')
           // COUNT LABELS
           var labelCnt = rectGroup.append('text')
             .attr('transform', function(d) {
-              var xTrans = (d.key === 'VEH-THEFT-AUTO') ? scaleAxisX('VEH') : scaleAxisX(d.key);
+              var xTrans = scaleAxisX(checkVehKey(d.key));
 
               return 'translate(' + (xTrans - (scaleAxisX.rangeBand() * 0.5)) + ', ' + (barHght - scaleAxisY(d.values.length) - padding - 5) + ')';
             })
@@ -189,7 +199,7 @@ angular.module('mkm.seaCrimeData')
               .duration(100)
               .ease('sin-in-out')
               .attr("transform", function(d) {
-                var xTrans = (d.key === 'VEH-THEFT-AUTO') ? scaleAxisX('VEH') : scaleAxisX(d.key);
+                var xTrans = scaleAxisX(checkVehKey(d.key));
 
                 return 'translate(' + (xTrans - (scaleAxisX.rangeBand() * 0.33)) + ', ' + (barHght - padding + 7) + ') rotate(-50)';
               });
@@ -199,7 +209,7 @@ angular.module('mkm.seaCrimeData')
               .duration(100)
               .ease('sin-in-out')
               .attr("transform", function(d) {
-                var xTrans = (d.key === 'VEH-THEFT-AUTO') ? scaleAxisX('VEH') : scaleAxisX(d.key);
+                var xTrans = scaleAxisX(checkVehKey(d.key));
 
                 return 'translate(' + (xTrans - (scaleAxisX.rangeBand() * 0.5)) + ', ' + (barHght - scaleAxisY(d.values.length) - padding - 6) + ')';
               });
@@ -209,7 +219,7 @@ angular.module('mkm.seaCrimeData')
               .duration(100)
               .ease('sin-in-out')
               .attr('transform', function(d) {
-                var scaleVal = (d.key === 'VEH-THEFT-AUTO') ? scaleAxisX('VEH') : scaleAxisX(d.key);
+                var scaleVal = scaleAxisX(checkVehKey(d.key));
 
                 return 'translate(' + scaleVal + ',' + ((barHght - padding) * 2) + ') rotate(180)';
               })

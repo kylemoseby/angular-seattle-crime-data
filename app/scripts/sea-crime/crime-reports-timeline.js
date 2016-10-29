@@ -213,7 +213,7 @@ angular.module('mkm.seaCrimeData')
               disableParentScroll: true,
               templateUrl: 'views/template-incident-detail.html',
               hasBackdrop: true,
-              panelClass: 'crime-report-detail',
+              panelClass: 'timeline-report-detail',
               position: position,
               trapFocus: true,
               zIndex: 150,
@@ -226,14 +226,14 @@ angular.module('mkm.seaCrimeData')
               }
             }).finally(function() {
 
-              var StreetView = new google.maps.Map(document.getElementById('street-view-detail'), {
+              var StreetView = new google.maps.Map(angular.element('.timeline-report-detail #street-view-detail')[0], {
                 scrollwheel: false,
                 zoomControl: false,
                 zoom: 0
               });
 
               var panorama = new google.maps.StreetViewPanorama(
-                document.getElementById('street-view-detail'), {
+                angular.element('.timeline-report-detail #street-view-detail')[0], {
                   'position': {
                     'lat': Number(event.properties.latitude),
                     'lng': Number(event.properties.longitude)

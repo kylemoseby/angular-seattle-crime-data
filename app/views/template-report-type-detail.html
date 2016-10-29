@@ -1,16 +1,18 @@
-<div layout="row" layout-wrap layout-padding layout-margin>
-  <div flex="100">
+<div layout="column" layout-padding layout-margin>
+  <div>
     <h2>{{reportType.key}}  <span class="badge" ng-style="{ background: reportType.fillColor}">{{reportType.values.length}}</span></h2>
-    <!-- <h3>Reports per subtype</h3> -->
-    <!-- <report-type-child flex="100" report-count="reportType.values.length" report-data="$reports"></report-type-child> -->
-    <div class="sub-types">
+  </div>
+  <div layout="row" layout-wrap>
+    <div flex="100" flex-gt-sm="50">
       <h3>Reports per day</h3>
       <report-type-day report-count="reportType.values.length" report-data="dataTypeDay"></report-type-day>
     </div>
-    <div class="sub-types">
+    <div flex="100" flex-gt-sm="50">
       <h3>Reports per zone</h3>
       <report-zone-beat report-count="reportType.values.length" report-data="dataZoneBeat"></report-zone-beat>
     </div>
+  </div>
+  <div>
     <button type="button" class="btn btn-primary" ng-click="closeDetail()">
       <span class="glyphicon glyphicon-remove"></span> Close Detail
     </button>
