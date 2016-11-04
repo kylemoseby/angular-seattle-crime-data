@@ -133,11 +133,26 @@ module.exports = function(grunt) {
     less: {
       development: {
         options: {
-          paths: [""]
+          paths: ['']
         },
         files: {
-          "app/app.css": "<%= yeoman.app %>/less/main.less"
+          'app/app.css': '<%= yeoman.app %>/less/main.less'
         }
+      }
+    },
+
+    csslint: {
+      // strict: {
+      //   options: {
+      //     import: 2
+      //   },
+      //   src: ['path/to/**/*.css']
+      // },
+      lax: {
+        options: {
+          import: false
+        },
+        src: ['app/app.css']
       }
     },
 

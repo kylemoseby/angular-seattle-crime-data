@@ -370,6 +370,8 @@ angular.module('mkm.seaCrimeData')
 
             // REFORMAT ON WINDOW RESIZE
             angular.element($window).bind('resize', function() {
+              console.log(detailBounds);
+              console.log('fired');
               $map.fitBounds(detailBounds);
             });
           }

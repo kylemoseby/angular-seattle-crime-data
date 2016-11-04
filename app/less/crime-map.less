@@ -1,25 +1,56 @@
 map-canvas {
+  height: 100%;
+  width: 100%;
+  display: block;
   .map-canvas {
-    height: 67vh;
+    height: 100%;
     width: 100%
   }
 }
 
+// REPORT DETAIL
 .incident-example,
-.map-report-detail {
-  background: #fff;
+.map-report-detail,
+.timeline-report-detail {
+  background: @well-bg;
   height: 100vh;
-  width: 100%;
+  width: 100vw;
   #report-map {
-    height: 67vh;
+    height: 30vh;
     width: 100%;
   }
   #street-view-detail {
-    height: 67vh;
+    height: 30vh;
     width: 100%;
   }
 }
 
+// END REPORT DETAIL
 md-menu-content {
   max-height: 60vh;
 }
+
+@media (min-width: @screen-sm-min) {}
+
+
+/* Medium devices (desktops, 992px and up) */
+
+@media (min-width: @screen-md-min) {
+  .incident-example,
+  .map-report-detail,
+  .timeline-report-detail {
+    #report-map {
+      height: 80vh;
+      width: 100%;
+    }
+    #street-view-detail {
+      height: 80vh;
+      width: 100%;
+    }
+  }
+}
+
+
+/* Large devices (large desktops, 1200px and up) */
+
+@media (min-width: @screen-lg-min) {}

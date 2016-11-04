@@ -1,5 +1,4 @@
 'use strict';
-
 angular.module('mkm.seaCrimeData')
   .directive('vizTimeLine', ['$window', '$mdPanel', function($window, $mdPanel) {
 

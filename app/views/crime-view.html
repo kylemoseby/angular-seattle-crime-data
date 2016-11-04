@@ -1,3 +1,15 @@
+<!-- TYPE DETAIL EXAMPLE -->
+<div layout="column">
+  <div>
+    <!-- REPORT DETAIL EXAMPLE -->
+    <h2>Type Detail</h2>
+    <div ng-include="'views/template-report-type-detail.html'"></div>
+    <h2>Incident Detail</h2>
+    <div ng-include="'views/template-incident-detail.html'" onload="incidentStreetView($event)" class="incident-example"></div>
+    <!-- // TYPE DETAIL EXAMPLE -->
+  </div>
+</div>
+<!-- // REPORT DETAIL EXAMPLE -->
 <div layout="column" layout-margin layout-padding>
   <!-- INTRO -->
   <div>
@@ -39,14 +51,4 @@
     </div>
   </div>
   <!-- // GOOGLE MAP -->
-  <!-- TYPE DETAIL EXAMPLE -->
-  <div>
-    <h2>Type Detail</h2>
-    <div ng-include="'views/template-report-type-detail.html'"></div>
-    <!-- // TYPE DETAIL EXAMPLE -->
-    <!-- REPORT DETAIL EXAMPLE -->
-    <h2>Incident Detail</h2>
-    <div ng-include="'views/template-incident-detail.html'" onload="incidentStreetView($event)" class="incident-example"></div>
-  </div>
-  <!-- // REPORT DETAIL EXAMPLE -->
 </div>
