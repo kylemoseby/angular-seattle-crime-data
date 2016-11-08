@@ -1,15 +1,3 @@
-<!-- TYPE DETAIL EXAMPLE -->
-<div layout="column">
-  <div>
-    <!-- REPORT DETAIL EXAMPLE -->
-    <h2>Type Detail</h2>
-    <div ng-include="'views/template-report-type-detail.html'"></div>
-    <h2>Incident Detail</h2>
-    <div ng-include="'views/template-incident-detail.html'" onload="incidentStreetView($event)" class="incident-example"></div>
-    <!-- // TYPE DETAIL EXAMPLE -->
-  </div>
-</div>
-<!-- // REPORT DETAIL EXAMPLE -->
 <div layout="column" layout-margin layout-padding>
   <!-- INTRO -->
   <div>
@@ -27,6 +15,14 @@
     </div>
   </div>
   <!-- // INTRO -->
+  <!-- GOOGLE MAP -->
+  <div>
+    <div flex="100" flex-gt-md="60">
+      <h2>Reports by Latitude and Longitude</h2>
+      <map-canvas map-promise="crimeData"></map-canvas>
+    </div>
+  </div>
+  <!-- // GOOGLE MAP -->
   <!-- BAR CHART -->
   <div>
     <div flex="100" flex-gt-md="60">
@@ -43,12 +39,16 @@
     </div>
   </div>
   <!-- // TIMELINE -->
-  <!-- GOOGLE MAP -->
-  <div>
-    <div flex="100" flex-gt-md="60">
-      <h2>Reports by Latitude and Longitude</h2>
-      <map-canvas map-promise="crimeData"></map-canvas>
-    </div>
-  </div>
-  <!-- // GOOGLE MAP -->
 </div>
+<!-- TYPE DETAIL EXAMPLE -->
+<div layout="column">
+  <div>
+    <!-- REPORT DETAIL EXAMPLE -->
+    <h2>Type Detail</h2>
+    <div ng-include="'views/template-report-type-detail.html'"></div>
+    <h2>Incident Detail</h2>
+    <div ng-include="'views/template-incident-detail.html'" onload="incidentStreetView($event)" class="incident-example"></div>
+    <!-- // TYPE DETAIL EXAMPLE -->
+  </div>
+</div>
+<!-- // REPORT DETAIL EXAMPLE -->

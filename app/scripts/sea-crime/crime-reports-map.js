@@ -95,6 +95,27 @@ angular.module('mkm.seaCrimeData')
           };
         }
 
+        function plotFilterByType(feature) {
+
+          //  PARENT TYPE
+          var offType = feature.f.offense_type;
+
+          var parentType = (offType.indexOf('-') === -1) ? offType : offType.slice(0, offType.indexOf('-'));
+
+          var filterOffence = ($scope.reportFilter.indexOf(parentType) > -1);
+
+          return {
+            icon: {
+              'path': google.maps.SymbolPath.CIRCLE,
+              'scale': 2.75,
+              'fillColor': filterOffence ? 'transparent' : feature.f.fillColor,
+              'fillOpacity': filterOffence ? 0 : 1,
+              'strokeWeight': 0,
+              'zIndex': filterOffence ? 100 : 1
+            }
+          };
+        }
+
         function plotstyleDetail(feature) {
 
           return {
@@ -227,9 +248,12 @@ angular.module('mkm.seaCrimeData')
 
         $map.data.setStyle(plotstyleBasic);
 
+
+        // map event handlers
         $map.data.addListener('click', markerClick);
 
         $scope.mapRefresh = function() {
+
           $map.fitBounds($scope.mapBounds);
         };
 
@@ -258,7 +282,6 @@ angular.module('mkm.seaCrimeData')
         $scope.filterAll = function($event) {
 
           $event.preventDefault();
-
           $event.cancelBubble = true;
 
           $scope.reportFilter = [];
@@ -279,25 +302,7 @@ angular.module('mkm.seaCrimeData')
 
           $event.preventDefault();
 
-          $map.data.setStyle(function(feature) {
-            //  PARENT TYPE
-            var offType = feature.f.offense_type;
-
-            var parentType = (offType.indexOf('-') === -1) ? offType : offType.slice(0, offType.indexOf('-'));
-
-            var filterOffence = ($scope.reportFilter.indexOf(parentType) > -1);
-
-            return {
-              icon: {
-                'path': google.maps.SymbolPath.CIRCLE,
-                'scale': 2.75,
-                'fillColor': filterOffence ? 'transparent' : feature.f.fillColor,
-                'fillOpacity': filterOffence ? 0 : 1,
-                'strokeWeight': 0,
-                'zIndex': filterOffence ? 100 : 1
-              }
-            };
-          });
+          $map.data.setStyle(plotFilterByType);
         };
 
         /*
@@ -370,8 +375,6 @@ angular.module('mkm.seaCrimeData')
 
             // REFORMAT ON WINDOW RESIZE
             angular.element($window).bind('resize', function() {
-              console.log(detailBounds);
-              console.log('fired');
               $map.fitBounds(detailBounds);
             });
           }

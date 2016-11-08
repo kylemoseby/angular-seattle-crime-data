@@ -49,6 +49,68 @@ angular.module('mkm.seaCrimeData')
           return (reportKey === 'VEH-THEFT-AUTO') ? 'VEH' : reportKey;
         }
 
+        // Type detail modal
+        function typeDetailModalInit(d) {
+
+          var position = scope.$panel
+            .newPanelPosition()
+            .absolute()
+            .center();
+
+          /* OPEN THE PANEL */
+          scope.$panel
+            .open({
+              attachTo: angular.element(document.body),
+              controllerAs: 'ctrl',
+              disableParentScroll: true,
+              templateUrl: 'views/template-report-type-detail.html',
+              hasBackdrop: true,
+              panelClass: 'report-type-detail',
+              position: position,
+              trapFocus: true,
+              zIndex: 150,
+              clickOutsideToClose: true,
+              escapeToClose: true,
+              focusOnOpen: true,
+              targetEvent: event,
+              locals: {
+                reportType: d
+              },
+              controller: function($scope, mdPanelRef, reportType) {
+
+                $scope.reportType = reportType;
+
+                $scope.dataTypeDay = d3.nest()
+                  .key(function(d) {
+                    var byDay = d3.time.format('%x');
+                    return byDay(new Date(d.date_reported));
+                  })
+                  .entries(reportType.values);
+
+                $scope.dataTypeChild = d3.nest()
+                  .key(function(d) {
+                    return d.offense_type;
+                  })
+                  .entries(reportType.values);
+
+                $scope.dataZoneBeat = d3.nest()
+                  .key(function(d) {
+                    return d.district_sector;
+                  })
+                  .key(function(d) {
+                    return d.zone_beat;
+                  })
+                  .entries(reportType.values);
+
+                $scope.closeDetail = function() {
+                  mdPanelRef.close();
+                };
+              }
+            })
+            .finally(function() {});
+        }
+
+
         scope.$promise.promise.then(function(data) {
 
           var _index_ = data.index;
@@ -89,71 +151,12 @@ angular.module('mkm.seaCrimeData')
             .attr('fill', function(d) {
               return d.fillColor;
             })
-            .on('click', function(d) {
-
-              var position = scope.$panel
-                .newPanelPosition()
-                .absolute()
-                .center();
-
-              /* OPEN THE PANEL */
-              scope.$panel
-                .open({
-                  attachTo: angular.element(document.body),
-                  controllerAs: 'ctrl',
-                  disableParentScroll: true,
-                  templateUrl: 'views/template-report-type-detail.html',
-                  hasBackdrop: true,
-                  panelClass: 'report-type-detail',
-                  position: position,
-                  trapFocus: true,
-                  zIndex: 150,
-                  clickOutsideToClose: true,
-                  escapeToClose: true,
-                  focusOnOpen: true,
-                  targetEvent: event,
-                  locals: {
-                    reportType: d
-                  },
-                  controller: function($scope, mdPanelRef, reportType) {
-
-                    $scope.reportType = reportType;
-
-                    $scope.dataTypeDay = d3.nest()
-                      .key(function(d) {
-                        var byDay = d3.time.format('%x');
-                        return byDay(new Date(d.date_reported));
-                      })
-                      .entries(reportType.values);
-
-                    $scope.dataTypeChild = d3.nest()
-                      .key(function(d) {
-                        return d.offense_type;
-                      })
-                      .entries(reportType.values);
-
-                    $scope.dataZoneBeat = d3.nest()
-                      .key(function(d) {
-                        return d.district_sector;
-                      })
-                      .key(function(d) {
-                        return d.zone_beat;
-                      })
-                      .entries(reportType.values);
-
-                    $scope.closeDetail = function() {
-
-                      mdPanelRef.close();
-
-                    };
-                  }
-                })
-                .finally(function() {});
-            });
+            .on('click', typeDetailModalInit);
 
           // CATEGORY LABELS
           var labelCatg = rectGroup.append('text')
             .attr('transform', function(d) {
+
               var xTrans = scaleAxisX(checkVehKey(d.key));
 
               return 'translate(' + (xTrans - (scaleAxisX.rangeBand() * 0.33)) + ', ' + (barHght - padding + 9) + ') rotate(-33)';
@@ -167,6 +170,7 @@ angular.module('mkm.seaCrimeData')
           // COUNT LABELS
           var labelCnt = rectGroup.append('text')
             .attr('transform', function(d) {
+
               var xTrans = scaleAxisX(checkVehKey(d.key));
 
               return 'translate(' + (xTrans - (scaleAxisX.rangeBand() * 0.5)) + ', ' + (barHght - scaleAxisY(d.values.length) - padding - 5) + ')';

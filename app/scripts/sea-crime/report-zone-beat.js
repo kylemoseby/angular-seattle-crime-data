@@ -24,7 +24,10 @@ angular.module('mkm.seaCrimeData')
           .data($scope.reports)
           .enter()
           .append('div')
-          .classed('report-districts', true);
+          .classed('report-districts', true)
+          .text(function(d) {
+            return d.key;
+          });
 
         var zones = districts.selectAll('div')
           .data(function(d) {
@@ -32,18 +35,20 @@ angular.module('mkm.seaCrimeData')
           })
           .enter()
           .append('div')
-          .classed({ 'report-zones': true })
-          .style('background', function(d) {
-            return zoneColor(d.values[0].district_sector);
-          });
+          .classed({ 'report-zones': true });
 
-        zones.selectAll('div')
+        zones.selectAll('span')
           .data(function(d) {
             return d.values;
           })
           .enter()
-          .append('div')
-          .classed({ 'zone-reports': true })
+          .append('span')
+          .style('background', function(d) {
+            return zoneColor(d.district_sector);
+          })
+          .classed({
+            'badge': true
+          })
           .text(function(d) {
             return d.zone_beat;
           });

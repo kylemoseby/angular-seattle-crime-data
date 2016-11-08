@@ -32,7 +32,7 @@ module.exports = function(grunt) {
       },
       js: {
         files: ['<%= yeoman.app %>/scripts/{,*/}*.js'],
-        tasks: ['jshint'],
+        tasks: ['newer:jshint'],
         options: {
           livereload: '<%= connect.options.livereload %>'
         }
@@ -44,7 +44,7 @@ module.exports = function(grunt) {
       styles: {
         files: ['<%= yeoman.app %>/less/{,*/}*.less'],
         // {,*/}*.css
-        tasks: ['less']
+        tasks: ['newer:less']
       },
       gruntfile: {
         files: ['Gruntfile.js']

@@ -78,13 +78,13 @@ svg.seattle-crime-timeline .axis.x line {
 /* Medium devices (desktops, 992px and up) */
 /* Large devices (large desktops, 1200px and up) */
 map-canvas {
-  height: 100%;
   width: 100%;
   display: block;
 }
 map-canvas .map-canvas {
-  height: 100%;
+  height: 50vh;
   width: 100%;
+  display: block;
 }
 .incident-example,
 .map-report-detail,
