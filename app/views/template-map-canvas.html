@@ -1,23 +1,25 @@
 <div class="map-canvas"></div>
-<md-menu class="crime-map-filter" ng-show="$index.length > 0">
-  <md-button aria-label="Filter crime data" class="md-icon-button" ng-click="$mdOpenMenu($event)">
-    <span class="glyphicon glyphicon-filter"></span>
-  </md-button>
-  <md-menu-content width="12">
-    <md-menu-item>
-      <md-button ng-click="filterApply($event)">Apply</button>
-    </md-menu-item>
-    <md-menu-item>
-      <md-button ng-click="filterReset($event)" ng-disabled="reportFilter.length === 0" md-prevent-menu-close>Reset</button>
-    </md-menu-item>
-    <md-menu-item>
-      <md-button ng-click="filterAll($event)" ng-disabled="reportFilter === []" md-prevent-menu-close>Clear All</button>
-    </md-menu-item>
-    <md-menu-divider></md-menu-divider>
-    <md-menu-item ng-repeat="(key, val) in $index">
-      <md-button ng-click="filterToggleType($event)" ng-class="{'md-primary' : reportFilter.indexOf(val.key) === -1}" md-prevent-menu-close>
-        <span class="badge" style="background-color: {{val.fillColor}};">&nbsp;</span> {{val.key}} ({{val.values.length}})
-      </md-button>
-    </md-menu-item>
-  </md-menu-content>
-</md-menu>
+<span class="glyphicon glyphicon-filter"></span>
+<md-button ng-click="filterApply($event)">Apply</md-button>
+<md-button ng-click="filterReset($event)" ng-disabled="reportFilter.length === 0" md-prevent-menu-close>Reset</md-button>
+<md-button ng-click="filterAll($event)" ng-disabled="reportFilter === []" md-prevent-menu-close>Clear All</md-button>
+<ul class="list-unstyled">
+  <li>
+    <md-button ng-click="filterToggleType($event)" ng-repeat="(key, val) in $index" ng-class="{'md-primary' : reportFilter.indexOf(val.key) === -1}">
+      <span class="badge" style="background-color: {{val.fillColor}};">&nbsp;</span> {{val.key}} ({{val.values.length}})
+    </md-button>
+  </li>
+</ul>
+<!-- <md-button aria-label="Filter crime data" class="md-icon-button" ng-click="$mdOpenMenu($event)"> -->
+<!-- </md-button> -->
+<!-- <md-menu class="crime-map-filter" ng-show="$index.length > 0"> -->
+<!-- <md-menu-content width="12"> -->
+<!-- <md-menu-item> -->
+<!-- </md-menu-item> -->
+<!-- <md-menu-item> -->
+<!-- </md-menu-item> -->
+<!-- <md-menu-item> -->
+<!-- </md-menu-item> -->
+<!-- <md-menu-divider></md-menu-divider> -->
+<!-- </md-menu-content> -->
+<!-- </md-menu> -->

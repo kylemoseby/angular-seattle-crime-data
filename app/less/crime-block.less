@@ -1,4 +1,5 @@
 #crime-reports-block {
+  display: block;
   height: 40vh;
   width: 100%;
   svg {
@@ -16,11 +17,18 @@
 }
 
 report-type-day {
-  .report-days {
-    display: inline-block;
-    height: 18px;
-    width: 18px;
-  }
+  display: block;
+  width: 100%;
+  // .report-days {
+  //   display: inline-block;
+  //   height: 18px;
+  //   width: 18px;
+  // }
+}
+
+.report-type {
+  display: inline-block;
+  overflow: hidden;
 }
 
 report-type-child {
@@ -30,16 +38,15 @@ report-type-child {
 }
 
 report-zone-beat {
-  .report-zones,
-  .zone-reports {
-    display: inline-block;
-  }
-  .report-zones {
-    margin-right: 3px;
-    .zone-reports {
-      color: #fff;
-      padding: 2px;
-      margin-right: 2px;
+  display: block;
+  width: 100%;
+  .report-districts {
+    .report-zones {
+      display: block;
+      clear: both;
+      .badge {
+        color: #fff;
+      }
     }
   }
 }

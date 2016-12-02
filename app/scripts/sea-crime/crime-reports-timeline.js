@@ -12,7 +12,6 @@ angular.module('mkm.seaCrimeData')
       link: function(scope, element) {
 
         scope.$panel = $mdPanel;
-
         scope.reportFilter = [];
 
         var elm = element.children('.crime-report-timeline')[0];
@@ -116,6 +115,7 @@ angular.module('mkm.seaCrimeData')
               Returns X coordinate for a circle representing one police report
           */
           function plotXcirc(d) {
+
             var incidentDate = new Date(d.properties.date_reported);
 
             var timeFormat = d3.time.format('%x');
@@ -181,11 +181,9 @@ angular.module('mkm.seaCrimeData')
               .duration(250);
 
             scope.toolTipLock = false;
-
           }
 
           /*   END FUNCTIONS FOR CIRCLES   */
-
           function crimeReportDetail($scope, mdPanelRef, incidentDetail) {
 
             $scope.incidentDetail = incidentDetail;
@@ -206,47 +204,48 @@ angular.module('mkm.seaCrimeData')
 
             /* OPEN THE PANEL */
             scope.$panel.open({
-              attachTo: angular.element(document.body),
-              controller: crimeReportDetail,
-              controllerAs: 'ctrl',
-              disableParentScroll: true,
-              templateUrl: 'views/template-incident-detail.html',
-              hasBackdrop: true,
-              panelClass: 'timeline-report-detail',
-              position: position,
-              trapFocus: true,
-              zIndex: 150,
-              clickOutsideToClose: true,
-              escapeToClose: true,
-              focusOnOpen: true,
-              targetEvent: event,
-              locals: {
-                incidentDetail: event.properties
-              }
-            }).finally(function() {
+                attachTo: angular.element(document.body),
+                controller: crimeReportDetail,
+                controllerAs: 'ctrl',
+                disableParentScroll: true,
+                templateUrl: 'views/template-incident-detail.html',
+                hasBackdrop: true,
+                panelClass: 'timeline-report-detail',
+                position: position,
+                trapFocus: true,
+                zIndex: 150,
+                clickOutsideToClose: true,
+                escapeToClose: true,
+                focusOnOpen: true,
+                targetEvent: event,
+                locals: {
+                  incidentDetail: event.properties
+                }
+              })
+              .finally(function() {
 
-              var StreetView = new google.maps.Map(angular.element('.timeline-report-detail #street-view-detail')[0], {
-                scrollwheel: false,
-                zoomControl: false,
-                zoom: 0
-              });
-
-              var panorama = new google.maps.StreetViewPanorama(
-                angular.element('.timeline-report-detail #street-view-detail')[0], {
-                  'position': {
-                    'lat': Number(event.properties.latitude),
-                    'lng': Number(event.properties.longitude)
-                  },
-                  'pov': {
-                    'heading': 34,
-                    'pitch': 5
-                  },
-                  'scrollwheel': false
+                var StreetView = new google.maps.Map(angular.element('.timeline-report-detail #street-view-detail')[0], {
+                  scrollwheel: false,
+                  zoomControl: false,
+                  zoom: 0
                 });
 
-              StreetView.setStreetView(panorama);
+                var panorama = new google.maps.StreetViewPanorama(
+                  angular.element('.timeline-report-detail #street-view-detail')[0], {
+                    'position': {
+                      'lat': Number(event.properties.latitude),
+                      'lng': Number(event.properties.longitude)
+                    },
+                    'pov': {
+                      'heading': 34,
+                      'pitch': 5
+                    },
+                    'scrollwheel': false
+                  });
 
-            });
+                StreetView.setStreetView(panorama);
+
+              });
 
             scope.incidentDetail = event.properties;
           }

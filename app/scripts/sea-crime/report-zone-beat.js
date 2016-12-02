@@ -10,15 +10,16 @@ angular.module('mkm.seaCrimeData')
       },
       link: function($scope, element) {
 
-        var zoneColor = d3.scale.category20b()
-          .domain(d3.map($scope.reports, function(d) {
-              return d.key;
-            })
-            .keys());
+        // var reportColor = d3.scale
+        //   .category20b()
+        //   .domain(d3.map($scope.reports, function(d) {
+        //       return d.key;
+        //     })
+        //     .keys());
 
         var $elm = element[0];
 
-        var wrapper = d3.select($elm);
+        var wrapper = d3.select($elm).text('Zone');
 
         var districts = wrapper.selectAll('div')
           .data($scope.reports)
@@ -35,7 +36,10 @@ angular.module('mkm.seaCrimeData')
           })
           .enter()
           .append('div')
-          .classed({ 'report-zones': true });
+          .classed({ 'report-zones': true })
+          .text(function(d) {
+            return d.key;
+          });
 
         zones.selectAll('span')
           .data(function(d) {
@@ -44,13 +48,15 @@ angular.module('mkm.seaCrimeData')
           .enter()
           .append('span')
           .style('background', function(d) {
-            return zoneColor(d.district_sector);
+            // return reportColor(d.district_sector);
+            return d.fillColor;
           })
           .classed({
             'badge': true
           })
-          .text(function(d) {
-            return d.zone_beat;
+          .html(function() {
+            // return d.zone_beat;
+            return '&nbsp;';
           });
       }
     };

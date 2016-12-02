@@ -1,5 +1,6 @@
 #sea-crime-viz,
 .crime-report-timeline {
+  display: block;
   height: 75vh;
   width: 100%;
 }
@@ -125,6 +126,7 @@ md-menu-content {
 }
 /* Large devices (large desktops, 1200px and up) */
 #crime-reports-block {
+  display: block;
   height: 40vh;
   width: 100%;
 }
@@ -137,25 +139,27 @@ md-menu-content {
   width: 100vw;
   overflow-y: scroll;
 }
-report-type-day .report-days {
+report-type-day {
+  display: block;
+  width: 100%;
+}
+.report-type {
   display: inline-block;
-  height: 18px;
-  width: 18px;
+  overflow: hidden;
 }
 report-type-child .report-types {
   display: inline-block;
 }
-report-zone-beat .report-zones,
-report-zone-beat .zone-reports {
-  display: inline-block;
+report-zone-beat {
+  display: block;
+  width: 100%;
 }
-report-zone-beat .report-zones {
-  margin-right: 3px;
+report-zone-beat .report-districts .report-zones {
+  display: block;
+  clear: both;
 }
-report-zone-beat .report-zones .zone-reports {
+report-zone-beat .report-districts .report-zones .badge {
   color: #fff;
-  padding: 2px;
-  margin-right: 2px;
 }
 /* Medium devices (desktops, 992px and up) */
 /* Large devices (large desktops, 1200px and up) */
