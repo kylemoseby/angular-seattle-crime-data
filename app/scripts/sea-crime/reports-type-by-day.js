@@ -7,7 +7,7 @@ angular.module('mkm.seaCrimeData')
     var $w = angular.element($window);
 
     $w.bind('resize', function(event) {
-      console.log(event.currentTarget.outerWidth);
+      console.log(event);
     });
 
     return {
@@ -38,10 +38,10 @@ angular.module('mkm.seaCrimeData')
         var reportTypes = reportDate.append('div')
           .classed({ 'report-types': true })
           // .attr('flex', function(d) {
-          //   console.log(d);
-          //   return ;
-          // })
-          .style('width', function(d) {
+
+        //   return ;
+        // })
+        .style('width', function(d) {
             return Math.ceil((d.values.length)) + '%';
           })
           .style('background', function(d) {
@@ -49,8 +49,7 @@ angular.module('mkm.seaCrimeData')
           });
 
         reportTypes.selectAll('div')
-          .data(function(d, i) {
-            console.log(i);
+          .data(function(d) {
             return d.values;
           })
           .enter()

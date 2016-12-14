@@ -1,4 +1,20 @@
 <div layout="column" layout-margin layout-padding>
+  <!-- BAR CHART -->
+  <div>
+    <div flex="100" flex-gt-md="60">
+      <h2>Report count by incident type</h2>
+      <div id="crime-reports-block" crime-reports-block crime-reports-data="crimeData"></div>
+    </div>
+  </div>
+  <!-- // BAR CHART -->
+  <!-- TIMELINE -->
+  <div>
+    <div flex="100" flex-gt-md="60">
+      <h2>Reports by date and time</h2>
+      <div id="sea-crime-viz" viz-time-line="$vizTimeline" viz-time-data="crimeData" crime-viz-map="$crimeMap"></div>
+    </div>
+  </div>
+  <!-- // TIMELINE -->
   <!-- INTRO -->
   <div>
     <div flex="100" flex-gt-md="60">
@@ -19,36 +35,22 @@
   <div>
     <div flex="100" flex-gt-md="60">
       <h2>Reports by Latitude and Longitude</h2>
-      <map-canvas map-promise="crimeData"></map-canvas>
+      <map-canvas map-promise="crimeData" map-style="mapStyle"></map-canvas>
     </div>
   </div>
   <!-- // GOOGLE MAP -->
-  <!-- BAR CHART -->
-  <div>
-    <div flex="100" flex-gt-md="60">
-      <h2>Report count by incident type</h2>
-      <div id="crime-reports-block" crime-reports-block crime-reports-data="crimeData"></div>
-    </div>
-  </div>
-  <!-- // BAR CHART -->
-  <!-- TIMELINE -->
-  <div>
-    <div flex="100" flex-gt-md="60">
-      <h2>Reports by date and time</h2>
-      <div id="sea-crime-viz" viz-time-line="$vizTimeline" viz-time-data="crimeData" crime-viz-map="$crimeMap"></div>
-    </div>
-  </div>
-  <!-- // TIMELINE -->
 </div>
 <!-- TYPE DETAIL EXAMPLE -->
-<div layout="column">
+<!-- <div layout="column">
   <div flex>
-    <!-- REPORT DETAIL EXAMPLE -->
-    <h2>Type Detail</h2>
+ -->
+<!-- REPORT DETAIL EXAMPLE -->
+<!--     <h2>Type Detail</h2>
     <div ng-include="'views/template-report-type-detail.html'"></div>
     <h2>Incident Detail</h2>
-    <!-- <div ng-include="'views/template-incident-detail.html'" onload="incidentStreetView()" class="incident-example"></div> -->
-    <!-- // TYPE DETAIL EXAMPLE -->
-  </div>
-</div>
+    <div ng-include="'views/template-incident-detail.html'" onload="incidentStreetView()" class="incident-example"></div>
+ -->
+<!-- // TYPE DETAIL EXAMPLE -->
+<!-- </div> -->
+<!-- </div> -->
 <!-- // REPORT DETAIL EXAMPLE -->

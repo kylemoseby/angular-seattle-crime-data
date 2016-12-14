@@ -7,6 +7,7 @@ angular.module('mkm.seaCrimeData')
       'templateUrl': 'views/template-map-canvas.html',
       'scope': {
         '$promise': '=mapPromise',
+        'mapStyle': '=mapStyle',
         'report': '=crimeReport'
       },
 
@@ -33,47 +34,55 @@ angular.module('mkm.seaCrimeData')
 
         // Google map style options (like CSS)
         // https://mapstyle.withgoogle.com/
-        $map.setOptions({ 'styles': [{ 'stylers': [{ 'hue': '#fff' }, { 'saturation': -100 }] }, { 'featureType': 'road', 'elementType': 'geometry', 'stylers': [{ 'lightness': 100 }, { 'visibility': 'simplified' }] }, { 'featureType': 'road', 'elementType': 'labels', 'stylers': [{ 'visibility': 'off' }] }, { 'featureType': 'transit.line', 'stylers': [{ 'visibility': 'off' }] }, { 'featureType': 'poi', 'stylers': [{ 'visibility': 'off' }] }, { 'featureType': 'water', 'elementType': 'labels', 'stylers': [{ 'visibility': 'off' }] }, { 'featureType': 'road', 'stylers': [{ 'visibility': 'on' }] }] });
+        if (!!$scope.mapStyle) {
+          $map.setOptions($scope.mapStyle);
+        }
 
+        // sets report data for $map
         function mapAddGEOJSON(reports) {
-
           $map.data.addGeoJson({
             'type': 'FeatureCollection',
             'features': reports
           });
         }
 
-        function plotstyleDetail(feature) {
+        function mapRemoveGEOJSON() {
+          $map.data.forEach(function(feature) {
+            // If you want, check here for some constraints.
+            $map.data.remove(feature);
+          });
+        }
 
-          return {
-            icon: {
-              'path': google.maps.SymbolPath.CIRCLE,
-              'scale': 6,
-              'fillColor': feature.f.fillColor,
-              'fillOpacity': 1,
-              'strokeWeight': 0
-            }
-          };
+        function filterByDate(report) {
+
+          var dateReported = new Date(report.f.date_reported);
+
+          if (dateReported >= $scope.startDate && dateReported <= $scope.endDate) {
+
+            return true;
+
+          } else {
+
+            return false;
+          }
         }
 
         function markerClick(event) {
 
           var _incident = event.feature.f;
 
-          var _latitude = Number(_incident.latitude);
-          var _longitude = Number(_incident.longitude);
-
-          var uluru = {
-            'lat': _latitude,
-            'lng': _longitude
-          };
-
+          // Google Map Marker
           var _marker = new google.maps.Marker({
-            'position': uluru,
+            'position': {
+              'lat': Number(_incident.latitude),
+              'lng': Number(_incident.longitude),
+            },
             'map': $map,
             'icon': 'images/spacer.png'
           });
 
+
+          // INFO WINDOW STUFF
           // Uses class from boostreap list-instyled
           var infoWindDate = d3.time.format('%a, %x at %H:%M%p');
 
@@ -96,92 +105,104 @@ angular.module('mkm.seaCrimeData')
 
           google.maps.event.addListener(infowindow, 'domready', function() {
 
-            function reportDetailModalInit() {
-
-              function reportDetailCtrl($scope, mdPanelRef, incidentDetail) {
-
-                $scope.incidentDetail = incidentDetail;
-
-                $scope.closeDetail = function() {
-
-                  this.incidentDetail = null;
-
-                  mdPanelRef.close();
-                };
-              }
-
-              var position = $scope.$panel.newPanelPosition()
-                .absolute()
-                .center();
-
-              /* OPEN THE PANEL */
-              $scope.$panel.open({
-                  attachTo: angular.element(document.body),
-                  controller: reportDetailCtrl,
-                  controllerAs: 'ctrl',
-                  disableParentScroll: true,
-                  templateUrl: 'views/template-incident-detail.html',
-                  hasBackdrop: true,
-                  panelClass: 'map-report-detail',
-                  position: position,
-                  trapFocus: true,
-                  zIndex: 150,
-                  clickOutsideToClose: true,
-                  escapeToClose: true,
-                  focusOnOpen: true,
-                  targetEvent: event,
-                  locals: {
-                    incidentDetail: _incident
-                  }
-                })
-                .finally(function() {
-
-                  var $modalElm = angular.element('.map-report-detail #street-view-detail')[0];
-
-                  // slect element from modal that was just created
-                  // class .map-report-detail defined above at Init
-                  var StreetView = new google.maps.Map($modalElm, {
-                    scrollwheel: false,
-                    zoomControl: false,
-                    zoom: 0
-                  });
-
-                  var panorama = new google.maps.StreetViewPanorama(
-                    $modalElm, {
-                      'position': {
-                        'lat': Number(_incident.latitude),
-                        'lng': Number(_incident.longitude)
-                      },
-                      'pov': {
-                        'heading': 34,
-                        'pitch': 1
-                      },
-                      'zoom': 0,
-                      'scrollwheel': false
-                    });
-
-                  StreetView.setStreetView(panorama);
-                });
-
-              $scope.incidentDetail = _incident;
-            }
-
             var infoWinBtn = d3.select("#map-info-btn");
 
-            infoWinBtn.on('click', reportDetailModalInit());
+            infoWinBtn.on('click',
+              // Report detail: Google Angular Material Modal
+              function() {
+
+                function reportDetailCtrl($scope, mdPanelRef, incidentDetail) {
+
+                  $scope.incidentDetail = incidentDetail;
+
+                  $scope.closeDetail = function() {
+
+                    this.incidentDetail = null;
+
+                    mdPanelRef.close();
+                  };
+                }
+
+                var position = $scope.$panel.newPanelPosition()
+                  .absolute()
+                  .center();
+
+                /* OPEN THE PANEL */
+                $scope.$panel.open({
+                    attachTo: angular.element(document.body),
+                    controller: reportDetailCtrl,
+                    controllerAs: 'ctrl',
+                    disableParentScroll: true,
+                    templateUrl: 'views/template-incident-detail.html',
+                    hasBackdrop: true,
+                    panelClass: 'map-report-detail',
+                    position: position,
+                    trapFocus: true,
+                    zIndex: 150,
+                    clickOutsideToClose: true,
+                    escapeToClose: true,
+                    focusOnOpen: true,
+                    targetEvent: event,
+                    locals: {
+                      incidentDetail: _incident
+                    }
+                  })
+                  .finally(function() {
+
+                    var $modalElm = angular.element('.map-report-detail #street-view-detail')[0];
+
+                    // slect element from modal that was just created
+                    // class .map-report-detail defined above at Init
+                    var StreetView = new google.maps.Map($modalElm, {
+                      scrollwheel: false,
+                      zoomControl: false,
+                      zoom: 0
+                    });
+
+                    var panorama = new google.maps.StreetViewPanorama(
+                      $modalElm, {
+                        'position': {
+                          'lat': Number(_incident.latitude),
+                          'lng': Number(_incident.longitude)
+                        },
+                        'pov': {
+                          'heading': 34,
+                          'pitch': 1
+                        },
+                        'zoom': 0,
+                        'scrollwheel': false
+                      });
+
+                    StreetView.setStreetView(panorama);
+                  });
+
+                $scope.incidentDetail = _incident;
+              }
+            );
           });
 
           $map.setCenter(_marker.getPosition());
         }
 
-        function plotFilterByType(feature) {
+        function plotstyleDetail(feature) {
+          return {
+            icon: {
+              'path': google.maps.SymbolPath.CIRCLE,
+              'scale': 6,
+              'fillColor': feature.f.fillColor,
+              'fillOpacity': 1,
+              'strokeWeight': 0
+            }
+          };
+        }
 
+        function plotFilterByType(feature) {
           //  PARENT TYPE
           var offType = feature.f.offense_type;
 
           var parentType = (offType.indexOf('-') === -1) ? offType : offType.slice(0, offType.indexOf('-'));
 
-          var filterOffence = ($scope.reportFilter.indexOf(parentType) > -1);
+          var filterOffence = ($scope.reportFilter.indexOf(parentType) === -1);
 
           return {
             icon: {
@@ -195,27 +216,29 @@ angular.module('mkm.seaCrimeData')
           };
         }
 
-        function plotstyleBasic(feature) {
+        function plotShowAll(feature) {
 
           return {
             icon: {
               'path': google.maps.SymbolPath.CIRCLE,
               'scale': 4,
               'fillColor': feature.f.fillColor,
-              'fillOpacity': 1,
+              'fillOpacity': filterByDate(feature) ? 1 : 0,
               'strokeWeight': 0
             }
           };
         }
 
-        $map.data.setStyle(plotstyleBasic);
+        $map.data.setStyle(plotShowAll);
 
         // map event handlers
         $map.data.addListener('click', markerClick);
 
         $scope.mapRefresh = function() {
 
-          $map.fitBounds($scope.mapBounds);
+          // $map.fitBounds($scope.mapBounds);
+
+          mapRemoveGEOJSON();
         };
 
         /*
@@ -240,22 +263,6 @@ angular.module('mkm.seaCrimeData')
           $scope.updated = true;
         };
 
-        $scope.filterAll = function($event) {
-
-          $event.preventDefault();
-          $event.cancelBubble = true;
-
-          $scope.reportFilter = [];
-
-          for (var i = $scope.$index.length - 1; i >= 0; i--) {
-
-            $scope.reportFilter.push($scope.$index[i].key);
-
-          }
-
-          $scope.updated = true;
-        };
-
         /*
           filters any viz and maps based on current index
         */
@@ -264,6 +271,8 @@ angular.module('mkm.seaCrimeData')
           $event.preventDefault();
 
           $map.data.setStyle(plotFilterByType);
+
+          $scope.updated = false;
         };
 
         /*
@@ -298,8 +307,13 @@ angular.module('mkm.seaCrimeData')
 
               $scope.dateRange = startEnd;
 
-              $scope.startDate = startEnd[1];
-              $scope.endDate = startEnd[1];
+              var filterDate = new Date(startEnd[0].toDateString());
+
+              $scope.startDate = new Date(filterDate.toDateString());
+
+              filterDate.setDate(filterDate.getDate() + 1);
+
+              $scope.endDate = new Date(filterDate.toDateString());
 
               $scope.$index = data.index;
               $scope.reports = data.incidents;
