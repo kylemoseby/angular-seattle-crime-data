@@ -113,7 +113,11 @@ angular.module('mkm.seaCrimeData')
 
         scope.$promise.promise.then(function(data) {
 
-          var _index_ = data.indexOffType;
+          var _index_ = data.indexOffType.sort(function(a, b) {
+            return d3.descending(a.values.length, b.values.length);
+          });
+
+          var colorScale = data.colorScaleOff;
 
           var axisTitles = _index_.map(function(d) {
             return checkVehKey(d.key);
@@ -149,7 +153,7 @@ angular.module('mkm.seaCrimeData')
               return scaleAxisY(d.values.length);
             })
             .attr('fill', function(d) {
-              return d.fillColor;
+              return colorScale(d.key);
             })
             .on('click', typeDetailModalInit);
 

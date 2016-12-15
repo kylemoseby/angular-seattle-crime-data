@@ -27,7 +27,7 @@ angular.module('mkm.seaCrimeData')
 
           x: function(_wdth_) {
             // Add 60 pixels on right side for axis/labels
-            return [padding + 60, _wdth_ - 40];
+            return [padding, _wdth_ - 40];
           },
 
           y: function(_hght_) {
@@ -56,9 +56,10 @@ angular.module('mkm.seaCrimeData')
 
         var xAxis = d3.svg.axis()
           .orient('bottom')
-          .ticks(d3.time.day, 1)
-          .tickSize(-(hght), 0, 0)
-          .tickFormat(d3.time.format('%m/%d'));
+          .ticks(d3.time.hour, 24)
+          // .tickSize(-(hght), 0, 0)
+          .tickFormat(d3.time.format('%m/%d'))
+          .scale(scaleAxisX);
 
         var yAxis = d3.svg.axis()
           .orient('left')
@@ -72,7 +73,9 @@ angular.module('mkm.seaCrimeData')
 
           var _incidents = data.incidents;
 
-          scope.$index = data.index;
+          scope.$index = data.indexOffType;
+
+          var colorScale = data.colorScaleOff;
 
           var dateRange = d3.extent(_incidents, function(d, i) {
             return (i === 0) ? d3.time.day.floor(new Date(d.date_reported)) : new Date(d.date_reported);
@@ -86,7 +89,7 @@ angular.module('mkm.seaCrimeData')
           /*   FUNCTIONS FOR CIRCLES   */
           function setCircStyle(currentState, d) {
 
-            var colour = d.fillColor;
+            var colour = colorScale(d.offense_type);
 
             switch (currentState) {
 
@@ -137,7 +140,7 @@ angular.module('mkm.seaCrimeData')
 
             var incident = data;
 
-            var timeFormatFull = d3.time.format('%H:%M %p');
+            var timeFormatFull = d3.time.format('%x %H:%M %p');
 
             // Populate tooltop now, need height to calculate offsets
             toolTip
@@ -164,7 +167,8 @@ angular.module('mkm.seaCrimeData')
               .duration(200)
               .style('opacity', 1)
               .style('background', function() {
-                return incident.fillColor;
+                return 'red';
+                // return incident.fillColor;
               })
               .attr('transform', 'translate(' + padding + ',' + hght + ')');
           }
