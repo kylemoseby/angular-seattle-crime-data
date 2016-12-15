@@ -75,8 +75,7 @@ angular.module('mkm.seaCrimeData')
           scope.$index = data.index;
 
           var dateRange = d3.extent(_incidents, function(d, i) {
-
-            return (i === 0) ? d3.time.day.floor(new Date(d.properties.date_reported)) : new Date(d.properties.date_reported);
+            return (i === 0) ? d3.time.day.floor(new Date(d.date_reported)) : new Date(d.date_reported);
           });
 
           scaleAxisX.domain(dateRange);
@@ -87,7 +86,7 @@ angular.module('mkm.seaCrimeData')
           /*   FUNCTIONS FOR CIRCLES   */
           function setCircStyle(currentState, d) {
 
-            var colour = d.properties.fillColor;
+            var colour = d.fillColor;
 
             switch (currentState) {
 
@@ -116,7 +115,7 @@ angular.module('mkm.seaCrimeData')
           */
           function plotXcirc(d) {
 
-            var incidentDate = new Date(d.properties.date_reported);
+            var incidentDate = new Date(d.date_reported);
 
             var timeFormat = d3.time.format('%x');
 
@@ -129,7 +128,7 @@ angular.module('mkm.seaCrimeData')
 
             var timeFormat = d3.time.format('%X');
 
-            var incidentTime = timeFormat(new Date(d.properties.date_reported));
+            var incidentTime = timeFormat(new Date(d.date_reported));
 
             return scaleAxisY(new Date('Wed Dec 31 1969 ' + incidentTime));
           }
@@ -277,7 +276,7 @@ angular.module('mkm.seaCrimeData')
 
                 this.setAttribute('r', radius * 2);
 
-                _toolTipShow(d.properties, this);
+                _toolTipShow(d, this);
               }
             })
             .on('mouseout', function(d) {
@@ -349,13 +348,13 @@ angular.module('mkm.seaCrimeData')
               .attr('cx', function(d) {
 
                 //  PARENT TYPE
-                var offType = d.properties.offense_type;
+                var offType = d.offense_type;
 
                 var parentType = (offType.indexOf('-') === -1) ? offType : offType.slice(0, offType.indexOf('-'));
 
                 if (filterIndex.indexOf(parentType) < 0) {
 
-                  var incidentDate = new Date(d.properties.date_reported)
+                  var incidentDate = new Date(d.date_reported)
                     .toDateString();
 
                   var _q_ = scaleAxisX(new Date(incidentDate));
@@ -368,7 +367,7 @@ angular.module('mkm.seaCrimeData')
                 }
               })
               .attr('fill', function(d) {
-                return d.properties.fillColor;
+                return d.fillColor;
               });
           };
 

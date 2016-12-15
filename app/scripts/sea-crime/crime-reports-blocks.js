@@ -113,7 +113,7 @@ angular.module('mkm.seaCrimeData')
 
         scope.$promise.promise.then(function(data) {
 
-          var _index_ = data.index;
+          var _index_ = data.indexOffType;
 
           var axisTitles = _index_.map(function(d) {
             return checkVehKey(d.key);
