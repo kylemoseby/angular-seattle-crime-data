@@ -13,7 +13,8 @@ angular.module('mkm.seaCrimeData')
     return {
       scope: {
         'reports': '=reportData',
-        'reportCount': '=reportCount'
+        'reportCount': '=reportCount',
+        'reportColor': '=reportColor'
       },
       link: function($scope, element) {
 
@@ -23,7 +24,12 @@ angular.module('mkm.seaCrimeData')
 
         var wrapper = d3.select(element[0]);
 
-        // var total = $scope.reportCount;
+        $scope.$typeColorScale = d3.scale
+          .category20()
+          .domain($scope.reports
+            .map(function(d) {
+              return d.summarized_offense_description;
+            }));
 
         var reportDate = wrapper.selectAll('div.report-date')
           .data($scope.reports)
@@ -37,11 +43,7 @@ angular.module('mkm.seaCrimeData')
 
         var reportTypes = reportDate.append('div')
           .classed({ 'report-types': true })
-          // .attr('flex', function(d) {
-
-        //   return ;
-        // })
-        .style('width', function(d) {
+          .style('width', function(d) {
             return Math.ceil((d.values.length)) + '%';
           })
           .style('background', function(d) {
@@ -55,8 +57,8 @@ angular.module('mkm.seaCrimeData')
           .enter()
           .append('div')
           .classed({ 'report-type': true })
-          .style('background', function() {
-            return 'red';
+          .style('background', function(d) {
+            return $scope.$typeColorScale(d.summarized_offense_description);
           })
           .style('width', function() {
             return Math.ceil($scope.elmWidth * 0.01) + 'px';

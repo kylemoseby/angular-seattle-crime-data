@@ -9,7 +9,7 @@ angular.module('mkm.seaCrimeData', [
       'method': 'GET',
       'url': 'https://data.seattle.gov/resource/7ais-f98f.json'
         //  Test URL if data.gov is down / included with GitHub project
-        // url: 'scripts/sea-crime/7ais-f98f.json'
+        // url: '/7ais-f98f.json'
     });
 
     /*

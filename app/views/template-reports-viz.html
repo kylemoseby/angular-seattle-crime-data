@@ -1,8 +1,10 @@
-<div class="crime-report-timeline"></div>
+<!-- FILTER MENU -->
 <md-menu class="crime-map-filter">
+  <!-- FILTER BUTTON  -->
   <md-button aria-label="Filter crime data" class="md-icon-button" ng-click="$mdOpenMenu($event)">
     <span class="glyphicon glyphicon-filter"></span>
   </md-button>
+  <!-- // FILTER BUTTON  -->
   <md-menu-content width="12">
     <md-menu-item>
       <md-button ng-click="filterData(reportFilter)">Apply</md-button>
@@ -16,8 +18,12 @@
     <md-menu-divider></md-menu-divider>
     <md-menu-item ng-repeat="(key, val) in $index">
       <md-button ng-click="filterToggleType($event)" ng-class="{'md-primary' : reportFilter.indexOf(val.key) === -1}" md-prevent-menu-close>
-        <span class="badge" style="background-color: {{val.fillColor}};">&nbsp;</span> {{val.key}} ({{val.values.length}})
+        <span class="badge" style="background-color: {{colorScaleOff(val.key)}};">&nbsp;</span> {{val.key}} ({{val.values.length}})
       </md-button>
     </md-menu-item>
   </md-menu-content>
 </md-menu>
+<!-- // FILTER MENU -->
+<!-- TIMELINE CANVAS -->
+<div class="crime-report-timeline"></div>
+<!-- // TIMELINE CANVAS -->

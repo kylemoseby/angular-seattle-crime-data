@@ -1,20 +1,15 @@
-<!-- <div layout="column" layout-padding layout-margin> -->
-<!-- <div flex="100"> -->
-<h2>{{reportType.key}}  <span class="badge" ng-style="{ background: reportType.fillColor}">{{reportType.values.length}}</span></h2>
-<!-- </div> -->
-<div layout="row" flex layout-wrap>
-  <div flex="100" flex-gt-sm="50">
-    <h3>Reports per day</h3>
-    <report-type-day report-count="reportType.values.length" report-data="dataTypeDay"></report-type-day>
-  </div>
-  <div flex="100" flex-gt-sm="50">
+<div layout="row" layout-padding layout-margin layout-wrap>
+  <div flex>
+    <button type="button" class="btn btn-close btn-primary" ng-click="closeDetail()" aria-label="Close Detail">
+      <span class="glyphicon glyphicon-remove"></span>
+    </button>
+    <h2>{{reportType.key}}  <span class="badge" ng-style="{ background: reportType.fillColor}">{{reportType.values.length}}</span></h2>
     <h3>Reports per zone</h3>
-    <report-zone-beat report-count="reportType.values.length" report-data="dataZoneBeat"></report-zone-beat>
+    <report-zone-beat report-data="dataZoneBeat" report-color="reportType.fillColor"></report-zone-beat>
+  </div>
+  <div flex="100">
+    <h3>Reports per day</h3>
+    <!-- NEED A WAY TO PASS FILL COLOUR TO DIRECTIVE -->
+    <report-type-day report-count="reportType.values.length" report-data="dataTypeDay" report-color="reportType.fillColor"></report-type-day>
   </div>
 </div>
-<div flex>
-  <button type="button" class="btn btn-primary" ng-click="closeDetail()">
-    <span class="glyphicon glyphicon-remove"></span> Close Detail
-  </button>
-</div>
-<!-- </div> -->

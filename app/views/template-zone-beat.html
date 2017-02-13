@@ -1,0 +1,42 @@
+<!-- SORT BY -->
+<md-menu name="reportSortBy">
+  <md-button aria-label="Sort by" class="md-icon-button" ng-click="$mdOpenMenu($event)">
+    <span class="glyphicon glyphicon-sort"></span>
+  </md-button>
+  <md-menu-content width="4">
+    <md-menu-item>
+      <md-button ng-click="sortReports('report count by district')">
+        report count by district
+      </md-button>
+    </md-menu-item>
+    <md-menu-item>
+      <md-button ng-click="sortReports('report count by zone')">
+        report count by zone
+      </md-button>
+    </md-menu-item>
+    <md-menu-item>
+      <md-button ng-click="sortReports('zone id')">
+        zone id
+      </md-button>
+    </md-menu-item>
+    <md-menu-item>
+    </md-menu-item>
+  </md-menu-content>
+</md-menu>
+<!-- // SORT BY -->
+<!-- COLOR  -->
+<md-button ng-click="changeColor()">
+  Color
+</md-button>
+<!-- // COLOR -->
+<!-- INDEX -->
+<ul class="list-inline">
+  <li ng-repeat="report in $typeColorScale.domain()">
+    <span class="badge" style="background: {{$typeColorScale(report)}}">{{report}}</span>
+  </li>
+</ul>
+<!-- // INDEX  -->
+<md-button ng-click="labelsHide()">
+  {{labelShow ? 'Hide' : 'Show'}} labels
+</md-button>
+<div class="report-zone-beat"></div>

@@ -11,6 +11,14 @@ angular.module('mkm.seaCrimeData')
 
       link: function(scope, element) {
 
+        scope.getIncidentParent = function(report) {
+          return (report.indexOf('-') === -1) ?
+            report :
+            report.slice(0, report.indexOf('-'));
+        };
+
+        var getIncidentParent = scope.getIncidentParent;
+
         scope.$panel = $mdPanel;
         scope.reportFilter = [];
 
@@ -23,6 +31,7 @@ angular.module('mkm.seaCrimeData')
         var wdth = elm.offsetWidth;
         var hght = elm.offsetHeight;
 
+        // CANVAS PADDING
         var calcPadding = {
 
           x: function(_wdth_) {
@@ -36,6 +45,7 @@ angular.module('mkm.seaCrimeData')
           }
         };
 
+        // CANVAS ELEMENT
         var svg = wrapper
           .append('svg')
           .attr({
@@ -44,9 +54,11 @@ angular.module('mkm.seaCrimeData')
             class: 'seattle-crime-timeline'
           });
 
+        // DIV FOR TOOLTIP
         var toolTip = d3.select("body").append("div")
           .classed('cicle-tool-tip', true);
 
+        // FRAMING SCALES
         var scaleAxisX = d3.time.scale()
           .range(calcPadding.x(wdth));
 
@@ -54,6 +66,7 @@ angular.module('mkm.seaCrimeData')
           .domain([new Date('Wed Dec 31 1969 00:00:00 GMT-0800 (PST)'), new Date('Wed Dec 31 1969 24:00:00 GMT-0800 (PST)')])
           .range(calcPadding.y(hght));
 
+        // AXIS ELEMENTS
         var xAxis = d3.svg.axis()
           .orient('bottom')
           .ticks(d3.time.hour, 24)
@@ -69,13 +82,17 @@ angular.module('mkm.seaCrimeData')
 
         scope.toolTipLock = scope.toolTipLock || false;
 
-        scope.promiseAttr.promise.then(function(data) {
+        function _init_(data) {
 
           var _incidents = data.incidents;
 
           scope.$index = data.indexOffType;
 
-          var colorScale = data.colorScaleOff;
+          scope.colorScaleOff = data.colorScaleOff;
+
+          function colorScaleApply(reportType) {
+            return scope.colorScaleOff(getIncidentParent(reportType));
+          }
 
           var dateRange = d3.extent(_incidents, function(d, i) {
             return (i === 0) ? d3.time.day.floor(new Date(d.date_reported)) : new Date(d.date_reported);
@@ -89,7 +106,7 @@ angular.module('mkm.seaCrimeData')
           /*   FUNCTIONS FOR CIRCLES   */
           function setCircStyle(currentState, d) {
 
-            var colour = colorScale(d.offense_type);
+            var colour = colorScaleApply(d.offense_type);
 
             switch (currentState) {
 
@@ -167,8 +184,7 @@ angular.module('mkm.seaCrimeData')
               .duration(200)
               .style('opacity', 1)
               .style('background', function() {
-                return 'red';
-                // return incident.fillColor;
+                return colorScaleApply(incident.offense_type);
               })
               .attr('transform', 'translate(' + padding + ',' + hght + ')');
           }
@@ -222,7 +238,7 @@ angular.module('mkm.seaCrimeData')
                 focusOnOpen: true,
                 targetEvent: event,
                 locals: {
-                  incidentDetail: event.properties
+                  incidentDetail: event
                 }
               })
               .finally(function() {
@@ -236,8 +252,8 @@ angular.module('mkm.seaCrimeData')
                 var panorama = new google.maps.StreetViewPanorama(
                   angular.element('.timeline-report-detail #street-view-detail')[0], {
                     'position': {
-                      'lat': Number(event.properties.latitude),
-                      'lng': Number(event.properties.longitude)
+                      'lat': Number(event.latitude),
+                      'lng': Number(event.longitude)
                     },
                     'pov': {
                       'heading': 34,
@@ -250,7 +266,7 @@ angular.module('mkm.seaCrimeData')
 
               });
 
-            scope.incidentDetail = event.properties;
+            scope.incidentDetail = event;
           }
 
           var axXoffset = 10;
@@ -371,7 +387,7 @@ angular.module('mkm.seaCrimeData')
                 }
               })
               .attr('fill', function(d) {
-                return d.fillColor;
+                return colorScaleApply(d.offense_type);
               });
           };
 
@@ -436,8 +452,9 @@ angular.module('mkm.seaCrimeData')
           angular.element($window).bind('resize', function() {
             _refreshTimeLine();
           });
+        }
 
-        });
+        scope.promiseAttr.promise.then(_init_);
       }
     };
   }]);

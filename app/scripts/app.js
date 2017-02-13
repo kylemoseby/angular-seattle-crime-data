@@ -77,45 +77,38 @@ angular.module('mkm.crimeDemo', [
         })
         .entries($scope.reportType.values);
 
-      $scope.dataZoneBeat = d3.nest()
-        .key(function(d) {
-          return d.district_sector;
-        })
-        .key(function(d) {
-          return d.zone_beat;
-        })
-        .entries($scope.reportType.values);
+      $scope.dataZoneBeat = $scope.reportType.values;
 
-      // $scope.incidentDetail = { "year": "2016", "zone_beat": "L3", "latitude": "47.721984863", "offense_code_extension": "0", "summarized_offense_description": "SHOPLIFTING", "date_reported": "2016-09-19T12:14:00", "offense_type": "THEFT-SHOPLIFT", "occurred_date_or_date_range_start": "2016-09-19T10:12:00", "summary_offense_code": "2300", "month": "9", "general_offense_number": "2016339816", "census_tract_2000": "100.5005", "location": { "latitude": "47.721984863", "needs_recoding": false, "longitude": "-122.293640137" }, "offense_code": "2303", "hundred_block_location": "127XX BLOCK OF LAKE CITY WY NE", "rms_cdw_id": "1038854", "district_sector": "L", "longitude": "-122.293640137", "fillColor": "#9467bd" };
+      $scope.incidentDetail = { "year": "2016", "zone_beat": "L3", "latitude": "47.721984863", "offense_code_extension": "0", "summarized_offense_description": "SHOPLIFTING", "date_reported": "2016-09-19T12:14:00", "offense_type": "THEFT-SHOPLIFT", "occurred_date_or_date_range_start": "2016-09-19T10:12:00", "summary_offense_code": "2300", "month": "9", "general_offense_number": "2016339816", "census_tract_2000": "100.5005", "location": { "latitude": "47.721984863", "needs_recoding": false, "longitude": "-122.293640137" }, "offense_code": "2303", "hundred_block_location": "127XX BLOCK OF LAKE CITY WY NE", "rms_cdw_id": "1038854", "district_sector": "L", "longitude": "-122.293640137", "fillColor": "#9467bd" };
 
-      // $scope.incidentStreetView = function() {
+      $scope.incidentStreetView = function() {
 
-      //   var incident = { "year": "2016", "zone_beat": "L3", "latitude": "47.721984863", "offense_code_extension": "0", "summarized_offense_description": "SHOPLIFTING", "date_reported": "2016-09-19T12:14:00", "offense_type": "THEFT-SHOPLIFT", "occurred_date_or_date_range_start": "2016-09-19T10:12:00", "summary_offense_code": "2300", "month": "9", "general_offense_number": "2016339816", "census_tract_2000": "100.5005", "location": { "latitude": "47.721984863", "needs_recoding": false, "longitude": "-122.293640137" }, "offense_code": "2303", "hundred_block_location": "127XX BLOCK OF LAKE CITY WY NE", "rms_cdw_id": "1038854", "district_sector": "L", "longitude": "-122.293640137", "fillColor": "#9467bd" };
+        var incident = { "year": "2016", "zone_beat": "L3", "latitude": "47.721984863", "offense_code_extension": "0", "summarized_offense_description": "SHOPLIFTING", "date_reported": "2016-09-19T12:14:00", "offense_type": "THEFT-SHOPLIFT", "occurred_date_or_date_range_start": "2016-09-19T10:12:00", "summary_offense_code": "2300", "month": "9", "general_offense_number": "2016339816", "census_tract_2000": "100.5005", "location": { "latitude": "47.721984863", "needs_recoding": false, "longitude": "-122.293640137" }, "offense_code": "2303", "hundred_block_location": "127XX BLOCK OF LAKE CITY WY NE", "rms_cdw_id": "1038854", "district_sector": "L", "longitude": "-122.293640137", "fillColor": "#9467bd" };
 
-      //   this.incidentDetail = incident;
+        this.incidentDetail = incident;
 
-      //   var StreetView = new google.maps.Map(angular.element('.incident-example #street-view-detail')[0], {
-      //     scrollwheel: false,
-      //     zoomControl: false,
-      //     zoom: 0
-      //   });
+        var StreetView = new google.maps.Map(angular.element('.incident-example #street-view-detail')[0], {
+          scrollwheel: false,
+          zoomControl: false,
+          zoom: 0
+        });
 
-      //   var panorama = new google.maps.StreetViewPanorama(
-      //     angular.element('.incident-example #street-view-detail')[0], {
-      //       'position': {
-      //         'lat': Number(incident.latitude),
-      //         'lng': Number(incident.longitude)
-      //       },
-      //       'pov': {
-      //         'heading': 34,
-      //         'pitch': 1
-      //       },
-      //       'zoom': 0,
-      //       'scrollwheel': false
-      //     });
+        var panorama = new google.maps.StreetViewPanorama(
+          angular.element('.incident-example #street-view-detail')[0], {
+            'position': {
+              'lat': Number(incident.latitude),
+              'lng': Number(incident.longitude)
+            },
+            'pov': {
+              'heading': 34,
+              'pitch': 1
+            },
+            'zoom': 0,
+            'scrollwheel': false
+          });
 
-      //   StreetView.setStreetView(panorama);
-      // };
+        StreetView.setStreetView(panorama);
+      };
 
     })();
 

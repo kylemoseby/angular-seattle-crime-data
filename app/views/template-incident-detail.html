@@ -1,11 +1,9 @@
 <div layout="row" layout-wrap layout-padding>
-  <div flex="100" flex-gt-sm="50">
-    <map-canvas id="report-map" crime-report="incidentDetail"></map-canvas>
-  </div>
-  <div flex="100" flex-gt-sm="50">
-    <div id="street-view-detail"></div>
-  </div>
+  <!-- TABLE -->
   <div flex="100">
+    <button type="button" class="btn btn-primary" ng-click="closeDetail()" aria-lable="Close Detail">
+      <span class="glyphicon glyphicon-remove"></span>
+    </button>
     <div class="table-responsive">
       <table class="table">
         <thead>
@@ -35,7 +33,17 @@
           </tr>
         </tbody>
       </table>
-      <button type="button" class="btn btn-primary" ng-click="closeDetail()"> <span class="glyphicon glyphicon-remove"></span> Close Detail </button>
     </div>
   </div>
+  <!-- // TABLE -->
+  <!-- MAP -->
+  <div flex="100" flex-gt-sm="50">
+    <map-canvas id="report-map" crime-report="incidentDetail"></map-canvas>
+  </div>
+  <!-- // MAP -->
+  <!-- STREET VIEW -->
+  <div flex="100" flex-gt-sm="50">
+    <div id="street-view-detail"></div>
+  </div>
+  <!-- // STREET VIEW -->
 </div>

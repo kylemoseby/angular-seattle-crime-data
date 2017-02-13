@@ -83,8 +83,8 @@ map-canvas {
   display: block;
 }
 map-canvas .map-canvas {
-  height: 50vh;
   width: 100%;
+  height: 70vh;
   display: block;
 }
 .incident-example,
@@ -139,6 +139,11 @@ md-menu-content {
   width: 100vw;
   overflow-y: scroll;
 }
+.report-type-detail .btn-close {
+  top: 12px;
+  right: 12px;
+  position: absolute;
+}
 report-type-day {
   display: block;
   width: 100%;
@@ -150,16 +155,21 @@ report-type-day {
 report-type-child .report-types {
   display: inline-block;
 }
-report-zone-beat {
+.report-zone-beat {
   display: block;
   width: 100%;
 }
-report-zone-beat .report-districts .report-zones {
-  display: block;
-  clear: both;
+.report-zone-beat .report-districts {
+  display: inline-block;
+  vertical-align: top;
 }
-report-zone-beat .report-districts .report-zones .badge {
+.report-zone-beat .report-districts .report-zones {
+  display: block;
+  width: 100%;
+}
+.report-zone-beat .report-districts .report-zones .badge {
   color: #fff;
+  width: 100%;
 }
 /* Medium devices (desktops, 992px and up) */
 /* Large devices (large desktops, 1200px and up) */
