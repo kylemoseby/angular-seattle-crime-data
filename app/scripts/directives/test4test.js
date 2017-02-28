@@ -2,12 +2,12 @@
 
 /**
  * @ngdoc directive
- * @name angularSeatleCrimeDataApp.directive:test4test
+ * @name mkm.seaCrimeData.directive:test4test
  * @description
  * # test4test
  */
-angular.module('angularSeatleCrimeDataApp')
-  .directive('test4test', function () {
+angular.module('mkm.seaCrimeData')
+  .directive('test4test', function() {
     return {
       template: '<div></div>',
       restrict: 'E',
