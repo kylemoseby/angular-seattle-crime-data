@@ -1,5 +1,5 @@
 'use strict';
-angular.module('mkm.seaCrimeData').directive('mapCanvas', ['$window', '$http', '$mdPanel', '$mdSidenav', function($window, $http, $mdPanel, $mdSidenav) {
+angular.module('mkm.seaCrimeData').directive('mapCanvas', ['$window', '$http', '$mdPanel', function($window, $http, $mdPanel) {
 
   function _link_($scope, $element) {
 
@@ -151,17 +151,13 @@ angular.module('mkm.seaCrimeData').directive('mapCanvas', ['$window', '$http', '
         $googleMap.setOptions($scope.mapStyle);
       }
 
-      var $mapBounds = function() {
-        return new google.maps.LatLngBounds();
-      };
-
       return {
 
         addCrimeData: function(reports) {
 
           var plots = [];
 
-          var bounds = $mapBounds();
+          var $mapBounds = new google.maps.LatLngBounds();
 
           // Opacity <>
           function filterByDate(reportDate) {
@@ -171,9 +167,9 @@ angular.module('mkm.seaCrimeData').directive('mapCanvas', ['$window', '$http', '
 
           // Opacity Array.length of > 0
           function filterByType(reportType) {
+            // return ($scope.filters.reportFilter.indexOf(getIncidentParent(reportType)) > -1) ? false : true;
             return ($scope.filters.reportFilter.indexOf(getIncidentParent(reportType)) > -1) ? false : true;
           }
-
 
           for (var i = reports.length - 1; i >= 0; i--) {
 
@@ -189,7 +185,7 @@ angular.module('mkm.seaCrimeData').directive('mapCanvas', ['$window', '$http', '
 
                 if (filterByType(_report_.offense_type)) {
 
-                  bounds.extend(new google.maps.LatLng(lati, long));
+                  $mapBounds.extend(new google.maps.LatLng(lati, long));
 
                   plots.push({
                     'type': 'Feature',
@@ -226,7 +222,14 @@ angular.module('mkm.seaCrimeData').directive('mapCanvas', ['$window', '$http', '
             return d.key;
           });
 
-          $googleMap.fitBounds(bounds);
+          $googleMap.fitBounds($mapBounds);
+
+          // REFORMAT ON WINDOW RESIZE
+          angular.element($window).bind('resize', function() {
+
+            $googleMap.fitBounds($mapBounds);
+
+          });
 
           return this;
         },
@@ -238,7 +241,6 @@ angular.module('mkm.seaCrimeData').directive('mapCanvas', ['$window', '$http', '
               icon: {
                 'path': google.maps.SymbolPath.CIRCLE,
                 'scale': 4,
-                // 'fillColor': feature.f.fillColor,
                 'fillColor': $scope.colorScaleOff(getIncidentParent(feature.f.offense_type)),
                 'fillOpacity': 1,
                 'strokeWeight': 0
@@ -319,27 +321,6 @@ angular.module('mkm.seaCrimeData').directive('mapCanvas', ['$window', '$http', '
       $scope.showApply = false;
     };
 
-    function buildToggler(navID) {
-      return function() {
-        // Component lookup should always be available since we are not using `ng-if`
-        $mdSidenav(navID).toggle();
-      };
-    }
-
-    $scope.toggleRight = buildToggler('right');
-
-    $scope.isOpenRight = function() {
-      return $mdSidenav('right').isOpen();
-    };
-
-    $scope.close = function() {
-      $mdSidenav('right').close();
-    };
-
-    // REFORMAT ON WINDOW RESIZE
-    angular.element($window).bind('resize', function() {
-      // $map.fitBounds($scope.mapBounds);
-    });
 
     // INIT
     if ($scope.$promise !== undefined) {
@@ -363,7 +344,6 @@ angular.module('mkm.seaCrimeData').directive('mapCanvas', ['$window', '$http', '
             .addCrimeData(data.incidents)
             .applyFilters();
         });
-
     } else if ($scope.report !== undefined) {
 
       var report = $scope.report;

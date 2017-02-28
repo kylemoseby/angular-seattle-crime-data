@@ -3,13 +3,21 @@
   <div flex>
     <h2>Type Detail</h2>
     <div ng-include="'views/template-report-type-detail.html'"></div>
-    <!-- <h2>Incident Detail</h2> -->
-    <!-- <div ng-include="'views/template-incident-detail.html'" onload="incidentStreetView()" class="incident-example"></div> -->
+    <h2>Incident Detail</h2>
+    <div ng-include="'views/template-incident-detail.html'" onload="incidentStreetView()" class="incident-example"></div>
   </div>
 </div>
 <!-- // TYPE DETAIL EXAMPLE -->
 <!-- // REPORT DETAIL EXAMPLE -->
 <div layout="row" layout-margin layout-padding layout-wrap>
+  <!-- GOOGLE MAP -->
+  <div flex="100">
+    <h2>Reports by Latitude and Longitude</h2>
+    <div flex="100" flex-gt-sm="50">
+      <map-canvas map-promise="crimeData" map-style="mapStyle"></map-canvas>
+    </div>
+  </div>
+  <!-- // GOOGLE MAP -->
   <!-- INTRO -->
   <!--   <div flex="100" flex-gt-md="50">
     <h1>Seattle Crime Reports</h1>
@@ -37,12 +45,4 @@
     <div id="sea-crime-viz" viz-time-line="$vizTimeline" viz-time-data="crimeData" crime-viz-map="$crimeMap"></div>
   </div>
   <!-- // TIMELINE -->
-  <!-- GOOGLE MAP -->
-  <div flex="100">
-    <h2>Reports by Latitude and Longitude</h2>
-    <div flex="100" flex-gt-sm="50">
-      <map-canvas map-promise="crimeData" map-style="mapStyle"></map-canvas>
-    </div>
-  </div>
-  <!-- // GOOGLE MAP -->
 </div>

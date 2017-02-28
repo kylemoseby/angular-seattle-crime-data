@@ -1,3 +1,4 @@
+{{filters.reportFilter}}
 <div ng-show="indexOffType">
   <!-- FILTER TYPE -->
   <md-menu class="map-filter-type">
@@ -6,10 +7,10 @@
     </md-button>
     <md-menu-content>
       <md-button ng-click="filterAll()" aria-label="Filter All">Filter All</md-button>
-      <md-button ng-click="filterNone()" aria-label="Filter None">Filter Reset</md-button>
+      <md-button ng-click="filterNone()" aria-label="Show All">Show All</md-button>
       <md-button ng-click="filterToggleType($event)" ng-repeat="(key, val) in indexOffType" ng-class="{
-        'md-accent'  : filters.indexOffFilter.indexOf(val.key) === -1,
-        'md-primary' : filters.reportFilter.indexOf(val.key) === -1,
+        'md-accent'  : false,
+        'md-primary' : false,
            }" aria-label="{{vall.key}}">
         <span class="badge" style="background-color: {{colorScaleOff(val.key)}};">&nbsp;</span> {{val.key}}
       </md-button>
@@ -17,15 +18,10 @@
   </md-menu>
   <!-- // FILTER TYPE -->
   <!-- FILTER DATE -->
-  <md-menu class="map-filter-date">
-    <md-button ng-click="$mdOpenMenu($event)" class="md-primary" aria-label="Filter by date">
-      <span class="glyphicon glyphicon-calendar"></span>
-    </md-button>
-    <md-menu-content>
-      <md-datepicker ng-model="filters.startDate" md-min-date="dateRange[0]" md-max-date="filters.endDate" md-placeholder="Start date" ng-click="dateChange($event)"></md-datepicker>
-      <md-datepicker ng-model="filters.endDate" md-min-date="filters.startDate" md-max-date="dateRange[1]" md-placeholder="End date" ng-click="dateChange($event)"></md-datepicker>
-    </md-menu-content>
-  </md-menu>
+  <div class="map-filter-date">
+    <md-datepicker ng-model="filters.startDate" md-min-date="dateRange[0]" md-max-date="filters.endDate" md-placeholder="Start date" ng-click="dateChange($event)"></md-datepicker>
+    <md-datepicker ng-model="filters.endDate" md-min-date="filters.startDate" md-max-date="dateRange[1]" md-placeholder="End date" ng-click="dateChange($event)"></md-datepicker>
+  </div>
   <!-- // FILTER DATE -->
   <md-button ng-click="filterApply($event)" ng-show="showApply" aria-labvel="Apply">Apply</md-button>
 </div>
