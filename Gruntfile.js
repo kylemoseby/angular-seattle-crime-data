@@ -39,7 +39,8 @@ module.exports = function(grunt) {
       },
       jsTest: {
         files: ['test/spec/{,*/}*.js'],
-        tasks: ['jshint:test', 'karma']
+        tasks: ['jshint:test']
+          // tasks: ['jshint:test', 'karma']
       },
       styles: {
         files: ['<%= yeoman.app %>/less/{,*/}*.less'],
@@ -284,6 +285,7 @@ module.exports = function(grunt) {
     //     }
     //   }
     // },
+
     uglify: {
       options: {
         mangle: false

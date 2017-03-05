@@ -69,8 +69,6 @@ angular.module('mkm.seaCrimeData')
 
           function typeDetailModalInit(d) {
 
-            console.log(d);
-
             var position = scope.$panel
               .newPanelPosition()
               .absolute()

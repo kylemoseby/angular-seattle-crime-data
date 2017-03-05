@@ -31,6 +31,7 @@ module.exports = function(config) {
       "app/scripts/services/mapstyle.js",
       "app/scripts/app.js",
       "app/scripts/directives/test4test.js",
+      // tests
       "test/spec/**/*.js"
     ],
 

@@ -12,14 +12,7 @@ angular.module('mkm.seaCrimeData')
       'templateUrl': 'views/template-zone-beat.html',
       link: function($scope, element) {
 
-        var reportsByZone = d3.nest()
-          .key(function(d) {
-            return d.district_sector;
-          })
-          .key(function(d) {
-            return d.zone_beat;
-          })
-          .entries($scope.reports);
+        var reportsByZone = $scope.reports;
 
         var $wrapper = d3.select(element.find('.report-zone-beat')[0]);
 
