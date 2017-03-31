@@ -37,7 +37,7 @@ angular.module('mkm.crimeDemo', [
 
       $scope.dataTypeDay = d3.nest()
         .key(function(d) {
-          var byDay = d3.time.format('%x');
+          var byDay = d3.timeFormat('%x');
           return byDay(new Date(d.date_reported));
         })
         .entries(reportType.values);
@@ -66,7 +66,7 @@ angular.module('mkm.crimeDemo', [
 
       $scope.dataTypeDay = d3.nest()
         .key(function(d) {
-          var byDay = d3.time.format('%x');
+          var byDay = d3.timeFormat('%x');
           return byDay(new Date(d.date_reported));
         })
         .entries($scope.reportType.values);

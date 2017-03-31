@@ -19,11 +19,19 @@ angular.module('mkm.seaCrimeData')
 
         var getIncidentParent = scope.getIncidentParent;
 
+
+
+
         scope.$panel = $mdPanel;
         scope.reportFilter = [];
 
+
+
+
         var elm = element.children('.crime-report-timeline')[0];
-        var wrapper = d3.select(elm);
+
+
+
 
         //  SVG DIMENSIONS
         var padding = 10;
@@ -45,40 +53,54 @@ angular.module('mkm.seaCrimeData')
           }
         };
 
-        // CANVAS ELEMENT
-        var svg = wrapper
+
+        console.log(hght);
+        console.log(wdth);
+
+
+
+        var wrapper = d3.select(elm);
+
+        wrapper
           .append('svg')
-          .attr({
-            height: hght,
-            width: wdth,
-            class: 'seattle-crime-timeline'
-          });
+          .attr('height', hght)
+          .attr('width', wdth)
+          .attr('class', 'seattle-crime-timeline');
+
+
+
+
+
+
+
+
+        // CANVAS ELEMENT
+        var svg = wrapper.select('svg');
+
 
         // DIV FOR TOOLTIP
         var toolTip = d3.select("body").append("div")
           .classed('cicle-tool-tip', true);
 
         // FRAMING SCALES
-        var scaleAxisX = d3.time.scale()
+        var scaleAxisX = d3.scaleTime()
           .range(calcPadding.x(wdth));
 
-        var scaleAxisY = d3.time.scale.utc()
+        var scaleAxisY = d3.scaleUtc()
           .domain([new Date('Wed Dec 31 1969 00:00:00 GMT-0800 (PST)'), new Date('Wed Dec 31 1969 24:00:00 GMT-0800 (PST)')])
           .range(calcPadding.y(hght));
 
         // AXIS ELEMENTS
-        var xAxis = d3.svg.axis()
-          .orient('bottom')
-          .ticks(d3.time.hour, 24)
+        var xAxis = d3.axisBottom()
+          .ticks(d3.timeHour, 24)
           // .tickSize(-(hght), 0, 0)
-          .tickFormat(d3.time.format('%m/%d'))
+          .tickFormat(d3.timeFormat('%m/%d'))
           .scale(scaleAxisX);
 
-        var yAxis = d3.svg.axis()
-          .orient('left')
-          .tickSize(-(wdth), 0, 0)
-          .tickFormat(d3.time.format("%H:%M"))
-          .ticks(d3.time.hours, 1);
+        var yAxis = d3.axisLeft();
+        // .tickSize(-(wdth), 0, 0)
+        // .tickFormat(d3.timeFormat("%H:%M"))
+        // .ticks(d3.timeHours, 1);
 
         scope.toolTipLock = scope.toolTipLock || false;
 
@@ -95,7 +117,7 @@ angular.module('mkm.seaCrimeData')
           }
 
           var dateRange = d3.extent(_incidents, function(d, i) {
-            return (i === 0) ? d3.time.day.floor(new Date(d.date_reported)) : new Date(d.date_reported);
+            return (i === 0) ? d3.timeDay.floor(new Date(d.date_reported)) : new Date(d.date_reported);
           });
 
           scaleAxisX.domain(dateRange);
@@ -137,7 +159,7 @@ angular.module('mkm.seaCrimeData')
 
             var incidentDate = new Date(d.date_reported);
 
-            var timeFormat = d3.time.format('%x');
+            var timeFormat = d3.timeFormat('%x');
 
             return scaleAxisX(new Date(timeFormat(incidentDate)));
           }
@@ -146,7 +168,7 @@ angular.module('mkm.seaCrimeData')
            */
           function plotYcirc(d) {
 
-            var timeFormat = d3.time.format('%X');
+            var timeFormat = d3.timeFormat('%X');
 
             var incidentTime = timeFormat(new Date(d.date_reported));
 
@@ -157,7 +179,7 @@ angular.module('mkm.seaCrimeData')
 
             var incident = data;
 
-            var timeFormatFull = d3.time.format('%x %H:%M %p');
+            var timeFormatFull = d3.timeFormat('%x %H:%M %p');
 
             // Populate tooltop now, need height to calculate offsets
             toolTip
@@ -327,10 +349,8 @@ angular.module('mkm.seaCrimeData')
             var newHght = elm.offsetHeight;
 
             svg
-              .attr({
-                height: newHght,
-                width: newWdth
-              });
+              .attr('height', newHght)
+              .attr('width', newWdth);
 
             scaleAxisX.range(calcPadding.x(newWdth));
 

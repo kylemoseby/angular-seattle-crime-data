@@ -18,36 +18,45 @@ angular.module('mkm.seaCrimeData')
 
         scope.$panel = $mdPanel;
 
-        var wrapper = d3.select($elm);
-
         //  SVG DIMENSIONS
         var padding = $elm.offsetWidth * 0.033;
         var wdth = $elm.offsetWidth;
         var hght = $elm.offsetHeight;
         var barHght = hght - padding - 120;
 
-        var svg = wrapper
-          .append('svg')
-          .attr({
-            'height': hght,
-            'width': wdth
-          });
 
-        var scaleAxisX = d3.scale.ordinal()
-          .rangeBands([padding, (wdth - padding)]);
 
-        var scaleAxisY = d3.scale.linear()
+        // DOM ELEMENTS
+        var wrapper = d3.select($elm);
+
+        wrapper.append('svg')
+          .attr('height', hght)
+          .attr('width', wdth);
+
+        var svg = wrapper.select('svg');
+
+        var rectGroup = svg.selectAll('g.reports-index-rect');
+
+
+        // AXIS
+        var scaleAxisX = d3.scaleBand()
+          .range([padding, (wdth - padding)]);
+
+        var scaleAxisY = d3.scaleLinear()
           .range([padding, barHght]);
+
+
 
         /*
           Necessary because of the way parent child relationships are stored in SPD Data
           VEH-THEFT-AUTO appears to be it's own distint topice, but all the other
           parent child relationsips are designated by the '-' as far as I can tell
-          -mkm
         */
         function checkVehKey(reportKey) {
           return (reportKey === 'VEH-THEFT-AUTO') ? 'VEH' : reportKey;
         }
+
+
 
         scope.$promise.promise.then(function(data) {
 
@@ -67,67 +76,7 @@ angular.module('mkm.seaCrimeData')
             return d.values.length;
           })]);
 
-          function typeDetailModalInit(d) {
-
-            var position = scope.$panel
-              .newPanelPosition()
-              .absolute()
-              .center();
-
-            /* OPEN THE PANEL */
-            scope.$panel
-              .open({
-                attachTo: angular.element(document.body),
-                controllerAs: 'ctrl',
-                disableParentScroll: true,
-                templateUrl: 'views/template-report-type-detail.html',
-                hasBackdrop: true,
-                panelClass: 'report-type-detail',
-                position: position,
-                trapFocus: true,
-                zIndex: 150,
-                clickOutsideToClose: true,
-                escapeToClose: true,
-                focusOnOpen: true,
-                targetEvent: event,
-                locals: {
-                  reportType: d
-                },
-                controller: function($scope, mdPanelRef, reportType) {
-
-                  $scope.reportType = reportType;
-                  $scope.reportType.fillColor = colorScale(reportType.key);
-
-                  $scope.dataTypeDay = d3.nest()
-                    .key(function(d) {
-                      var byDay = d3.time.format('%x');
-                      return byDay(new Date(d.date_reported));
-                    })
-                    .entries(reportType.values);
-
-                  $scope.dataTypeChild = d3.nest()
-                    .key(function(d) {
-                      return d.offense_type;
-                    })
-                    .entries(reportType.values);
-
-                  $scope.dataZoneBeat = d3.nest()
-                    .key(function(d) {
-                      return d.district_sector;
-                    })
-                    .key(function(d) {
-                      return d.zone_beat;
-                    })
-                    .entries(reportType.values);
-
-                  $scope.closeDetail = function() {
-                    mdPanelRef.close();
-                  };
-                }
-              });
-          }
-
-          var rectGroup = svg.selectAll('g.reports-index-rect')
+          rectGroup
             .data(_index_)
             .enter()
             .append('g')
@@ -138,7 +87,9 @@ angular.module('mkm.seaCrimeData')
             // FIX LATER
             .attr('transform', 'translate(' + padding + ',80)');
 
-          var rect = rectGroup.append('rect')
+
+          var rect = svg.selectAll('g.reports-index-rect')
+            .append('rect')
             .attr('transform', function(d) {
               var scaleVal = scaleAxisX(checkVehKey(d.key));
               return 'translate(' + scaleVal + ',' + ((barHght - padding) * 2) + ') rotate(180)';
@@ -146,22 +97,23 @@ angular.module('mkm.seaCrimeData')
             .attr('y', function() {
               return barHght - padding;
             })
-            .attr('width', scaleAxisX.rangeBand())
+            .attr('width', scaleAxisX.bandwidth())
             .attr('height', function(d) {
               return scaleAxisY(d.values.length);
             })
             .attr('fill', function(d) {
               return colorScale(d.key);
-            })
-            .on('click', typeDetailModalInit);
+            });
+          // .on('click', typeDetailModalInit);
 
           // CATEGORY LABELS
-          var labelCatg = rectGroup.append('text')
+          var labelCatg = svg.selectAll('g.reports-index-rect')
+            .append('text')
             .attr('transform', function(d) {
 
               var xTrans = scaleAxisX(checkVehKey(d.key));
 
-              return 'translate(' + (xTrans - (scaleAxisX.rangeBand() * 0.33)) + ', ' + (barHght - padding + 9) + ') rotate(-33)';
+              return 'translate(' + (xTrans - (scaleAxisX.bandwidth() * 0.33)) + ', ' + (barHght - padding + 9) + ') rotate(-33)';
             })
             .attr('text-anchor', 'end')
             .attr('class', 'block-label category')
@@ -170,18 +122,23 @@ angular.module('mkm.seaCrimeData')
             });
 
           // COUNT LABELS
-          var labelCnt = rectGroup.append('text')
+          var labelCnt = svg.selectAll('g.reports-index-rect')
+            .append('text')
             .attr('transform', function(d) {
 
               var xTrans = scaleAxisX(checkVehKey(d.key));
 
-              return 'translate(' + (xTrans - (scaleAxisX.rangeBand() * 0.5)) + ', ' + (barHght - scaleAxisY(d.values.length) - padding - 5) + ')';
+              return 'translate(' + (xTrans - (scaleAxisX.bandwidth() * 0.5)) + ', ' + (barHght - scaleAxisY(d.values.length) - padding - 5) + ')';
             })
             .attr('class', 'block-label count')
             .attr('text-anchor', 'middle')
             .text(function(d) {
               return d.values.length;
             });
+
+
+
+
 
           function _refreshBlocks() {
 
@@ -191,12 +148,10 @@ angular.module('mkm.seaCrimeData')
             barHght = hght - padding - 120;
 
             svg
-              .attr({
-                'height': hght,
-                'width': wdth
-              });
+              .attr('height', hght)
+              .attr('width', wdth);
 
-            scaleAxisX.rangeBands([padding, (wdth - padding)]);
+            scaleAxisX.bandwidth([padding, (wdth - padding)]);
 
             scaleAxisY.range([padding, barHght]);
 
@@ -207,7 +162,7 @@ angular.module('mkm.seaCrimeData')
               .attr("transform", function(d) {
                 var xTrans = scaleAxisX(checkVehKey(d.key));
 
-                return 'translate(' + (xTrans - (scaleAxisX.rangeBand() * 0.33)) + ', ' + (barHght - padding + 7) + ') rotate(-50)';
+                return 'translate(' + (xTrans - (scaleAxisX.bandwidth() * 0.33)) + ', ' + (barHght - padding + 7) + ') rotate(-50)';
               });
 
             labelCnt
@@ -217,7 +172,7 @@ angular.module('mkm.seaCrimeData')
               .attr("transform", function(d) {
                 var xTrans = scaleAxisX(checkVehKey(d.key));
 
-                return 'translate(' + (xTrans - (scaleAxisX.rangeBand() * 0.5)) + ', ' + (barHght - scaleAxisY(d.values.length) - padding - 6) + ')';
+                return 'translate(' + (xTrans - (scaleAxisX.bandwidth() * 0.5)) + ', ' + (barHght - scaleAxisY(d.values.length) - padding - 6) + ')';
               });
 
             rect
@@ -232,7 +187,7 @@ angular.module('mkm.seaCrimeData')
               .attr('y', function() {
                 return barHght - padding;
               })
-              .attr('width', scaleAxisX.rangeBand())
+              .attr('width', scaleAxisX.bandwidth())
               .attr('height', function(d) {
                 return scaleAxisY(d.values.length);
               });
@@ -249,3 +204,67 @@ angular.module('mkm.seaCrimeData')
 
     };
   }]);
+
+
+
+// function typeDetailModalInit(d) {
+
+//   var position = scope.$panel
+//     .newPanelPosition()
+//     .absolute()
+//     .center();
+
+//   /* OPEN THE PANEL */
+//   scope.$panel
+//     .open({
+//       attachTo: angular.element(document.body),
+//       controllerAs: 'ctrl',
+//       disableParentScroll: true,
+//       templateUrl: 'views/template-report-type-detail.html',
+//       hasBackdrop: true,
+//       panelClass: 'report-type-detail',
+//       position: position,
+//       trapFocus: true,
+//       zIndex: 150,
+//       clickOutsideToClose: true,
+//       escapeToClose: true,
+//       focusOnOpen: true,
+//       targetEvent: event,
+//       locals: {
+//         reportType: d
+//       },
+//       controller: function($scope, mdPanelRef, reportType) {
+
+//         console.log(reportType);
+
+//         $scope.reportType = reportType;
+//         $scope.reportType.fillColor = colorScale(reportType.key);
+
+//         $scope.dataTypeDay = d3.nest()
+//           .key(function(d) {
+//             var byDay = d3.time.format('%x');
+//             return byDay(new Date(d.date_reported));
+//           })
+//           .entries(reportType.values);
+
+//         $scope.dataTypeChild = d3.nest()
+//           .key(function(d) {
+//             return d.offense_type;
+//           })
+//           .entries(reportType.values);
+
+//         $scope.dataZoneBeat = d3.nest()
+//           .key(function(d) {
+//             return d.district_sector;
+//           })
+//           .key(function(d) {
+//             return d.zone_beat;
+//           })
+//           .entries(reportType.values);
+
+//         $scope.closeDetail = function() {
+//           mdPanelRef.close();
+//         };
+//       }
+//     });
+// }

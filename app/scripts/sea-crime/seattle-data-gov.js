@@ -36,12 +36,12 @@ angular.module('mkm.seaCrimeData', [
         })
         .entries(response.data);
 
-      var $typeColorScale = d3.scale
-        .category20()
+      var $typeColorScale = d3.scaleOrdinal()
         .domain($offTypeNest
           .map(function(d) {
             return d.key;
-          }));
+          }))
+        .range(d3.schemeCategory20);
 
       _promise.resolve({
         incidents: response.data,

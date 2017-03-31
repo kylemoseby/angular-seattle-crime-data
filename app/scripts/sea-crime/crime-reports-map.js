@@ -18,7 +18,7 @@ angular.module('mkm.seaCrimeData').directive('mapCanvas', ['$window', '$http', '
 
     $scope.showApply = false;
 
-    $scope.colorScaleOff = d3.scale.category20();
+    $scope.colorScaleOff = d3.schemeCategory20;
 
     var $detailModal = function(_incident) {
 
