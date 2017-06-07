@@ -4,7 +4,7 @@
   "version": "1.0.0",
   "homepage": "https://github.com/angular/angular-seatle-crime-data",
   "main": [
-    "source/seattle-crime-reports-scripts.js",
+    "source/seattle-crime-reports-source.js",
     "source/seattle-crime-map-main.css"
   ],
   "license": "MIT",

@@ -288,27 +288,24 @@ module.exports = function(grunt) {
 
     uglify: {
       dist: {
-        options: {
-          mangle: false
-        },
+        // options: {
+        //   mangle: true
+        // },
         files: {
           '<%= yeoman.dist %>/scripts/scripts.js': [
-            '<%= yeoman.dist %>/scripts.js'
+            '<%= yeoman.dist %>/scripts/scripts.js'
           ]
         }
       },
       source: {
         options: {
-          beautify: {
-            beautify: true,
-            indent_level: 1
-          },
+          beautify: true,
           mangle: true,
           compress: false
         },
         files: {
-          'source/seattle-crime-reports-source.js': [
-            'source/seattle-crime-reports-source.js'
+          'source/scripts-mangled.js': [
+            '<%= yeoman.dist %>/scripts.js'
           ]
         }
       }
@@ -318,10 +315,6 @@ module.exports = function(grunt) {
       dist: {
         src: ['<%= yeoman.app %>/scripts/{,*/}*.js'],
         dest: 'dist/scripts.js',
-      },
-      source: {
-        src: ['<%= yeoman.app %>/scripts/sea-crime/{,*/}*.js'],
-        dest: '.tmp/scripts/source.js',
       },
     },
 
@@ -421,23 +414,25 @@ module.exports = function(grunt) {
       },
       styles: {
         expand: true,
-        cwd: '<%= yeoman.app %>/styles',
+        cwd: '<%= yeoman.app %>/app.css',
         dest: '.tmp/styles/',
-        src: '{,*/}*.css'
+        src: 'app.css'
       },
       source: {
         dest: 'source/',
         flatten: true,
         expand: true,
         src: [
-          '.tmp/scripts/source.js',
-          '<%= yeoman.dist %>/styles/main.*.css'
+          '.tmp/concat/scripts/scripts.js',
+          '<%= yeoman.dist %>/styles/vendor.*.css'
         ],
         rename: function(dest, src) {
 
           var fileStr = src.slice(0, src.indexOf('.'));
 
           var id_ext = src.slice(src.lastIndexOf('.'), src.length);
+
+          console.log('seattle-crime-reports-' + fileStr + id_ext);
 
           return dest + 'seattle-crime-reports-' + fileStr + id_ext;
         }
@@ -497,23 +492,27 @@ module.exports = function(grunt) {
     'karma'
   ]);
 
+  grunt.registerTask('source', [
+    'uglify:source'
+  ]);
 
   grunt.registerTask('build', [
     'clean:dist',
     'wiredep',
     'useminPrepare',
-    'concurrent',
+    'concurrent:dist',
     'autoprefixer',
     'ngtemplates',
-    'concat',
+    'concat:dist',
     'ngAnnotate',
-    'copy',
+    'copy:dist',
     'cdnify',
     'cssmin',
-    'uglify',
+    'uglify:dist',
     'filerev',
     'usemin',
-    'htmlmin'
+    'htmlmin',
+    'source'
   ]);
 
   grunt.registerTask('default', [
