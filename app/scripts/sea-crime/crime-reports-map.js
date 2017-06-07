@@ -55,7 +55,7 @@ angular.module('mkm.seaCrimeData').directive('mapCanvas', ['$window', '$http', '
         })
         .finally(function() {
 
-          var $modalElm = angular.element('.map-report-detail #street-view-detail')[0];
+          var $modalElm = document.getElementById('street-view-detail');
 
           // slect element from modal that was just created
           // class .map-report-detail defined above at Init
@@ -131,7 +131,7 @@ angular.module('mkm.seaCrimeData').directive('mapCanvas', ['$window', '$http', '
 
     var $map = (function() {
 
-      var $googleMap = new google.maps.Map($element.children('.map-canvas')[0], {
+      var $googleMap = new google.maps.Map($element.children()[$element.children().length - 1], {
         'scrollwheel': false,
         'streetViewControl': false,
         'mapTypeControl': false,
@@ -241,7 +241,7 @@ angular.module('mkm.seaCrimeData').directive('mapCanvas', ['$window', '$http', '
               icon: {
                 'path': google.maps.SymbolPath.CIRCLE,
                 'scale': 4,
-                'fillColor': $scope.colorScaleOff(getIncidentParent(feature.f.offense_type)),
+                'fillColor': typeof($scope.colorScaleOff) === 'function' ? $scope.colorScaleOff(getIncidentParent(feature.f.offense_type)) : 'transparent',
                 'fillOpacity': 1,
                 'strokeWeight': 0
               }

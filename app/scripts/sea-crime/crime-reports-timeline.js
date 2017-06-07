@@ -28,13 +28,12 @@ angular.module('mkm.seaCrimeData')
 
 
 
-        var elm = element.children('.crime-report-timeline')[0];
-
-
+        var elm = element.children('.crime-report-timeline')[element.children('.crime-report-timeline').length - 1];
 
 
         //  SVG DIMENSIONS
         var padding = 10;
+
 
         var wdth = elm.offsetWidth;
         var hght = elm.offsetHeight;
@@ -52,11 +51,6 @@ angular.module('mkm.seaCrimeData')
             return [padding + 10, _hght_ - padding - 30];
           }
         };
-
-
-        console.log(hght);
-        console.log(wdth);
-
 
 
         var wrapper = d3.select(elm);
@@ -201,9 +195,11 @@ angular.module('mkm.seaCrimeData')
                 'left-side': d3.event.offsetX < wdth * 0.5,
                 // RIGHT of screen
                 'rght-side': d3.event.offsetX > wdth * 0.5
-              })
-              .transition()
-              .duration(200)
+              });
+
+            toolTip
+              .transition(d3.transition()
+                .duration(200))
               .style('opacity', 1)
               .style('background', function() {
                 return colorScaleApply(incident.offense_type);
@@ -213,13 +209,14 @@ angular.module('mkm.seaCrimeData')
 
           function toolTipHide() {
 
-            toolTip.transition()
-              .duration(500)
+            toolTip.transition(d3.transition()
+                .duration(500))
               .style('opacity', 0);
 
             reportMarks.selectAll('circle')
-              .transition()
-              .duration(250);
+              .transition(d3.transition()
+                .duration(250)
+              );
 
             scope.toolTipLock = false;
           }
@@ -265,14 +262,14 @@ angular.module('mkm.seaCrimeData')
               })
               .finally(function() {
 
-                var StreetView = new google.maps.Map(angular.element('.timeline-report-detail #street-view-detail')[0], {
+                var StreetView = new google.maps.Map(document.getElementById('street-view-detail'), {
                   scrollwheel: false,
                   zoomControl: false,
                   zoom: 0
                 });
 
                 var panorama = new google.maps.StreetViewPanorama(
-                  angular.element('.timeline-report-detail #street-view-detail')[0], {
+                  document.getElementById('street-view-detail'), {
                     'position': {
                       'lat': Number(event.latitude),
                       'lng': Number(event.longitude)
