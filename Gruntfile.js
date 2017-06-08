@@ -315,13 +315,26 @@ module.exports = function(grunt) {
     },
 
     concat: {
+      options: {
+        banner: "'use strict';\n",
+        process: function(src, filepath) {
+          return '// Source: ' + filepath + '\n' +
+            src.replace(/(^|\n)[ \t]*('use strict'|"use strict");?\s*/g, '$1');
+        }
+      },
       dist: {
-        src: ['<%= yeoman.app %>/scripts/{,*/}*.js'],
-        dest: 'dist/scripts.js',
+        src: [
+          '<%= yeoman.app %>/scripts/{,*/}*.js'
+        ],
+        dest: 'dist/scripts.js'
       },
       source: {
-        src: ['<%= yeoman.app %>/scripts/sea-crime/{,*/}*.js'],
-        dest: '.tmp/scripts/source.js',
+        src: [
+          '<%= yeoman.app %>/scripts/seattle-crime-data.js',
+          '<%= yeoman.app %>/scripts/sea-crime/{,*/}*.js',
+          '.tmp/templateCache.js'
+        ],
+        dest: '.tmp/scripts/source.js'
       },
     },
 
