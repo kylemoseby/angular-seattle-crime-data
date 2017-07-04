@@ -87,14 +87,10 @@ angular.module('mkm.seaCrimeData')
         // AXIS ELEMENTS
         var xAxis = d3.axisBottom()
           .ticks(d3.timeHour, 24)
-          // .tickSize(-(hght), 0, 0)
           .tickFormat(d3.timeFormat('%m/%d'))
           .scale(scaleAxisX);
 
         var yAxis = d3.axisLeft();
-        // .tickSize(-(wdth), 0, 0)
-        // .tickFormat(d3.timeFormat("%H:%M"))
-        // .ticks(d3.timeHours, 1);
 
         scope.toolTipLock = scope.toolTipLock || false;
 

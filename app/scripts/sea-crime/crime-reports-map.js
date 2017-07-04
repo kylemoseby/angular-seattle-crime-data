@@ -1,5 +1,6 @@
 'use strict';
-angular.module('mkm.seaCrimeData').directive('mapCanvas', ['$window', '$http', '$mdPanel', function($window, $http, $mdPanel) {
+angular.module('mkm.seaCrimeData')
+.directive('mapCanvas', ['$window', '$http', '$mdPanel', function($window, $http, $mdPanel) {
 
   function _link_($scope, $element) {
 
@@ -103,7 +104,7 @@ angular.module('mkm.seaCrimeData').directive('mapCanvas', ['$window', '$http', '
             '<li><span class=\"glyphicon glyphicon-pushpin\" style=\"color: ' + $scope.colorScaleOff(getIncidentParent(_r_.offense_type)) + '\"></span>' + _r_.offense_type + ' ' + _r_.date_reported + '</li>' +
             '<li>Block: ' + _r_.hundred_block_location + '</li>' +
             '<li>Description: ' + _r_.summarized_offense_description + '</li>' +
-            '<li><md-button id=\"map-info-btn\">More info</md-button></li>' +
+            '<li><button id=\"map-info-btn\" class=\"btn btn-sm btn-primary\"><span class=\"glyphicon glyphicon-new-window\"></span></button></li>' +
             '</ul>'
           );
 
@@ -167,7 +168,6 @@ angular.module('mkm.seaCrimeData').directive('mapCanvas', ['$window', '$http', '
 
           // Opacity Array.length of > 0
           function filterByType(reportType) {
-            // return ($scope.filters.reportFilter.indexOf(getIncidentParent(reportType)) > -1) ? false : true;
             return ($scope.filters.reportFilter.indexOf(getIncidentParent(reportType)) > -1) ? false : true;
           }
 
@@ -262,10 +262,17 @@ angular.module('mkm.seaCrimeData').directive('mapCanvas', ['$window', '$http', '
       };
     })();
 
+
+
+
+
     $scope.mapRefresh = function() {
-      // $map.fitBounds($scope.mapBounds);
+
       $map.removeCrimeData();
     };
+
+
+
 
     $scope.filterToggleType = function($event) {
 
@@ -286,6 +293,9 @@ angular.module('mkm.seaCrimeData').directive('mapCanvas', ['$window', '$http', '
       $scope.showApply = true;
     };
 
+
+
+
     $scope.filterAll = function() {
 
       for (var filter in $scope.indexOffType) {
@@ -296,6 +306,8 @@ angular.module('mkm.seaCrimeData').directive('mapCanvas', ['$window', '$http', '
       $scope.showApply = true;
     };
 
+
+
     $scope.filterNone = function() {
 
       $scope.filters.reportFilter = [];
@@ -303,12 +315,16 @@ angular.module('mkm.seaCrimeData').directive('mapCanvas', ['$window', '$http', '
       $scope.showApply = true;
     };
 
+
+
     $scope.dateChange = function($event) {
 
       $event.preventDefault();
 
       $scope.showApply = true;
     };
+
+
 
     $scope.filterApply = function($event) {
 
@@ -323,9 +339,9 @@ angular.module('mkm.seaCrimeData').directive('mapCanvas', ['$window', '$http', '
 
 
     // INIT
-    if ($scope.$promise !== undefined) {
+    if ($scope.$seaCrimeData !== undefined) {
 
-      $scope.$promise.promise
+      $scope.$seaCrimeData.promise
         .then(function(data) {
 
           $scope.dateRange = d3.extent(data.incidents, function(d) {
@@ -344,6 +360,7 @@ angular.module('mkm.seaCrimeData').directive('mapCanvas', ['$window', '$http', '
             .addCrimeData(data.incidents)
             .applyFilters();
         });
+
     } else if ($scope.report !== undefined) {
 
       var report = $scope.report;
@@ -355,8 +372,6 @@ angular.module('mkm.seaCrimeData').directive('mapCanvas', ['$window', '$http', '
       var _latitude = Number(report.latitude);
 
       if (!isNaN(_longitude) && !isNaN(_latitude)) {
-
-        // $map.data.setStyle(plotstyleDetail);
 
         var detailBounds = new google.maps.LatLngBounds();
 
@@ -377,11 +392,12 @@ angular.module('mkm.seaCrimeData').directive('mapCanvas', ['$window', '$http', '
 
   return {
     'templateUrl': 'views/template-map-canvas.html',
-    'scope': {
-      '$promise': '=mapPromise',
-      'mapStyle': '=mapStyle',
-      'report': '=crimeReport'
-    },
     link: _link_
+  };
+}])
+.directive('mapFilters', [function(){
+  return {
+    require: 'mapCanvas',
+    templateUrl: 'views/template-map-filters.html',
   };
 }]);

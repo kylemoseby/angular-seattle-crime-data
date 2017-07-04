@@ -52,5 +52,18 @@ angular.module('mkm.seaCrimeData', [
     });
 
     return _promise;
+  }])
+  .controller('CrimeReportrsCtrl', ['$scope', 'seattleDataGov', 'mapStyle', function($scope, seattleDataGov, mapStyle) {
+
+    $scope.$seaCrimeData = seattleDataGov;
+
+    $scope.$seaCrimeData.promise.then(function(data) {
+
+      $scope.$index = data.index;
+
+      $scope.$reports = data.incidents;
+    });
+
+    $scope.mapStyle = mapStyle;
 
   }]);

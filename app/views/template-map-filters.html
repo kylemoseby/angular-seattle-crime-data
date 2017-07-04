@@ -1,0 +1,20 @@
+<div ng-show="indexOffType">
+  <!-- FILTER TYPE -->
+  <button ng-click="filterToggleType($event)" ng-repeat="(key, val) in indexOffType" class="btn" ng-class="{
+        'btn-default'  : filters.reportFilter.indexOf(val.key) !== -1 && showApply,
+        'btn-primary' : filters.reportFilter.indexOf(val.key) === -1,
+        'btn-link' : filters.reportFilter.indexOf(val.key) !== -1 && !showApply
+     }" aria-label="{{vall.key}}">
+    <div class="badge" style="background-color: {{filters.reportFilter.indexOf(val.key) !== -1 && !showApply ? '#555' : colorScaleOff(val.key)}};"><span class="glyphicon glyphicon-eye-close" ng-show="filters.reportFilter.indexOf(val.key) !== -1"></span>&nbsp;</div> {{val.key}}
+  </button>
+  <!-- // FILTER TYPE -->
+  <!-- FILTER DATE -->
+  <div class="map-filter-date">
+    <md-datepicker ng-model="filters.startDate" md-min-date="dateRange[0]" md-max-date="filters.endDate" md-placeholder="Start date" ng-click="dateChange($event)"></md-datepicker>
+    <md-datepicker ng-model="filters.endDate" md-min-date="filters.startDate" md-max-date="dateRange[1]" md-placeholder="End date" ng-click="dateChange($event)"></md-datepicker>
+  </div>
+  <!-- // FILTER DATE -->
+  <button class="btn btn-default" ng-click="filterApply($event)" ng-show="showApply" aria-labvel="Apply">Apply</button>
+  <button class="btn btn-default" ng-click="filterAll()" aria-label="Filter All">Filter All</button>
+  <button class="btn btn-default" ng-click="filterNone()" aria-label="Show All">Show All</button>
+</div>
