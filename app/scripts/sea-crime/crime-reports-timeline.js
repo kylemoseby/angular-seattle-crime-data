@@ -210,7 +210,8 @@ angular.module('mkm.seaCrimeData')
               .style('opacity', 0);
 
             reportMarks.selectAll('circle')
-              .transition(d3.transition()
+              .transition(
+                d3.transition()
                 .duration(250)
               );
 
