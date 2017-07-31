@@ -1,0 +1,37 @@
+<button class="btn" ng-click="toggleAxis()">{{disp.axis}}</button>
+<button class="btn" ng-click="circSetColorType()" ng-class="{ 'btn-primary' : disp.color === 'extension' }">By Code Extension</button>
+<button class="btn" ng-click="circSetColorDist()" ng-class="{ 'btn-primary' : disp.color === 'district' }">By District</button>
+<md-slider ng-model="disp.circRad" min="5" max="20" step="3" ng-change="setCircleRad()"></md-slider>
+<br> Display size: {{disp.circRad}}
+<br>
+<ul class="list-unstyled filter-list">
+  <li>
+    <h3>Code Extension</h3>
+  </li>
+  <li>
+    <md-checkbox aria-label="Select All" ng-checked="isChecked('extension')" ng-click="toggleAll('extension')">
+      <span ng-if="isChecked('extension')">Un-</span>Select All
+    </md-checkbox>
+  </li>
+  <li ng-repeat="key in scaleType.domain()">
+    <md-checkbox ng-model="filter.extension[key]" aria-label="offCodeMap['$' + key].offense_type_description" ng-checked="true" ng-change="filterCircle()">
+      <span class="badge" style="background-color: {{scaleType(key)}};" ng-show="disp.color === 'extension'">&nbsp;</span> {{key}} - {{offCodeMap['$' + key].offense_type_description}}
+    </md-checkbox>
+  </li>
+</ul>
+<ul class="list-unstyled filter-list">
+  <li>
+    <h3>Districts</h3>
+  </li>
+  <li>
+    <md-checkbox aria-label="Select All" ng-checked="isChecked('district')" ng-click="toggleAll('district')">
+      <!-- md-indeterminate="isIndeterminate()" -->
+      <span ng-if="isChecked('district')">Un-</span>Select All
+    </md-checkbox>
+  </li>
+  <li ng-repeat="key in scaleDist.domain()">
+    <md-checkbox ng-model="filter.district[key]" aria-label="key" ng-checked="true" ng-change="filterCircle()">
+      <span class="badge" style="background-color: {{scaleDist(key)}};">&nbsp;</span> {{key}}
+    </md-checkbox>
+  </li>
+</ul>

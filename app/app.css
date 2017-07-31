@@ -170,8 +170,22 @@ report-type-child .report-types {
 }
 /* Medium devices (desktops, 992px and up) */
 /* Large devices (large desktops, 1200px and up) */
-seattle-crime-plotted {
+crime-plot-svg,
+.crime-plot-svg {
+  display: block;
   height: 90vh;
-  width: 100%;
-  border: solid 1px black;
+}
+.filter-list {
+  vertical-align: top;
+  padding: 6px 12px;
+}
+.filter-list md-checkbox {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.timeline-report-detail-panel {
+  background: #fff;
+  height: 90vh;
+  width: 90vw;
 }
