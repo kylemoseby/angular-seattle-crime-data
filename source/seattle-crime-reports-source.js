@@ -513,167 +513,179 @@ angular.module("mkm.seaCrimeData").directive("seattleCrimePlotted", [ "$http", f
    c.extBand.domain(e);
    c.distBand.domain(d);
   };
-  b._seaCrimeData_.finally(function() {});
+  function d(a) {
+   function c(a, b) {
+    return d3.nest().key(function(a) {
+     return a[b];
+    }).entries(a);
+   }
+   b.offCodes = c(a.data, "summary_offense_code");
+   b.districts = c(a.data, "district_sector");
+  }
+  b._seaCrimeData_.then(d).finally(function() {});
  }
  return {
   controller: b
  };
 } ]).directive("crimePlotMenu", [ function() {
+ function a(a) {
+  a.isIndeterminate = function() {
+   return a.selected.length !== 0 && a.selected.length !== a.items.length;
+  };
+  a.isChecked = function(b) {
+   var c = a.filter[b];
+   var d = true;
+   if (Object.keys(c).length > 0) {
+    for (var e in c) {
+     if (!c[e]) {
+      d = false;
+      break;
+     }
+    }
+   }
+   return d;
+  };
+  a.toggleAll = function(b) {
+   var c = Object.values(a.filter[b]);
+   var d = c.every(function(a) {
+    return a === true;
+   });
+   for (var e in a.filter[b]) {
+    a.filter[b][e] = !d;
+   }
+   a.filterCircle();
+  };
+ }
  return {
   require: "^seattleCrimePlotted",
   templateUrl: "views/template-crime-plot-menu.html",
-  link: function(a) {
-   a.isIndeterminate = function() {
-    return a.selected.length !== 0 && a.selected.length !== a.items.length;
-   };
-   a.isChecked = function(b) {
-    var c = a.filter[b];
-    var d = true;
-    if (Object.keys(c).length > 0) {
-     for (var e in c) {
-      if (!c[e]) {
-       d = false;
-       break;
-      }
-     }
-    }
-    return d;
-   };
-   a.toggleAll = function(b) {
-    var c = Object.values(a.filter[b]);
-    var d = c.every(function(a) {
-     return a === true;
-    });
-    for (var e in a.filter[b]) {
-     a.filter[b][e] = !d;
-    }
-    a.filterCircle();
-   };
-  }
+  link: a
  };
 } ]).directive("crimePlotSvg", [ "$window", "crimeReportPanelPlots", function(a, b) {
- return {
-  require: [ "^seattleCrimePlotted" ],
-  link: function(c, d) {
-   var e = b();
-   var f = d3.select(d[0]).append("svg");
-   var g = d3.axisBottom().ticks(d3.timeHour, 24).tickFormat(d3.timeFormat("%m/%d"));
-   var h = d3.axisLeft();
-   var i = d3.axisLeft();
-   var j = f.append("g").attr("class", "axis x");
-   var k = f.append("g").attr("transform", "translate(35, -22)").attr("class", "axis y dist").attr("opacity", 1);
-   var l = f.append("g").attr("transform", "translate(35, -22)").attr("class", "axis y type").attr("opacity", 0);
-   var m = f.append("g").attr("class", "crime-report-plots");
-   var n = c.scales;
-   c._seaCrimeData_.then(function o(b) {
-    var o = b.data;
-    f.attr("height", d[0].offsetHeight).attr("width", d[0].offsetWidth);
-    c.setElementScales(f);
-    c.setDataScales(o);
-    function p(a) {
-     g.scale(a.dateReported);
-     j.call(g);
-     h.scale(a.distBand);
-     i.scale(a.extBand);
-     k.call(h);
-     l.call(i);
+ function c(c, d) {
+  var e = b();
+  var f = d3.select(d[0]).append("svg");
+  var g = d3.axisBottom().ticks(d3.timeHour, 24).tickFormat(d3.timeFormat("%m/%d"));
+  var h = d3.axisLeft();
+  var i = d3.axisLeft();
+  var j = f.append("g").attr("class", "axis x");
+  var k = f.append("g").attr("transform", "translate(35, -22)").attr("class", "axis y dist").attr("opacity", 1);
+  var l = f.append("g").attr("transform", "translate(35, -22)").attr("class", "axis y type").attr("opacity", 0);
+  var m = f.append("g").attr("class", "crime-report-plots");
+  var n = c.scales;
+  function o(b) {
+   var o = b.data;
+   f.attr("height", d[0].offsetHeight).attr("width", d[0].offsetWidth);
+   c.setElementScales(f);
+   c.setDataScales(o);
+   function p(a) {
+    g.scale(a.dateReported);
+    j.call(g);
+    h.scale(a.distBand);
+    i.scale(a.extBand);
+    k.call(h);
+    l.call(i);
+   }
+   p(n);
+   function q(a) {
+    if (c.filter.extension[a.summary_offense_code] && c.filter.district[a.district_sector]) {
+     return c.disp.circRad / 10 + "vh";
+    } else {
+     return "0px";
     }
-    p(n);
-    function q(a) {
-     if (c.filter.extension[a.summary_offense_code] && c.filter.district[a.district_sector]) {
-      return c.disp.circRad / 10 + "vh";
-     } else {
-      return "0px";
-     }
-    }
-    c.circles = m.selectAll("circle").data(b.data).enter().append("circle").attr("r", q).attr("class", "timeline-circle").attr("cx", function(a) {
-     return n.dateReported(new Date(a.date_reported));
-    }).attr("cy", function(a) {
-     return n.distBand(a.district_sector);
-    }).style("fill", function(a) {
-     n.distColour(a.district_sector);
-     return n.extColour(a.summary_offense_code);
-    }).on("click", function(a) {
-     e.showPanel(a, d3.event, this);
-    });
-    function r(a, b, c) {
-     var d;
-     return function() {
-      var e = this, f = arguments;
-      var g = function() {
-       d = null;
-       if (!c) {
-        a.apply(e, f);
-       }
-      };
-      var h = c && !d;
-      clearTimeout(d);
-      d = setTimeout(g, b);
-      if (h) {
+   }
+   c.circles = m.selectAll("circle").data(b.data).enter().append("circle").attr("r", q).attr("class", "timeline-circle").attr("cx", function(a) {
+    return n.dateReported(new Date(a.date_reported));
+   }).attr("cy", function(a) {
+    return n.distBand(a.district_sector);
+   }).style("fill", function(a) {
+    n.distColour(a.district_sector);
+    return n.extColour(a.summary_offense_code);
+   }).on("click", function(a) {
+    e.showPanel(a, d3.event, this);
+   });
+   function r(a, b, c) {
+    var d;
+    return function() {
+     var e = this, f = arguments;
+     var g = function() {
+      d = null;
+      if (!c) {
        a.apply(e, f);
       }
      };
-    }
-    var s = d3.transition().duration(950).ease(d3.easeLinear);
-    c.setCircleRad = r(function() {
-     c.circles.transition(s).attr("r", q);
-    }, 250);
-    c.filterCircle = r(function() {
-     c.circles.transition(s).attr("r", q);
-    }, 250);
-    c.circSetColorType = function() {
-     c.circles.transition(s).style("fill", function(a) {
-      return n.extColour(a.summary_offense_code);
-     });
-     c.disp.color = "extension";
-    };
-    c.circSetColorDist = function() {
-     c.circles.transition(s).style("fill", function(a) {
-      return n.distColour(a.district_sector);
-     });
-     c.disp.color = "district";
-    };
-    function t() {
-     k.attr("opacity", 1);
-     l.attr("opacity", 0);
-     c.circles.transition(s).attr("cy", function(a) {
-      return n.distBand(a.district_sector);
-     });
-    }
-    function u() {
-     k.attr("opacity", 0);
-     l.attr("opacity", 1);
-     c.circles.transition(s).attr("cy", function(a) {
-      return n.extBand(a.summary_offense_code);
-     });
-    }
-    c.toggleAxis = function() {
-     if (c.disp.axis === "extension") {
-      t();
-      c.disp.axis = "district";
-     } else if (c.disp.axis === "district") {
-      u();
-      c.disp.axis = "extension";
+     var h = c && !d;
+     clearTimeout(d);
+     d = setTimeout(g, b);
+     if (h) {
+      a.apply(e, f);
      }
     };
-    angular.element(a).bind("resize", r(function() {
-     f.attr("height", d[0].offsetHeight).attr("width", d[0].offsetWidth);
-     c.setElementScales(f);
-     c.circles.transition(s).attr("cx", function(a) {
-      return n.dateReported(new Date(a.date_reported));
-     }).attr("cy", function(a) {
-      if (c.disp.axis === "district") {
-       return n.distBand(a.district_sector);
-      } else if (c.disp.axis === "extension") {
-       return n.extBand(a.summary_offense_code);
-      }
-     });
-     p(n);
-    }, 250));
-    c.scaleType = n.extColour;
-    c.scaleDist = n.distColour;
-   });
+   }
+   var s = d3.transition().duration(950).ease(d3.easeLinear);
+   c.setCircleRad = r(function() {
+    c.circles.transition(s).attr("r", q);
+   }, 250);
+   c.filterCircle = r(function() {
+    c.circles.transition(s).attr("r", q);
+   }, 250);
+   c.circSetColorType = function() {
+    c.circles.transition(s).style("fill", function(a) {
+     return n.extColour(a.summary_offense_code);
+    });
+    c.disp.color = "extension";
+   };
+   c.circSetColorDist = function() {
+    c.circles.transition(s).style("fill", function(a) {
+     return n.distColour(a.district_sector);
+    });
+    c.disp.color = "district";
+   };
+   function t() {
+    k.attr("opacity", 1);
+    l.attr("opacity", 0);
+    c.circles.transition(s).attr("cy", function(a) {
+     return n.distBand(a.district_sector);
+    });
+   }
+   function u() {
+    k.attr("opacity", 0);
+    l.attr("opacity", 1);
+    c.circles.transition(s).attr("cy", function(a) {
+     return n.extBand(a.summary_offense_code);
+    });
+   }
+   c.toggleAxis = function() {
+    if (c.disp.axis === "extension") {
+     t();
+     c.disp.axis = "district";
+    } else if (c.disp.axis === "district") {
+     u();
+     c.disp.axis = "extension";
+    }
+   };
+   angular.element(a).bind("resize", r(function() {
+    f.attr("height", d[0].offsetHeight).attr("width", d[0].offsetWidth);
+    c.setElementScales(f);
+    c.circles.transition(s).attr("cx", function(a) {
+     return n.dateReported(new Date(a.date_reported));
+    }).attr("cy", function(a) {
+     if (c.disp.axis === "district") {
+      return n.distBand(a.district_sector);
+     } else if (c.disp.axis === "extension") {
+      return n.extBand(a.summary_offense_code);
+     }
+    });
+    p(n);
+   }, 250));
+   c.scaleType = n.extColour;
+   c.scaleDist = n.distColour;
   }
+  c._seaCrimeData_.then(o);
+ }
+ return {
+  require: [ "^seattleCrimePlotted" ],
+  link: c
  };
 } ]).factory("crimeReportPanelPlots", [ "$mdPanel", function(a) {
  var b = a;
@@ -1148,9 +1160,9 @@ angular.module("mkm.seaCrimeData").directive("reportTypeChild", [ function() {
 } ]);
 
 angular.module("mkm.seaCrimeData").run([ "$templateCache", function(a) {
- a.put("views/crime-view.html", '<!-- INTRO --><!-- <div flex="100" flex-gt-md="50">\n' + "  <h1>Seattle Crime Reports</h1>\n" + '  <p>The following examples all use data that can be found at <a href="https://data.seattle.gov/Public-Safety/Seattle-Police-Department-Police-Report-Incident/7ais-f98f" target="_blank">data.seattle.gov</a>. An HTTP requests a <a href="https://data.seattle.gov/resource/7ais-f98f.json" target="_blank">JSON object</a> at page load. JSON data is then processed using D3 and native JavaScript, and finally rendered as Angular directives. All visualastions are SVG elements generated by D3. Mapping is done with Google Maps JavaScript API.</p>\n' + '  <p>Coded by <a href="http://kylemoseby.com" target="_blank">Kyle Moseby</a>.</p>\n' + '  <p><a href="https://github.com/kylemoseby/angular-seattle-crime-data" target="_blank">A GitHub Repo can be found here <span class="icon-github"></span></a></p>\n' + "  <h3>Dependencies</h3>\n" + "  <ul>\n" + '    <li><a href="https://angularjs.org/" target="_blank">AngularJS</a></li>\n' + '    <li><a href="https://D3js.org/" target="_blank">D3</a></li>\n' + '    <li><a href="https://developers.google.com/maps//" target="_blank">Google Maps</a></li>\n' + "  </ul>\n" + "</div>\n" + ' --><!-- // INTRO --><!-- TIMELINE --> <div class="container-fluid"> <div seattle-crime-plotted class="row"> <div class="col-sm-5 crime-plot-menu" crime-plot-menu></div> <div class="col-sm-7"> <crime-plot-svg></crime-plot-svg> </div> </div> <!-- // TIMELINE --> <!-- GOOGLE MAP --> <!--  <div flex="100" flex-gt-md="40">\n' + "    <h2>Reports by Latitude and Longitude</h2>\n" + '    <div flex="100">\n' + '      <map-canvas map-promise="crimeData" map-style="mapStyle"></map-canvas>\n' + "      <map-filters></map-filters>\n" + "    </div>\n" + "  </div> --> <!-- // GOOGLE MAP --> <!-- BAR CHART --> <!--\n" + '   <div flex="100" flex-gt-md="50">\n' + "    <h2>Report count by incident type</h2>\n" + '    <div id="crime-reports-block" crime-reports-block crime-reports-data="crimeData"></div>\n' + "  </div>\n" + '   --> <!-- // BAR CHART --> </div> <!-- TYPE DETAIL EXAMPLE --> <!-- <div layout="column" class="report-type-detail"> --> <!-- <div flex> --> <!-- <h2>Type Detail</h2> --> <!-- <div ng-include="\'views/template-report-type-detail.html\'"></div> --> <!-- <h2>Incident Detail</h2> --> <!-- <div ng-include="\'views/template-incident-detail.html\'" onload="incidentStreetView()" class="incident-example"></div> --> <!-- </div> --> <!-- </div> --> <!-- // TYPE DETAIL EXAMPLE --> <!-- // REPORT DETAIL EXAMPLE -->');
+ a.put("views/crime-view.html", '<!-- INTRO --><!-- <div flex="100" flex-gt-md="50">\n' + "  <h1>Seattle Crime Reports</h1>\n" + '  <p>The following examples all use data that can be found at <a href="https://data.seattle.gov/Public-Safety/Seattle-Police-Department-Police-Report-Incident/7ais-f98f" target="_blank">data.seattle.gov</a>. An HTTP requests a <a href="https://data.seattle.gov/resource/7ais-f98f.json" target="_blank">JSON object</a> at page load. JSON data is then processed using D3 and native JavaScript, and finally rendered as Angular directives. All visualastions are SVG elements generated by D3. Mapping is done with Google Maps JavaScript API.</p>\n' + '  <p>Coded by <a href="http://kylemoseby.com" target="_blank">Kyle Moseby</a>.</p>\n' + '  <p><a href="https://github.com/kylemoseby/angular-seattle-crime-data" target="_blank">A GitHub Repo can be found here <span class="icon-github"></span></a></p>\n' + "  <h3>Dependencies</h3>\n" + "  <ul>\n" + '    <li><a href="https://angularjs.org/" target="_blank">AngularJS</a></li>\n' + '    <li><a href="https://D3js.org/" target="_blank">D3</a></li>\n' + '    <li><a href="https://developers.google.com/maps//" target="_blank">Google Maps</a></li>\n' + "  </ul>\n" + "</div>\n" + ' --><!-- // INTRO --><!-- TIMELINE --> <div class="container-fluid"> <div seattle-crime-plotted class="row"> <div class="col-sm-5 crime-plot-menu" crime-plot-menu></div> <div class="col-sm-7"> <crime-plot-svg></crime-plot-svg> </div> </div> <!-- // TIMELINE --> <!-- GOOGLE MAP --> <!--\n' + '   <div flex="100" flex-gt-md="40">\n' + "    <h2>Reports by Latitude and Longitude</h2>\n" + '    <div flex="100">\n' + '      <map-canvas map-promise="crimeData" map-style="mapStyle"></map-canvas>\n' + "      <map-filters></map-filters>\n" + "    </div>\n" + "  </div> --> <!-- // GOOGLE MAP --> <!-- BAR CHART --> <!--\n" + '   <div flex="100" flex-gt-md="50">\n' + "    <h2>Report count by incident type</h2>\n" + '    <div id="crime-reports-block" crime-reports-block crime-reports-data="crimeData"></div>\n' + "  </div>\n" + '   --> <!-- // BAR CHART --> </div> <!-- TYPE DETAIL EXAMPLE --> <!-- <div layout="column" class="report-type-detail"> --> <!-- <div flex> --> <!-- <h2>Type Detail</h2> --> <!-- <div ng-include="\'views/template-report-type-detail.html\'"></div> --> <!-- <h2>Incident Detail</h2> --> <!-- <div ng-include="\'views/template-incident-detail.html\'" onload="incidentStreetView()" class="incident-example"></div> --> <!-- </div> --> <!-- </div> --> <!-- // TYPE DETAIL EXAMPLE --> <!-- // REPORT DETAIL EXAMPLE -->');
  a.put("views/template-crime-map-filter.html", '<md-menu> <md-button aria-label="Filter crime data" class="md-icon-button" ng-click="$mdMenu.open($event)"> <span class="glyphicon glyphicon-filter"></span> </md-button> <md-menu-content width="8"> <md-menu-item> <md-button ng-click="filterApply($event)">Apply </md-button></md-menu-item> <md-menu-item> <md-button ng-click="filterReset($event)" ng-disabled="!mapIndexFilter().length > 0" md-prevent-menu-close>Reset </md-button></md-menu-item> <md-menu-item> <md-button ng-click="filterClear($event)" ng-disabled="$indexLength() === mapIndexFilter().length" md-prevent-menu-close>Clear All </md-button></md-menu-item> <md-menu-divider></md-menu-divider> <md-menu-item ng-repeat="(key, val) in filterInd | orderObjectBy : \'count\' : true"> <md-button ng-click="filterPushSplice($event)" ng-class="{\'md-primary\' : val.show}" md-prevent-menu-close> {{val.offenseCategory}} <span class="badge" style="background-color: {{val.fillColor}}">&nbsp;</span> </md-button> </md-menu-item> </md-menu-content> </md-menu>');
- a.put("views/template-crime-plot-menu.html", '<button class="btn" ng-click="toggleAxis()">{{disp.axis}}</button> <button class="btn" ng-click="circSetColorType()" ng-class="{ \'btn-primary\' : disp.color === \'extension\' }">By Code Extension</button> <button class="btn" ng-click="circSetColorDist()" ng-class="{ \'btn-primary\' : disp.color === \'district\' }">By District</button> <md-slider ng-model="disp.circRad" min="5" max="20" step="3" ng-change="setCircleRad()"></md-slider> <br> Display size: {{disp.circRad}} <br> <ul class="list-unstyled filter-list"> <li> <h3>Code Extension</h3> </li> <li> <md-checkbox aria-label="Select All" ng-checked="isChecked(\'extension\')" ng-click="toggleAll(\'extension\')"> <span ng-if="isChecked(\'extension\')">Un-</span>Select All </md-checkbox> </li> <li ng-repeat="key in scaleType.domain()"> <md-checkbox ng-model="filter.extension[key]" aria-label="offCodeMap[\'$\' + key].offense_type_description" ng-checked="true" ng-change="filterCircle()"> <span class="badge" style="background-color: {{scaleType(key)}}" ng-show="disp.color === \'extension\'">&nbsp;</span> {{key}} - {{offCodeMap[\'$\' + key].offense_type_description}} </md-checkbox> </li> </ul> <ul class="list-unstyled filter-list"> <li> <h3>Districts</h3> </li> <li> <md-checkbox aria-label="Select All" ng-checked="isChecked(\'district\')" ng-click="toggleAll(\'district\')"> <!-- md-indeterminate="isIndeterminate()" --> <span ng-if="isChecked(\'district\')">Un-</span>Select All </md-checkbox> </li> <li ng-repeat="key in scaleDist.domain()"> <md-checkbox ng-model="filter.district[key]" aria-label="key" ng-checked="true" ng-change="filterCircle()"> <span class="badge" style="background-color: {{scaleDist(key)}}">&nbsp;</span> {{key}} </md-checkbox> </li> </ul>');
+ a.put("views/template-crime-plot-menu.html", '<button class="btn" ng-click="toggleAxis()">{{disp.axis}}</button> <button class="btn" ng-click="circSetColorType()" ng-class="{ \'btn-primary\' : disp.color === \'extension\' }">By Code Extension</button> <button class="btn" ng-click="circSetColorDist()" ng-class="{ \'btn-primary\' : disp.color === \'district\' }">By District</button> <md-slider ng-model="disp.circRad" min="5" max="20" step="3" ng-change="setCircleRad()"></md-slider> <br> Display size: {{disp.circRad}} <br> <ul class="list-unstyled filter-list"> <li> <h3>Code Extension</h3> </li> <li> <md-checkbox aria-label="Select All" ng-checked="isChecked(\'extension\')" ng-click="toggleAll(\'extension\')"> <span ng-if="isChecked(\'extension\')">Un-</span>Select All </md-checkbox> </li> <li ng-repeat="_c in offCodes | orderBy:\'-values.length\'"> <!-- <li ng-repeat="_c.key in scaleType.domain()"> --> <md-checkbox ng-model="filter.extension[_c.key]" aria-label="offCodeMap[\'$\' + _c.key].offense_type_description" ng-checked="true" ng-change="filterCircle()"> <span class="badge" style="background-color: {{scaleType(_c.key)}}" ng-show="disp.color === \'extension\'">&nbsp;</span> {{_c.key}} - {{offCodeMap[\'$\' + _c.key].offense_type_description}} ({{_c.values.length}}) </md-checkbox> </li> </ul> <ul class="list-unstyled filter-list"> <li> <h3>Districts</h3> </li> <li> <md-checkbox aria-label="Select All" ng-checked="isChecked(\'district\')" ng-click="toggleAll(\'district\')"> <!-- md-indeterminate="isIndeterminate()" --> <span ng-if="isChecked(\'district\')">Un-</span>Select All </md-checkbox> </li> <li ng-repeat="_d in districts | orderBy:\'-values.length\' "> <!-- <li ng-repeat="_d.key in scaleDist.domain()"> --> <md-checkbox ng-model="filter.district[_d.key]" aria-label="_d.key" ng-checked="true" ng-change="filterCircle()"> <span class="badge" style="background-color: {{scaleDist(_d.key)}}">&nbsp;</span> {{_d.key}} ({{_d.values.length}}) </md-checkbox> </li> </ul>');
  a.put("views/template-incident-detail.html", '<div layout="row" layout-wrap layout-padding> <!-- TABLE --> <div flex="100"> <button type="button" class="btn btn-primary" ng-click="closeDetail()" aria-lable="Close Detail"> <span class="glyphicon glyphicon-remove"></span> </button> <div class="table-responsive"> <table class="table"> <thead> <tr> <td>Date Reported</td> <td>Address</td> <td>District Sector</td> <td>Census Tract</td> <td>General Offense Number</td> <td>Offense Type</td> <td>Offense Code</td> <td>Description</td> <td>Zone/Beat</td> </tr> </thead> <tbody> <tr> <td>{{incidentDetail.date_reported | date:\'medium\'}}</td> <td>{{incidentDetail.hundred_block_location}}</td> <td>{{incidentDetail.district_sector}}</td> <td>{{incidentDetail.census_tract_2000}}</td> <td>{{incidentDetail.general_offense_number}}</td> <td>{{incidentDetail.offense_type}}</td> <td>{{incidentDetail.offense_code}}</td> <td>{{incidentDetail.summarized_offense_description}}</td> <td>{{incidentDetail.zone_beat}}</td> </tr> </tbody> </table> </div> </div> <!-- // TABLE --> <!-- MAP --> <div flex="100" flex-gt-sm="50"> <map-canvas id="report-map" crime-report="incidentDetail"></map-canvas> </div> <!-- // MAP --> <!-- STREET VIEW --> <div flex="100" flex-gt-sm="50"> <div id="street-view-detail"></div> </div> <!-- // STREET VIEW --> </div>');
  a.put("views/template-map-canvas.html", '<!-- MAP CANVAS --> <div class="map-canvas"></div> <!-- MAP CANVAS -->');
  a.put("views/template-map-filters.html", '<div ng-show="indexOffType"> <!-- FILTER TYPE --> <button ng-click="filterToggleType($event)" ng-repeat="(key, val) in indexOffType" class="btn" ng-class="{\n' + "        'btn-default'  : filters.reportFilter.indexOf(val.key) !== -1 && showApply,\n" + "        'btn-primary' : filters.reportFilter.indexOf(val.key) === -1,\n" + "        'btn-link' : filters.reportFilter.indexOf(val.key) !== -1 && !showApply\n" + '     }" aria-label="{{vall.key}}"> <div class="badge" style="background-color: {{filters.reportFilter.indexOf(val.key) !== -1 && !showApply ? \'#555\' : colorScaleOff(val.key)}}"><span class="glyphicon glyphicon-eye-close" ng-show="filters.reportFilter.indexOf(val.key) !== -1"></span>&nbsp;</div> {{val.key}} </button> <!-- // FILTER TYPE --> <!-- FILTER DATE --> <div class="map-filter-date"> <md-datepicker ng-model="filters.startDate" md-min-date="dateRange[0]" md-max-date="filters.endDate" md-placeholder="Start date" ng-click="dateChange($event)"></md-datepicker> <md-datepicker ng-model="filters.endDate" md-min-date="filters.startDate" md-max-date="dateRange[1]" md-placeholder="End date" ng-click="dateChange($event)"></md-datepicker> </div> <!-- // FILTER DATE --> <button class="btn btn-default" ng-click="filterApply($event)" ng-show="showApply" aria-labvel="Apply">Apply</button> <button class="btn btn-default" ng-click="filterAll()" aria-label="Filter All">Filter All</button> <button class="btn btn-default" ng-click="filterNone()" aria-label="Show All">Show All</button> </div>');
