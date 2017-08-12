@@ -13,9 +13,10 @@
       <span ng-if="isChecked('extension')">Un-</span>Select All
     </md-checkbox>
   </li>
-  <li ng-repeat="key in scaleType.domain()">
-    <md-checkbox ng-model="filter.extension[key]" aria-label="offCodeMap['$' + key].offense_type_description" ng-checked="true" ng-change="filterCircle()">
-      <span class="badge" style="background-color: {{scaleType(key)}};" ng-show="disp.color === 'extension'">&nbsp;</span> {{key}} - {{offCodeMap['$' + key].offense_type_description}}
+  <li ng-repeat="_c in offCodes | orderBy:'-values.length'">
+  <!-- <li ng-repeat="_c.key in scaleType.domain()"> -->
+    <md-checkbox ng-model="filter.extension[_c.key]" aria-label="offCodeMap['$' + _c.key].offense_type_description" ng-checked="true" ng-change="filterCircle()">
+      <span class="badge" style="background-color: {{scaleType(_c.key)}};" ng-show="disp.color === 'extension'">&nbsp;</span> {{_c.key}} - {{offCodeMap['$' + _c.key].offense_type_description}} ({{_c.values.length}})
     </md-checkbox>
   </li>
 </ul>
@@ -29,9 +30,10 @@
       <span ng-if="isChecked('district')">Un-</span>Select All
     </md-checkbox>
   </li>
-  <li ng-repeat="key in scaleDist.domain()">
-    <md-checkbox ng-model="filter.district[key]" aria-label="key" ng-checked="true" ng-change="filterCircle()">
-      <span class="badge" style="background-color: {{scaleDist(key)}};">&nbsp;</span> {{key}}
+  <li ng-repeat="_d in districts | orderBy:'-values.length'">
+  <!-- <li ng-repeat="_d.key in scaleDist.domain()"> -->
+    <md-checkbox ng-model="filter.district[_d.key]" aria-label="_d.key" ng-checked="true" ng-change="filterCircle()">
+      <span class="badge" style="background-color: {{scaleDist(_d.key)}};">&nbsp;</span> {{_d.key}} ({{_d.values.length}})
     </md-checkbox>
   </li>
 </ul>
