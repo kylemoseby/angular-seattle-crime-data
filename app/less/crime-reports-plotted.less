@@ -1,22 +1,35 @@
+.timeline-report-detail-panel {
+  background: @body-bg;
+  height: 90vh;
+  width: 90vw;
+}
+
+seattle-crime-plotted {
+  overflow: hidden;
+
   crime-plot-svg,
   .crime-plot-svg {
     display: block;
     height: 90vh;
   }
 
-  .filter-list {
-    vertical-align: top;
-    padding: @padding-base-vertical @padding-base-horizontal;
-    md-checkbox {
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
+  crime-plot-menu {
+    .filter-list {
+      vertical-align: top;
+      margin: 0;
+      list-style: none;
+      padding: @padding-small-vertical @padding-small-horizontal;
+      display: inline-block;
+      max-width: 50%;
+      md-checkbox {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
     }
   }
+}
 
-
-.timeline-report-detail-panel {
-	background: @body-bg;
-	height: 90vh;
-	width: 90vw;
+seattle-crime-plotted.loading {
+  height: 0
 }

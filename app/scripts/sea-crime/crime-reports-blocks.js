@@ -14,16 +14,17 @@ angular.module('mkm.seaCrimeData')
 
       'link': function(scope, element) {
 
+
         var $elm = element[0];
 
+        // Angular Modal
         scope.$panel = $mdPanel;
 
         //  SVG DIMENSIONS
         var padding = $elm.offsetWidth * 0.033;
         var wdth = $elm.offsetWidth;
         var hght = $elm.offsetHeight;
-        var barHght = hght - padding - 120;
-
+        var barHght = hght - padding - (hght * 0.45);
 
 
         // DOM ELEMENTS
@@ -33,9 +34,31 @@ angular.module('mkm.seaCrimeData')
           .attr('height', hght)
           .attr('width', wdth);
 
+        var progressBar = wrapper.select('.loading-wrapper');
+
         var svg = wrapper.select('svg');
 
         var rectGroup = svg.selectAll('g.reports-index-rect');
+
+
+        // PROGRESS BAR LOADING
+        scope.progress = {
+          now: 2,
+          max: 100,
+          loaded: 2
+        };
+
+        function progressUpdate() {
+          scope.progress.now++;
+          scope.progress.loaded = (scope.progress.now / scope.progress.max) * 100;
+        }
+
+        function hideProgressBar() {
+
+          progressBar.classed('loaded', true);
+        }
+        // END PROGRESS BAR LOADING
+
 
 
         // AXIS
@@ -56,13 +79,15 @@ angular.module('mkm.seaCrimeData')
           return (reportKey === 'VEH-THEFT-AUTO') ? 'VEH' : reportKey;
         }
 
-
-
-        scope.$promise.promise.then(function(data) {
+        // render Visualization with returned data
+        function renderBlocksWithData(data) {
 
           var _index_ = data.indexOffType.sort(function(a, b) {
             return d3.descending(a.values.length, b.values.length);
           });
+
+          scope.progress.max = _index_.length;
+
 
           var colorScale = data.colorScaleOff;
 
@@ -76,18 +101,142 @@ angular.module('mkm.seaCrimeData')
             return d.values.length;
           })]);
 
+          // Category Detail Modal
+          function typeDetailModalInit(d) {
+
+            /*
+              _d_ = {
+                fillColor: "#ffbb78"
+                key: "ASSLT"
+                values: [{
+                    census_tract_2000: "7500.4017",
+                    date_reported: "2017-09-06T22:29:00",
+                    district_sector: "E",
+                    general_offense_number: "2017332238",
+                    hundred_block_location: "10XX BLOCK OF E PIKE ST",
+                    latitude: "47.614089966",
+                    location: {
+                        l
+                        atitude: "47.614089966",
+                        needs_recoding: false,
+                        longitude: "-122.31879425"
+                    },
+                    longitude: "-122.318794250",
+                    month: "9",
+                    occurred_date_or_date_range_start: "2017-09-06T22:29:00",
+                    offense_code: "1313",
+                    offense_code_extension: "0",
+                    offense_type: "ASSLT-NONAGG",
+                    rms_cdw_id: "1274601",
+                    summarized_offense_description: "ASSAULT",
+                    summary_offense_code: "1300",
+                    year: "2017",
+                    zone_beat: "E2"
+                  }]
+               };
+             */
+
+            var position = scope.$panel
+              .newPanelPosition()
+              .absolute()
+              .center();
+
+            /* OPEN THE PANEL */
+            scope.$panel
+              .open({
+                attachTo: angular.element(document.body),
+                controllerAs: 'ctrl',
+                disableParentScroll: true,
+                templateUrl: 'views/template-report-type-detail.html',
+                hasBackdrop: true,
+                panelClass: 'report-type-detail',
+                position: position,
+                trapFocus: true,
+                zIndex: 150,
+                clickOutsideToClose: true,
+                escapeToClose: true,
+                focusOnOpen: true,
+                targetEvent: event,
+                locals: {
+                  reportType: d
+                },
+                controller: function($scope, mdPanelRef, reportType) {
+
+                  console.log(reportType);
+
+                  $scope.reportType = reportType;
+                  $scope.reportType.fillColor = colorScale(reportType.key);
+
+                  $scope.dataTypeDay = d3.nest()
+                    .key(function(d) {
+                      var byDay = d3.timeFormat('%x');
+                      return byDay(new Date(d.date_reported));
+                    })
+                    .entries(reportType.values);
+
+                  $scope.dataTypeChild = d3.nest()
+                    .key(function(d) {
+                      return d.offense_type;
+                    })
+                    .entries(reportType.values);
+
+                  $scope.dataZoneBeat = d3.nest()
+                    .key(function(d) {
+                      return d.district_sector;
+                    })
+                    .key(function(d) {
+                      return d.zone_beat;
+                    })
+                    .entries(reportType.values);
+
+                  $scope.closeDetail = function() {
+                    mdPanelRef.close();
+                  };
+                }
+              });
+          }
+          // END Category Detail Modal
+
+
+
+          // Bar chart wrappers
           rectGroup
             .data(_index_)
             .enter()
             .append('g')
-            .attr('id', function(d) {
-              return d.key;
-            })
+            .attr('id', function(d) { return d.key; })
             .attr('class', 'reports-index-rect')
-            // FIX LATER
             .attr('transform', 'translate(' + padding + ',80)');
+          // END Bar chart wrappers
+
+          // CATEGORY LABELS
+          var labelCatg = svg.selectAll('g.reports-index-rect')
+            .append('text')
+            .attr('transform', function(d) {
+              var xTrans = scaleAxisX(checkVehKey(d.key));
+              return 'translate(' + (xTrans - (scaleAxisX.bandwidth() * 0.33)) + ', ' + (barHght - padding + 9) + ') rotate(-50)';
+            })
+            .attr('text-anchor', 'end')
+            .attr('class', 'block-label category')
+            .text(function(d) {
+              return d.key;
+            });
+
+          // COUNT LABELS
+          var labelCnt = svg.selectAll('g.reports-index-rect')
+            .append('text')
+            .attr('transform', function(d) {
+              var xTrans = scaleAxisX(checkVehKey(d.key));
+              return 'translate(' + (xTrans - (scaleAxisX.bandwidth() * 0.5)) + ', ' + (barHght - scaleAxisY(d.values.length) - padding - 5) + ')';
+            })
+            .attr('class', 'block-label count')
+            .attr('text-anchor', 'middle')
+            .text(function(d) {
+              return d.values.length;
+            });
 
 
+          // Bar chart | SVG rects
           var rect = svg.selectAll('g.reports-index-rect')
             .append('rect')
             .attr('transform', function(d) {
@@ -102,43 +251,12 @@ angular.module('mkm.seaCrimeData')
               return scaleAxisY(d.values.length);
             })
             .attr('fill', function(d) {
+              progressUpdate();
+
               return colorScale(d.key);
-            });
-          // .on('click', typeDetailModalInit);
-
-          // CATEGORY LABELS
-          var labelCatg = svg.selectAll('g.reports-index-rect')
-            .append('text')
-            .attr('transform', function(d) {
-
-              var xTrans = scaleAxisX(checkVehKey(d.key));
-
-              return 'translate(' + (xTrans - (scaleAxisX.bandwidth() * 0.33)) + ', ' + (barHght - padding + 9) + ') rotate(-33)';
             })
-            .attr('text-anchor', 'end')
-            .attr('class', 'block-label category')
-            .text(function(d) {
-              return d.key;
-            });
-
-          // COUNT LABELS
-          var labelCnt = svg.selectAll('g.reports-index-rect')
-            .append('text')
-            .attr('transform', function(d) {
-
-              var xTrans = scaleAxisX(checkVehKey(d.key));
-
-              return 'translate(' + (xTrans - (scaleAxisX.bandwidth() * 0.5)) + ', ' + (barHght - scaleAxisY(d.values.length) - padding - 5) + ')';
-            })
-            .attr('class', 'block-label count')
-            .attr('text-anchor', 'middle')
-            .text(function(d) {
-              return d.values.length;
-            });
-
-
-
-
+            .on('click', typeDetailModalInit);
+          // END Bar chart
 
           function _refreshBlocks() {
 
@@ -151,37 +269,33 @@ angular.module('mkm.seaCrimeData')
               .attr('height', hght)
               .attr('width', wdth);
 
-            scaleAxisX.bandwidth([padding, (wdth - padding)]);
+            scaleAxisX.range([padding, (wdth - padding)]);
 
             scaleAxisY.range([padding, barHght]);
 
-            labelCatg
-              .transition()
+            // Transistions definitions
+            var t = d3.transition()
               .duration(100)
-              .ease('sin-in-out')
+              .ease(d3.easeLinear);
+
+            labelCatg
+              .transition(t)
               .attr("transform", function(d) {
                 var xTrans = scaleAxisX(checkVehKey(d.key));
-
                 return 'translate(' + (xTrans - (scaleAxisX.bandwidth() * 0.33)) + ', ' + (barHght - padding + 7) + ') rotate(-50)';
               });
 
             labelCnt
-              .transition()
-              .duration(100)
-              .ease('sin-in-out')
+              .transition(t)
               .attr("transform", function(d) {
                 var xTrans = scaleAxisX(checkVehKey(d.key));
-
                 return 'translate(' + (xTrans - (scaleAxisX.bandwidth() * 0.5)) + ', ' + (barHght - scaleAxisY(d.values.length) - padding - 6) + ')';
               });
 
             rect
-              .transition()
-              .duration(100)
-              .ease('sin-in-out')
+              .transition(t)
               .attr('transform', function(d) {
                 var scaleVal = scaleAxisX(checkVehKey(d.key));
-
                 return 'translate(' + scaleVal + ',' + ((barHght - padding) * 2) + ') rotate(180)';
               })
               .attr('y', function() {
@@ -193,78 +307,19 @@ angular.module('mkm.seaCrimeData')
               });
           }
 
+          angular.element($window).bind('resize', _refreshBlocks);
+
           scope.blockID = {
             refreshBlocks: _refreshBlocks
           };
+        }
+        // END render Visualization
 
-          angular.element($window).bind('resize', _refreshBlocks);
+        // INIT
+        scope.$promise.promise.then(renderBlocksWithData);
+        scope.$promise.promise.finally(hideProgressBar);
 
-        });
+
       }
-
     };
   }]);
-
-
-
-// function typeDetailModalInit(d) {
-
-//   var position = scope.$panel
-//     .newPanelPosition()
-//     .absolute()
-//     .center();
-
-//   /* OPEN THE PANEL */
-//   scope.$panel
-//     .open({
-//       attachTo: angular.element(document.body),
-//       controllerAs: 'ctrl',
-//       disableParentScroll: true,
-//       templateUrl: 'views/template-report-type-detail.html',
-//       hasBackdrop: true,
-//       panelClass: 'report-type-detail',
-//       position: position,
-//       trapFocus: true,
-//       zIndex: 150,
-//       clickOutsideToClose: true,
-//       escapeToClose: true,
-//       focusOnOpen: true,
-//       targetEvent: event,
-//       locals: {
-//         reportType: d
-//       },
-//       controller: function($scope, mdPanelRef, reportType) {
-
-//         console.log(reportType);
-
-//         $scope.reportType = reportType;
-//         $scope.reportType.fillColor = colorScale(reportType.key);
-
-//         $scope.dataTypeDay = d3.nest()
-//           .key(function(d) {
-//             var byDay = d3.time.format('%x');
-//             return byDay(new Date(d.date_reported));
-//           })
-//           .entries(reportType.values);
-
-//         $scope.dataTypeChild = d3.nest()
-//           .key(function(d) {
-//             return d.offense_type;
-//           })
-//           .entries(reportType.values);
-
-//         $scope.dataZoneBeat = d3.nest()
-//           .key(function(d) {
-//             return d.district_sector;
-//           })
-//           .key(function(d) {
-//             return d.zone_beat;
-//           })
-//           .entries(reportType.values);
-
-//         $scope.closeDetail = function() {
-//           mdPanelRef.close();
-//         };
-//       }
-//     });
-// }

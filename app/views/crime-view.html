@@ -15,30 +15,30 @@
  <!-- // INTRO -->
 <!-- TIMELINE -->
 <div class="container-fluid">
-  <div seattle-crime-plotted class="row">
-    <div class="col-sm-5 crime-plot-menu" crime-plot-menu></div>
+  <seattle-crime-plotted class="row">
+    <div class="col-sm-5 crime-plot-menu">
+      <crime-plot-menu></crime-plot-menu>
+    </div>
     <div class="col-sm-7">
       <crime-plot-svg></crime-plot-svg>
     </div>
-  </div>
+  </seattle-crime-plotted>
   <!-- // TIMELINE -->
   <!-- GOOGLE MAP -->
-  <!--
-   <div flex="100" flex-gt-md="40">
+ <!-- flex-gt-md="40" -->
+   <div flex="100" >
     <h2>Reports by Latitude and Longitude</h2>
-    <div flex="100">
-      <map-canvas map-promise="crimeData" map-style="mapStyle"></map-canvas>
-      <map-filters></map-filters>
-    </div>
-  </div> -->
+    <seattle-crime-map layout="row" flex="100" map-promise="$seaCrimeData" map-style="mapStyle">
+      <map-canvas flex="40"></map-canvas>
+      <map-filters flex="40"></map-filters>
+    </seattle-crime-map>
+  </div>
   <!-- // GOOGLE MAP -->
   <!-- BAR CHART -->
- <!--
-   <div flex="100" flex-gt-md="50">
+   <div flex="100" flex-gt-md="100">
     <h2>Report count by incident type</h2>
-    <div id="crime-reports-block" crime-reports-block crime-reports-data="crimeData"></div>
+    <div id="crime-reports-block" crime-reports-block crime-reports-data="$seaCrimeData"></div>
   </div>
-   -->
   <!-- // BAR CHART -->
 </div>
 <!-- TYPE DETAIL EXAMPLE -->

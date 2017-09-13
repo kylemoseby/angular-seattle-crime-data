@@ -1,8 +1,29 @@
 #crime-reports-block {
   display: block;
-  height: 40vh;
+  height: 50vh;
   width: 100%;
+  overflow: hidden;
+
+  .loading-wrapper{
+    height:100%;
+    width: 100%;
+    background: @body-bg;
+    overflow: hidden;
+  }
+  .loading-wrapper.loaded {
+    height: 0;
+    width: 0;
+    visibility: none;
+  }
 }
+
+.block-label {
+  font-size: @font-size-large;
+  text-transform: lowercase;
+  fill: @gray-light;
+  stroke: @gray-light;
+}
+
 
 .report-type-detail {
   background: @well-bg;

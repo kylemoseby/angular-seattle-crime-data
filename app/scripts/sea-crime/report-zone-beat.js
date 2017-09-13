@@ -16,12 +16,12 @@ angular.module('mkm.seaCrimeData')
 
         var $wrapper = d3.select(element.find('.report-zone-beat')[0]);
 
-        $scope.$typeColorScale = d3.scale
-          .category20()
+        $scope.$typeColorScale = d3.scaleOrdinal(d3.schemeCategory20)
           .domain($scope.reports
             .map(function(d) {
               return d.summarized_offense_description;
-            }));
+            })
+          );
 
         var labels = $wrapper.insert('div')
           .html('Districts<br>Zones');

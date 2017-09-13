@@ -1,10 +1,10 @@
 <button class="btn" ng-click="toggleAxis()">{{disp.axis}}</button>
 <button class="btn" ng-click="circSetColorType()" ng-class="{ 'btn-primary' : disp.color === 'extension' }">By Code Extension</button>
 <button class="btn" ng-click="circSetColorDist()" ng-class="{ 'btn-primary' : disp.color === 'district' }">By District</button>
-<md-slider ng-model="disp.circRad" min="5" max="20" step="3" ng-change="setCircleRad()"></md-slider>
+<md-slider ng-model="disp.circRad" min="5" max="20" step="3" ng-change="setCircleRad()" aria-label="Plot display size"></md-slider>
 <br> Display size: {{disp.circRad}}
 <br>
-<ul class="list-unstyled filter-list">
+<ul class="filter-list">
   <li>
     <h3>Code Extension</h3>
   </li>
@@ -15,12 +15,12 @@
   </li>
   <li ng-repeat="_c in offCodes | orderBy:'-values.length'">
   <!-- <li ng-repeat="_c.key in scaleType.domain()"> -->
-    <md-checkbox ng-model="filter.extension[_c.key]" aria-label="offCodeMap['$' + _c.key].offense_type_description" ng-checked="true" ng-change="filterCircle()">
+    <md-checkbox ng-model="filter.extension[_c.key]" aria-label="offCodeMap['$' + _c.key].offense_type_description" ng-checked="true" ng-change="filterChange()">
       <span class="badge" style="background-color: {{scaleType(_c.key)}};" ng-show="disp.color === 'extension'">&nbsp;</span> {{_c.key}} - {{offCodeMap['$' + _c.key].offense_type_description}} ({{_c.values.length}})
     </md-checkbox>
   </li>
 </ul>
-<ul class="list-unstyled filter-list">
+<ul class="filter-list">
   <li>
     <h3>Districts</h3>
   </li>

@@ -1,16 +1,11 @@
 'use strict';
 
-angular
-  .module('mkm.crimeDemo', [
-    'ngMaterial',
-    '$mdPanel',
-    'mkm.seaCrimeData'
-  ]);
-
 angular.module('mkm.seaCrimeData')
   .directive("seattleCrimePlotted", ['$http', function($http) {
 
-    function _controller_($scope) {
+    function _controller_($scope, $element) {
+
+      $element.addClass('loading');
 
       $scope._seaCrimeData_ = $http({
         method: 'GET',
@@ -26,9 +21,10 @@ angular.module('mkm.seaCrimeData')
           $scope.offCodeMap = d3.map(response.data, function(d) {
             return d.summary_offense_code;
           });
+        })
+        .finally(function() {
+          $element.removeClass('loading');
         });
-
-      // $scope.loaded = true;
 
       // DISPLAY OPTIONS
       $scope.disp = {
@@ -106,13 +102,13 @@ angular.module('mkm.seaCrimeData')
 
       function calcTotals(response) {
 
-        function d3Nest(_data, _prop){
+        function d3Nest(_data, _prop) {
 
           return d3.nest()
-          .key(function(d) {
-            return d[_prop];
-          })
-          .entries(_data);
+            .key(function(d) {
+              return d[_prop];
+            })
+            .entries(_data);
         }
 
         $scope.offCodes = d3Nest(response.data, 'summary_offense_code');
@@ -121,10 +117,7 @@ angular.module('mkm.seaCrimeData')
       }
 
       $scope._seaCrimeData_
-        .then(calcTotals)
-        .finally(function() {
-          // $scope.loaded = true;
-        });
+        .then(calcTotals);
     }
 
     return {
@@ -175,6 +168,11 @@ angular.module('mkm.seaCrimeData')
 
         $scope.filterCircle();
       };
+
+      $scope.fileterChange = function() {
+        console.log('cahnged');
+        $scope.filterCircle();
+      };
     }
     return {
       require: '^seattleCrimePlotted',
@@ -216,14 +214,63 @@ angular.module('mkm.seaCrimeData')
         .attr('class', 'axis y type')
         .attr('opacity', 0); // hide code extension axis
 
+      // AXIS CLASSES
+      function callAxis(_scales_) { // X AXIS
+
+        xAxis.scale(_scales_.dateReported);
+
+        // APPEND X AXIS
+        axDate.call(xAxis);
+
+        // Y AXIS
+        yAxisDist.scale(_scales_.distBand);
+        yAxisExt.scale(_scales_.extBand);
+
+        axDist.call(yAxisDist);
+        axExt.call(yAxisExt);
+      }
+
+
 
       // CRIME REPORT $scope.CIRCLES
       var circWrap = $svg.append('g')
         .attr('class', 'crime-report-plots');
 
+      // $scope.circles = circWrap.selectAll('circle');
+
+
       var $scales = $scope.scales;
 
-      function init(response) {
+
+      // Transistions definitions
+      var _t_ = d3.transition()
+        .duration(950)
+        .ease(d3.easeLinear);
+
+
+      // https://davidwalsh.name/essential-javascript-functions
+      // Returns a function, that, as long as it continues to be invoked, will not
+      // be triggered. The function will be called after it stops being called for
+      // N milliseconds. If `immediate` is passed, trigger the function on the
+      // leading edge, instead of the trailing.
+      function debounce(func, wait, immediate) {
+        var timeout;
+        return function() {
+          var context = this,
+            args = arguments;
+          var later = function() {
+            timeout = null;
+            if (!immediate) { func.apply(context, args); }
+          };
+          var callNow = immediate && !timeout;
+          clearTimeout(timeout);
+          timeout = setTimeout(later, wait);
+          if (callNow) { func.apply(context, args); }
+        };
+      }
+
+
+      function _init_(response) {
 
         var crimeReports = response.data;
 
@@ -236,29 +283,13 @@ angular.module('mkm.seaCrimeData')
         $scope.setElementScales($svg);
         $scope.setDataScales(crimeReports);
 
-        // AXIS CLASSES
-        function callAxis(_scales_) { // X AXIS
-
-          xAxis.scale(_scales_.dateReported);
-
-          // APPEND X AXIS
-          axDate.call(xAxis);
-
-          // Y AXIS
-          yAxisDist.scale(_scales_.distBand);
-          yAxisExt.scale(_scales_.extBand);
-
-          axDist.call(yAxisDist);
-          axExt.call(yAxisExt);
-        }
-
         callAxis($scales);
 
 
         function calcCircR(d) {
 
-          if ($scope.filter.extension[d.summary_offense_code] &&
-            $scope.filter.district[d.district_sector]) {
+          if (!$scope.filter.extension[d.summary_offense_code] &&
+            !$scope.filter.district[d.district_sector]) {
 
             return ($scope.disp.circRad / 10) + 'vh';
 
@@ -283,61 +314,68 @@ angular.module('mkm.seaCrimeData')
           })
           .style('fill', function(d) {
             // populates district scale
-
             $scales.distColour(d.district_sector);
-
             return $scales.extColour(d.summary_offense_code); // fill by code extension
           })
           .on('click', function(d) {
             $panel.showPanel(d, d3.event, this);
           });
 
-        // https://davidwalsh.name/essential-javascript-functions
-        // Returns a function, that, as long as it continues to be invoked, will not
-        // be triggered. The function will be called after it stops being called for
-        // N milliseconds. If `immediate` is passed, trigger the function on the
-        // leading edge, instead of the trailing.
-        function debounce(func, wait, immediate) {
-          var timeout;
-          return function() {
-            var context = this,
-              args = arguments;
-            var later = function() {
-              timeout = null;
-              if (!immediate) { func.apply(context, args); }
-            };
-            var callNow = immediate && !timeout;
-            clearTimeout(timeout);
-            timeout = setTimeout(later, wait);
-            if (callNow) { func.apply(context, args); }
-          };
+        function reloadCanvas() {
+
+          $svg
+            .attr('height', $element[0].offsetHeight)
+            .attr('width', $element[0].offsetWidth);
+
+          $scope.setElementScales($svg);
+
+          $scope.circles.transition(_t_)
+            .attr('cx', function(d) {
+              return $scales.dateReported(new Date(d.date_reported));
+            })
+            .attr('cy', function(d) {
+
+              if ($scope.disp.axis === 'district') {
+
+                return $scales.distBand(d.district_sector);
+
+              } else if ($scope.disp.axis === 'extension') {
+
+                return $scales.extBand(d.summary_offense_code);
+              }
+            });
+
+          callAxis($scales);
         }
 
 
-        // Transistions definitions
-        var t = d3.transition()
-          .duration(950)
-          .ease(d3.easeLinear);
 
-        $scope.setCircleRad = debounce(function() {
-          $scope.circles
-            .transition(t)
-            .attr('r', calcCircR);
+        $scope.setCircleRad = function() {
+          console.log('fired');
+          debounce(function() {
+            $scope.circles
+              .transition(_t_)
+              .attr('r', calcCircR);
 
-        }, 250);
+          }, 250);
+        };
 
-        $scope.filterCircle = debounce(function() {
 
-          $scope.circles.transition(t)
-            .attr('r', calcCircR);
+        $scope.filterCircle = reloadCanvas;
+        // $scope.filterCircle = function() {
+        //   console.log('filterCircle');
+        //   debounce(function() {
 
-        }, 250);
+        //           $scope.circles.transition(_t_)
+        //             .attr('r', calcCircR);
 
+        //         }, 500);
+        // };
 
         // Event Handlers
         $scope.circSetColorType = function() {
 
-          $scope.circles.transition(t)
+          $scope.circles.transition(_t_)
             .style('fill', function(d) {
               return $scales.extColour(d.summary_offense_code);
             });
@@ -347,7 +385,7 @@ angular.module('mkm.seaCrimeData')
 
         $scope.circSetColorDist = function() {
 
-          $scope.circles.transition(t)
+          $scope.circles.transition(_t_)
             .style('fill', function(d) {
               return $scales.distColour(d.district_sector);
             });
@@ -356,14 +394,12 @@ angular.module('mkm.seaCrimeData')
         };
 
 
-
-
         function plotDistricts() {
 
           axDist.attr('opacity', 1);
           axExt.attr('opacity', 0);
 
-          $scope.circles.transition(t)
+          $scope.circles.transition(_t_)
             .attr('cy', function(d) {
               return $scales.distBand(d.district_sector); //plot by district
             });
@@ -375,7 +411,7 @@ angular.module('mkm.seaCrimeData')
           axDist.attr('opacity', 0);
           axExt.attr('opacity', 1);
 
-          $scope.circles.transition(t)
+          $scope.circles.transition(_t_)
             .attr('cy', function(d) {
               return $scales.extBand(d.summary_offense_code); //plot by offense code
             });
@@ -399,32 +435,8 @@ angular.module('mkm.seaCrimeData')
         };
 
 
-        angular.element($window).bind('resize', debounce(function() {
-
-          $svg
-            .attr('height', $element[0].offsetHeight)
-            .attr('width', $element[0].offsetWidth);
-
-          $scope.setElementScales($svg);
-
-          $scope.circles.transition(t)
-            .attr('cx', function(d) {
-              return $scales.dateReported(new Date(d.date_reported));
-            })
-            .attr('cy', function(d) {
-
-              if ($scope.disp.axis === 'district') {
-
-                return $scales.distBand(d.district_sector);
-
-              } else if ($scope.disp.axis === 'extension') {
-
-                return $scales.extBand(d.summary_offense_code);
-              }
-            });
-
-          callAxis($scales);
-        }, 250));
+        // angular.element($window).bind('resize', reloadCanvas($scope.circles));
+        angular.element($window).bind('resize', debounce(reloadCanvas, 250));
 
 
         // UPDATE DOM
@@ -434,7 +446,7 @@ angular.module('mkm.seaCrimeData')
       }
 
 
-      $scope._seaCrimeData_.then(init);
+      $scope._seaCrimeData_.then(_init_);
     }
     return {
       require: ['^seattleCrimePlotted'],
