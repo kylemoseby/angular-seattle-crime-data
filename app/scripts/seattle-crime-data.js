@@ -1,7 +1,8 @@
 'use strict';
 
 angular.module('mkm.seaCrimeData', [
-    'ngMaterial'
+    'ngMaterial',
+    'mkm.mapStyle'
   ])
   .service('seattleDataGov', ['$http', '$q', function($http, $q) {
 
@@ -62,6 +63,7 @@ angular.module('mkm.seaCrimeData', [
       $scope.$index = data.index;
 
       $scope.$reports = data.incidents;
+
     });
 
     $scope.mapStyle = mapStyle;

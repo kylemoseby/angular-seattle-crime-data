@@ -1,3 +1,34 @@
+
+<!-- TIMELINE -->
+<div class="container-fluid">
+  <!-- <seattle-crime-plotted class="row">
+    <div class="col-sm-5 crime-plot-menu">
+      <crime-plot-menu></crime-plot-menu>
+    </div>
+    <div class="col-sm-7">
+      <crime-plot-svg></crime-plot-svg>
+    </div>
+  </seattle-crime-plotted> -->
+  <!-- // TIMELINE -->
+  <!-- GOOGLE MAP -->
+  <!-- flex-gt-md="40" -->
+  <h2>Reports by Latitude and Longitude</h2>
+  <div layout="row">
+    <seattle-crime-map layout="row" flex="100" map-promise="$seaCrimeData" map-style="mapStyle" layout-margin layout-padding>
+      <map-canvas flex="40"></map-canvas>
+      <map-filters flex="60"></map-filters>
+    </seattle-crime-map>
+  </div>
+   <!-- // GOOGLE MAP -->
+</div>
+<!-- TYPE DETAIL EXAMPLE -->
+<div layout="column" class="report-type-detail">
+<div flex>
+<!-- <h2>Type Detail</h2>
+<div ng-include="'views/template-report-type-detail.html'"></div>
+ --><!-- // TYPE DETAIL EXAMPLE -->
+<!-- REPORT DETAIL EXAMPLE -->
+<!-- // REPORT DETAIL EXAMPLE -->
 <!-- INTRO -->
 <!-- <div flex="100" flex-gt-md="50">
   <h1>Seattle Crime Reports</h1>
@@ -12,43 +43,57 @@
   </ul>
 </div>
  -->
- <!-- // INTRO -->
-<!-- TIMELINE -->
-<div class="container-fluid">
-  <seattle-crime-plotted class="row">
-    <div class="col-sm-5 crime-plot-menu">
-      <crime-plot-menu></crime-plot-menu>
-    </div>
-    <div class="col-sm-7">
-      <crime-plot-svg></crime-plot-svg>
-    </div>
-  </seattle-crime-plotted>
-  <!-- // TIMELINE -->
-  <!-- GOOGLE MAP -->
- <!-- flex-gt-md="40" -->
-   <div flex="100" >
-    <h2>Reports by Latitude and Longitude</h2>
-    <seattle-crime-map layout="row" flex="100" map-promise="$seaCrimeData" map-style="mapStyle">
-      <map-canvas flex="40"></map-canvas>
-      <map-filters flex="40"></map-filters>
-    </seattle-crime-map>
-  </div>
-  <!-- // GOOGLE MAP -->
-  <!-- BAR CHART -->
-   <div flex="100" flex-gt-md="100">
+<!-- // INTRO -->
+<!-- BAR CHART -->
+<!--    <div flex="100" flex-gt-md="100">
     <h2>Report count by incident type</h2>
     <div id="crime-reports-block" crime-reports-block crime-reports-data="$seaCrimeData"></div>
   </div>
-  <!-- // BAR CHART -->
-</div>
-<!-- TYPE DETAIL EXAMPLE -->
-<!-- <div layout="column" class="report-type-detail"> -->
-<!-- <div flex> -->
-<!-- <h2>Type Detail</h2> -->
-<!-- <div ng-include="'views/template-report-type-detail.html'"></div> -->
-<!-- <h2>Incident Detail</h2> -->
-<!-- <div ng-include="'views/template-incident-detail.html'" onload="incidentStreetView()" class="incident-example"></div> -->
-<!-- </div> -->
-<!-- </div> -->
-<!-- // TYPE DETAIL EXAMPLE -->
-<!-- // REPORT DETAIL EXAMPLE -->
+ -->
+<!-- // BAR CHART -->
+<!-- <spd-officer-involved-shootings ng-controller="OISCtrl">
+    <incident-by-race></incident-by-race>
+    <div class="alert alert-danger" role="alert" ng-show="error">
+      {{error.status}} Something went wrong! - {{error.data.message}}
+    </div>
+    <div class="meta-data">
+      <a ng-href="OIS.meta.view.attributionLink">{{OIS.meta.view.attribution}}</a>
+      <p>{{OIS.meta.view.description}}</p>
+      <p>{{OIS.meta.view.license.name}}</p>
+      <p>{{OIS.meta.view.publicationDate | date:'medium' }}</p>
+      <p>{{OIS.meta.view.viewLastModified | date:'medium' }}</p>
+    </div>
+    <h3>Meta Data</h3>
+    <ul class="list-unstyled">
+      <li ng-repeat="column in OIS.meta.view.columns" ng-hide="$last">
+        {{column.name}} - {{column.description}}
+        <ul>
+          <li ng-repeat="(key, cache) in column.cachedContents" ng-switch on="key">
+            <span ng-switch-when="top">
+                    <ul>
+                      <li ng-repeat="top in cache"> {{top.item}} : {{top.count}}</li>
+                    </ul>
+                  </span>
+            <div ng-switch-default>
+              {{key}} : {{cache}}
+            </div>
+          </li>
+        </ul>
+      </li>
+    </ul>
+    <h3>Raw data</h3>
+    <div class="table-responsive">
+      <table class="table">
+        <thead>
+          <th ng-repeat="column in OIS.meta.view.columns" ng-hide="hiddenCols[$index] || $last">{{column.name}}</th>
+        </thead>
+        <tbody>
+          <tr ng-repeat="row in OIS.data track by $index">
+            <td ng-repeat="val in row track by $index" ng-hide="hiddenCols[$index] || $last">{{val}}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </spd-officer-involved-shootings>
+   path-district-count ng-controller="PathReportrsCtrl"></path-district-count>
+     -->

@@ -20,23 +20,13 @@ angular.module('mkm.seaCrimeData')
         // Angular Modal
         scope.$panel = $mdPanel;
 
-        //  SVG DIMENSIONS
-        var padding = $elm.offsetWidth * 0.033;
-        var wdth = $elm.offsetWidth;
-        var hght = $elm.offsetHeight;
-        var barHght = hght - padding - (hght * 0.45);
-
 
         // DOM ELEMENTS
         var wrapper = d3.select($elm);
 
-        wrapper.append('svg')
-          .attr('height', hght)
-          .attr('width', wdth);
-
         var progressBar = wrapper.select('.loading-wrapper');
 
-        var svg = wrapper.select('svg');
+        var svg = wrapper.append('svg');
 
         var rectGroup = svg.selectAll('g.reports-index-rect');
 
@@ -59,17 +49,6 @@ angular.module('mkm.seaCrimeData')
         }
         // END PROGRESS BAR LOADING
 
-
-
-        // AXIS
-        var scaleAxisX = d3.scaleBand()
-          .range([padding, (wdth - padding)]);
-
-        var scaleAxisY = d3.scaleLinear()
-          .range([padding, barHght]);
-
-
-
         /*
           Necessary because of the way parent child relationships are stored in SPD Data
           VEH-THEFT-AUTO appears to be it's own distint topice, but all the other
@@ -81,6 +60,23 @@ angular.module('mkm.seaCrimeData')
 
         // render Visualization with returned data
         function renderBlocksWithData(data) {
+
+          //  SVG DIMENSIONS
+          var padding = $elm.offsetWidth * 0.033;
+          var wdth = $elm.offsetWidth;
+          var hght = $elm.offsetHeight;
+          var barHght = hght - padding - (hght * 0.45);
+
+          // AXIS
+          var scaleAxisX = d3.scaleBand()
+            .range([padding, (wdth - padding)]);
+
+          var scaleAxisY = d3.scaleLinear()
+            .range([padding, barHght]);
+
+          svg
+            .attr('height', hght)
+            .attr('width', wdth);
 
           var _index_ = data.indexOffType.sort(function(a, b) {
             return d3.descending(a.values.length, b.values.length);
@@ -106,32 +102,32 @@ angular.module('mkm.seaCrimeData')
 
             /*
               _d_ = {
-                fillColor: "#ffbb78"
-                key: "ASSLT"
+                fillColor: '#ffbb78'
+                key: 'ASSLT'
                 values: [{
-                    census_tract_2000: "7500.4017",
-                    date_reported: "2017-09-06T22:29:00",
-                    district_sector: "E",
-                    general_offense_number: "2017332238",
-                    hundred_block_location: "10XX BLOCK OF E PIKE ST",
-                    latitude: "47.614089966",
+                    census_tract_2000: '7500.4017',
+                    date_reported: '2017-09-06T22:29:00',
+                    district_sector: 'E',
+                    general_offense_number: '2017332238',
+                    hundred_block_location: '10XX BLOCK OF E PIKE ST',
+                    latitude: '47.614089966',
                     location: {
                         l
-                        atitude: "47.614089966",
+                        atitude: '47.614089966',
                         needs_recoding: false,
-                        longitude: "-122.31879425"
+                        longitude: '-122.31879425'
                     },
-                    longitude: "-122.318794250",
-                    month: "9",
-                    occurred_date_or_date_range_start: "2017-09-06T22:29:00",
-                    offense_code: "1313",
-                    offense_code_extension: "0",
-                    offense_type: "ASSLT-NONAGG",
-                    rms_cdw_id: "1274601",
-                    summarized_offense_description: "ASSAULT",
-                    summary_offense_code: "1300",
-                    year: "2017",
-                    zone_beat: "E2"
+                    longitude: '-122.318794250',
+                    month: '9',
+                    occurred_date_or_date_range_start: '2017-09-06T22:29:00',
+                    offense_code: '1313',
+                    offense_code_extension: '0',
+                    offense_type: 'ASSLT-NONAGG',
+                    rms_cdw_id: '1274601',
+                    summarized_offense_description: 'ASSAULT',
+                    summary_offense_code: '1300',
+                    year: '2017',
+                    zone_beat: 'E2'
                   }]
                };
              */
@@ -162,10 +158,10 @@ angular.module('mkm.seaCrimeData')
                 },
                 controller: function($scope, mdPanelRef, reportType) {
 
-                  console.log(reportType);
-
                   $scope.reportType = reportType;
                   $scope.reportType.fillColor = colorScale(reportType.key);
+
+                  $scope.reports = reportType.values;
 
                   $scope.dataTypeDay = d3.nest()
                     .key(function(d) {
@@ -280,14 +276,14 @@ angular.module('mkm.seaCrimeData')
 
             labelCatg
               .transition(t)
-              .attr("transform", function(d) {
+              .attr('transform', function(d) {
                 var xTrans = scaleAxisX(checkVehKey(d.key));
                 return 'translate(' + (xTrans - (scaleAxisX.bandwidth() * 0.33)) + ', ' + (barHght - padding + 7) + ') rotate(-50)';
               });
 
             labelCnt
               .transition(t)
-              .attr("transform", function(d) {
+              .attr('transform', function(d) {
                 var xTrans = scaleAxisX(checkVehKey(d.key));
                 return 'translate(' + (xTrans - (scaleAxisX.bandwidth() * 0.5)) + ', ' + (barHght - scaleAxisY(d.values.length) - padding - 6) + ')';
               });
@@ -322,4 +318,132 @@ angular.module('mkm.seaCrimeData')
 
       }
     };
-  }]);
+  }])
+  .controller('PathReportrsCtrl', [
+    '$scope',
+    'seattleDataGov',
+    function($scope, seattleDataGov) {
+      $scope.$seaCrimeData = seattleDataGov;
+
+      $scope.$seaCrimeData.promise.then(function(data) {
+        $scope.index = data.index;
+
+        $scope.reports = data.incidents;
+      });
+    }
+  ])
+  .directive('pathDistrictCount', [
+    function() {
+      return {
+        link: function($scope, $element) {
+
+          // SCALES
+          var scaleXTime = d3.scaleTime();
+          var scaleYCount = d3.scaleLinear();
+          var districtColor = d3.scaleOrdinal().range(d3.schemeCategory20);
+
+          // DOM ELEMENTS
+          var $wrapper = d3.select($element[0]);
+
+          var $svg = $wrapper.append('svg');
+
+          var D3path = function() {
+
+            var _path = $svg
+              .append('path');
+
+            var valueline = d3.line()
+              .x(function(d) {
+                return Math.floor(scaleXTime(new Date(d.date_reported)));
+              })
+              .y(function(d, i) {
+                return scaleYCount(i);
+              });
+
+            function _addData(data) {
+
+              _path
+                .data([data.sort(function(a, b) {
+                  return d3.ascending(a.date_reported, b.date_reported);
+                })])
+                .attr('class', 'line')
+                .attr('d', valueline);
+            }
+
+            return {
+              getPath: _path,
+              addData: _addData
+            };
+          };
+
+
+          function svgApplyFraming(_reports) {
+
+            var padding = 40;
+            var hght = $element[0].offsetHeight;
+            var wdth = $element[0].offsetWidth;
+
+            $svg.attr('width', wdth).attr('height', hght);
+
+            var districtSectors = d3
+              .nest()
+              .key(function(d) {
+                return d.district_sector;
+              })
+              .entries(_reports);
+
+
+            scaleXTime.domain(
+                d3.extent(_reports, function(d) {
+                  return new Date(d.date_reported);
+                })
+              )
+              .range([padding, wdth - padding]);
+
+            scaleYCount
+              .domain([0, _reports.length])
+              .range([hght - padding, padding]);
+
+            districtColor
+              .domain(districtSectors
+                .map(function(d) {
+                  return d.key;
+                }));
+
+            $svg.append('g')
+              .attr('transform', 'translate(0,' + (hght - padding) + ')')
+              .call(d3.axisBottom(scaleXTime));
+
+            $svg.append('g')
+              .attr('transform', 'translate(' + padding + ',0)')
+              .call(d3.axisLeft(scaleYCount));
+
+
+            var totalReports = new D3path();
+
+            totalReports.addData(_reports);
+
+            totalReports.getPath
+              .attr('stroke', 'blue');
+
+            districtSectors.forEach(function(d) {
+              var distLine = new D3path();
+
+              distLine.addData(d.values);
+
+              distLine.getPath
+                .attr('stroke', districtColor(d.key));
+            });
+          }
+
+
+          // Data might be delivered via a $promise
+          $scope.$watch('reports', function(newValues) {
+            if (Array.isArray(newValues)) {
+              svgApplyFraming(newValues);
+            }
+          });
+        }
+      };
+    }
+  ]);

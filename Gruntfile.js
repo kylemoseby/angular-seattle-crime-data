@@ -299,11 +299,11 @@ module.exports = function(grunt) {
       },
       source: {
         options: {
-          beautify: {
-            beautify: true,
-            indent_level: 1
-          },
-          mangle: true,
+          // beautify: {
+            // beautify: true,
+            // indent_level: 1
+          // },
+          mangle: false,
           compress: false
         },
         files: {

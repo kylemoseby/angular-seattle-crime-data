@@ -1,3 +1,25 @@
+// https://davidwalsh.name/essential-javascript-functions
+// Returns a function, that, as long as it continues to be invoked, will not
+// be triggered. The function will be called after it stops being called for
+// N milliseconds. If `immediate` is passed, trigger the function on the
+// leading edge, instead of the trailing.
+// function debounce(func, wait, immediate) {
+//   var timeout;
+//   return function() {
+//     var context = this,
+//       args = arguments;
+//     var later = function() {
+//       timeout = null;
+//       if (!immediate) { func.apply(context, args); }
+//     };
+//     var callNow = immediate && !timeout;
+//     clearTimeout(timeout);
+//     timeout = setTimeout(later, wait);
+//     if (callNow) { func.apply(context, args); }
+//   };
+// }
+
+
 'use strict';
 
 angular.module('mkm.seaCrimeData')
@@ -124,62 +146,6 @@ angular.module('mkm.seaCrimeData')
       controller: _controller_,
     };
   }])
-  .directive('crimePlotMenu', [function() {
-
-    function _link_($scope) {
-
-      $scope.isIndeterminate = function() {
-        return ($scope.selected.length !== 0 &&
-          $scope.selected.length !== $scope.items.length);
-      };
-
-      $scope.isChecked = function(type) {
-
-        var _filter_ = $scope.filter[type];
-
-        var checked = true;
-
-        if (Object.keys(_filter_).length > 0) {
-
-          for (var key in _filter_) {
-
-            if (!_filter_[key]) {
-
-              checked = false;
-              break;
-            }
-          }
-        }
-
-        return checked;
-      };
-
-      $scope.toggleAll = function(type) {
-
-        var vals = Object.values($scope.filter[type]);
-
-        var $test = vals.every(function(d) {
-          return d === true;
-        });
-
-        for (var key in $scope.filter[type]) {
-          $scope.filter[type][key] = !$test;
-        }
-
-        $scope.filterCircle();
-      };
-
-      $scope.fileterChange = function() {
-        console.log('cahnged');
-        $scope.filterCircle();
-      };
-    }
-    return {
-      require: '^seattleCrimePlotted',
-      templateUrl: 'views/template-crime-plot-menu.html',
-      link: _link_
-    };
-  }])
   .directive('crimePlotSvg', ['$window', 'crimeReportPanelPlots', function($window, $reportPanel) {
 
     function _link_($scope, $element) {
@@ -230,14 +196,11 @@ angular.module('mkm.seaCrimeData')
         axExt.call(yAxisExt);
       }
 
-
-
       // CRIME REPORT $scope.CIRCLES
       var circWrap = $svg.append('g')
         .attr('class', 'crime-report-plots');
 
-      // $scope.circles = circWrap.selectAll('circle');
-
+      $scope.circles = circWrap.selectAll('circle');
 
       var $scales = $scope.scales;
 
@@ -246,28 +209,6 @@ angular.module('mkm.seaCrimeData')
       var _t_ = d3.transition()
         .duration(950)
         .ease(d3.easeLinear);
-
-
-      // https://davidwalsh.name/essential-javascript-functions
-      // Returns a function, that, as long as it continues to be invoked, will not
-      // be triggered. The function will be called after it stops being called for
-      // N milliseconds. If `immediate` is passed, trigger the function on the
-      // leading edge, instead of the trailing.
-      function debounce(func, wait, immediate) {
-        var timeout;
-        return function() {
-          var context = this,
-            args = arguments;
-          var later = function() {
-            timeout = null;
-            if (!immediate) { func.apply(context, args); }
-          };
-          var callNow = immediate && !timeout;
-          clearTimeout(timeout);
-          timeout = setTimeout(later, wait);
-          if (callNow) { func.apply(context, args); }
-        };
-      }
 
 
       function _init_(response) {
@@ -288,8 +229,8 @@ angular.module('mkm.seaCrimeData')
 
         function calcCircR(d) {
 
-          if (!$scope.filter.extension[d.summary_offense_code] &&
-            !$scope.filter.district[d.district_sector]) {
+          if ($scope.filter.extension[d.summary_offense_code] &&
+            $scope.filter.district[d.district_sector]) {
 
             return ($scope.disp.circRad / 10) + 'vh';
 
@@ -351,26 +292,24 @@ angular.module('mkm.seaCrimeData')
 
 
         $scope.setCircleRad = function() {
-          console.log('fired');
-          debounce(function() {
-            $scope.circles
-              .transition(_t_)
-              .attr('r', calcCircR);
 
-          }, 250);
+          // debounce(function() {
+          $scope.circles
+            .transition(_t_)
+            .attr('r', calcCircR);
+
+          // }, 250);
         };
 
 
-        $scope.filterCircle = reloadCanvas;
-        // $scope.filterCircle = function() {
-        //   console.log('filterCircle');
-        //   debounce(function() {
+        // $scope.filterCircle = reloadCanvas;
+        $scope.filterCircle = function() {
 
-        //           $scope.circles.transition(_t_)
-        //             .attr('r', calcCircR);
-
-        //         }, 500);
-        // };
+          // debounce(function() {
+          $scope.circles.transition(_t_)
+            .attr('r', calcCircR);
+          // }, 500);
+        };
 
         // Event Handlers
         $scope.circSetColorType = function() {
@@ -435,8 +374,8 @@ angular.module('mkm.seaCrimeData')
         };
 
 
-        // angular.element($window).bind('resize', reloadCanvas($scope.circles));
-        angular.element($window).bind('resize', debounce(reloadCanvas, 250));
+        angular.element($window).bind('resize', reloadCanvas($scope.circles));
+        // angular.element($window).bind('resize', debounce(reloadCanvas, 250));
 
 
         // UPDATE DOM
@@ -453,7 +392,61 @@ angular.module('mkm.seaCrimeData')
       link: _link_
     };
   }])
-  .factory('crimeReportPanelPlots', ['$mdPanel', function($mdPanel) {
+  .directive('crimePlotMenu', [function() {
+    return {
+      require: '^seattleCrimePlotted',
+      templateUrl: 'views/template-crime-plot-menu.html',
+      link: function($scope) {
+
+        // FILTER FUNCTIONS ???
+        $scope.isIndeterminate = function() {
+          return ($scope.selected.length !== 0 &&
+            $scope.selected.length !== $scope.items.length);
+        };
+
+        $scope.isChecked = function(type) {
+
+          var _filter_ = $scope.filter[type];
+
+          var checked = true;
+
+          if (Object.keys(_filter_).length > 0) {
+
+            for (var key in _filter_) {
+
+              if (!_filter_[key]) {
+
+                checked = false;
+                break;
+              }
+            }
+          }
+
+          return checked;
+        };
+
+        $scope.toggleAll = function(type) {
+
+          var vals = Object.values($scope.filter[type]);
+
+          var $test = vals.every(function(d) {
+            return d === true;
+          });
+
+          for (var key in $scope.filter[type]) {
+            $scope.filter[type][key] = !$test;
+          }
+
+          $scope.filterCircle();
+        };
+
+        $scope.filterChange = function() {
+          $scope.filterCircle();
+        };
+        // END FILTER FUNCTIONS ???
+      }
+    };
+  }]).factory('crimeReportPanelPlots', ['$mdPanel', function($mdPanel) {
 
     var $panel = $mdPanel;
 

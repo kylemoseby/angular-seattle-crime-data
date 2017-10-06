@@ -1,43 +1,28 @@
-<div layout="row" layout-wrap layout-padding>
-  <!-- TABLE -->
+<div layout="column" layout-wrap layout-padding>
   <div flex="100">
-    <button type="button" class="btn btn-primary" ng-click="closeDetail()" aria-lable="Close Detail">
+    <h3>{{incidentDetail.summarized_offense_description}}</h3>
+    <button type="button" class="btn btn-primary pull-right" ng-click="closeDetail()" aria-lable="Close Detail">
       <span class="glyphicon glyphicon-remove"></span>
     </button>
-    <div class="table-responsive">
-      <table class="table">
-        <thead>
-          <tr>
-            <td>Date Reported</td>
-            <td>Address</td>
-            <td>District Sector</td>
-            <td>Census Tract</td>
-            <td>General Offense Number</td>
-            <td>Offense Type</td>
-            <td>Offense Code</td>
-            <td>Description</td>
-            <td>Zone/Beat</td>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>{{incidentDetail.date_reported | date:'medium'}}</td>
-            <td>{{incidentDetail.hundred_block_location}}</td>
-            <td>{{incidentDetail.district_sector}}</td>
-            <td>{{incidentDetail.census_tract_2000}}</td>
-            <td>{{incidentDetail.general_offense_number}}</td>
-            <td>{{incidentDetail.offense_type}}</td>
-            <td>{{incidentDetail.offense_code}}</td>
-            <td>{{incidentDetail.summarized_offense_description}}</td>
-            <td>{{incidentDetail.zone_beat}}</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+  </div>
+</div>
+<div layout="row" layout-wrap layout-padding>
+  <!-- TABLE -->
+  <div flex-gt-sm="25" flex="100">
+    <ul class="list-unstyled">
+      <li>Date Reported: {{incidentDetail.date_reported | date:'medium'}}</li>
+      <li>Address: {{incidentDetail.hundred_block_location}}</li>
+      <li>District Sector: {{incidentDetail.district_sector}}</li>
+      <li>Census Tract: {{incidentDetail.census_tract_2000}}</li>
+      <li>General Offense Number: {{incidentDetail.general_offense_number}}</li>
+      <li>Offense Type: {{incidentDetail.offense_type}}</li>
+      <li>Offense Code: {{incidentDetail.offense_code}}</li>
+      <li>Zone/Beat: {{incidentDetail.zone_beat}}</li>
+    </ul>
   </div>
   <!-- // TABLE -->
   <!-- STREET VIEW -->
-  <div flex="100" flex-gt-sm="50">
+  <div flex-gt-sm="70" flex="100">
     <div id="street-view-detail"></div>
   </div>
   <!-- // STREET VIEW -->

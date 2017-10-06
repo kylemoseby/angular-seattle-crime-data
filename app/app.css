@@ -84,6 +84,11 @@ map-canvas {
   height: 100vh;
   width: 100vw;
 }
+.incident-example h3,
+.map-report-detail h3,
+.timeline-report-detail h3 {
+  display: inline-block;
+}
 .incident-example #report-map,
 .map-report-detail #report-map,
 .timeline-report-detail #report-map {
@@ -114,7 +119,6 @@ md-menu-content {
     width: 100%;
   }
 }
-/* Large devices (large desktops, 1200px and up) */
 #crime-reports-block {
   display: block;
   height: 50vh;
@@ -206,4 +210,19 @@ seattle-crime-plotted crime-plot-menu .filter-list md-checkbox {
 }
 seattle-crime-plotted.loading {
   height: 0;
+}
+path-district-count {
+  display: block;
+  height: 50vh;
+  width: 100%;
+}
+.line {
+  fill: none;
+  stroke-width: 2px;
+}
+spd-officer-involved-shootings incident-by-race {
+  display: block;
+  height: 60vh;
+  width: 100%;
+  background: grey;
 }
