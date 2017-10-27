@@ -4,6 +4,31 @@ map-canvas {
   height: 70vh;
 }
 
+
+// ANIMATIONS
+.map-loader {
+  overflow: hidden;
+  padding: 0;
+  height: 0px;
+  display: flex;
+}
+
+.map-loaded-add,
+.map-loaded-remove {
+  transition: all 0.5s cubic-bezier(0.250, 0.460, 0.450, 0.940);
+}
+
+.map-loaded,
+.map-loaded-add.map-loaded-add-active {
+  height: inherit;
+}
+
+.map-loaded-remove.map-loaded-remove-active {
+  // height: 600px;
+  background: yellow;
+}
+
+// ENDIMATIONS
 // REPORT DETAIL
 .incident-example,
 .map-report-detail,
@@ -30,8 +55,6 @@ md-menu-content {
 }
 
 // @media (min-width: @screen-sm-min) {}
-
-
 
 /* Medium devices (desktops, 992px and up) */
 

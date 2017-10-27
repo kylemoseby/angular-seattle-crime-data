@@ -119,12 +119,10 @@ angular.module('mkm.seaCrimeData')
           });
 
 
-
           function markerClick($event) {
             // $scope.$infoWindow($googleMap, $event);
 
             $detailModal($event.feature.f);
-
           }
 
           $googleMap.data.addListener('click', markerClick);
@@ -145,8 +143,9 @@ angular.module('mkm.seaCrimeData')
 
               // Opacity <>
               function filterByDate(reportDate) {
+
                 var dateReported = new Date(reportDate);
-                // return (dateReported <= $scope.filters.startDate && dateReported >= $scope.filters.endDate) ? true : false;
+
                 return (dateReported >= $scope.filters.startDate && dateReported <= $scope.filters.endDate) ? true : false;
               }
 
@@ -155,6 +154,10 @@ angular.module('mkm.seaCrimeData')
                 return ($scope.filters.reportFilter.indexOf($scope.getIncidentParent(reportType)) > -1) ? false : true;
               }
 
+              // Add report count {{reports.length}} to progress bar
+              $scope.progressBar.setVal('max', reports.length);
+
+              // filter reports loop
               for (var i = reports.length - 1; i >= 0; i--) {
 
                 var _report_ = reports[i];
@@ -183,8 +186,17 @@ angular.module('mkm.seaCrimeData')
                   }
                   // end valid lat/long
                 }
-                // end for
+                // end validation
+
+                // update progress bar
+                $scope.progressBar.setVal('now', 1);
+
+                if (i === 0) {
+
+                  $scope.progressBar.loadingComplete();
+                }
               }
+              // END filter reports loop
 
               $googleMap.data.addGeoJson({
                 "type": "FeatureCollection",
@@ -238,18 +250,12 @@ angular.module('mkm.seaCrimeData')
         // $scope.filterToggleType = function($event) {
         //   $event.preventDefault();
         //   $event.cancelBubble = true;
-
         //   var toggleKey = $scope.filters.reportFilter.indexOf(this.val.key);
-
         //   if (toggleKey === -1) {
-
         //     $scope.filters.reportFilter.push(this.val.key);
-
         //   } else {
-
         //     $scope.filters.reportFilter.splice(toggleKey, 1);
         //   }
-
         //   $scope._apply = true;
         // };
 
@@ -361,6 +367,44 @@ angular.module('mkm.seaCrimeData')
         };
 
         $scope.colorScaleOff = d3.schemeCategory20;
+      }
+    };
+  }])
+  .directive('mapLoadProgress', ['$animate', function($animate) {
+
+    return {
+      require: '^seattleCrimeMap', // Array = multiple requires, ? = optional, ^ = check parent elements
+      link: function($scope, $element) {
+        console.log($element);
+        $animate.on('addClass', $element, function callback(element, phase) {
+          // cool we detected an enter animation within the container
+          console.log(element);
+          console.log(phase);
+        });
+
+        $scope.progressBar = {
+          valnow: 0,
+          valmin: 0,
+          valmax: 0,
+          loaded: false,
+
+          setVal: function(prop, val) {
+
+            $scope.progressBar['val' + prop] += val;
+          },
+
+          valWidth: function() {
+
+            var _width_ = Math.floor(this.valnow / this.valmax) * 100;
+
+            return _width_ + '%';
+          },
+
+          loadingComplete: function() {
+
+            this.loaded = true;
+          }
+        };
       }
     };
   }]);

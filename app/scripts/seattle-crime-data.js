@@ -64,6 +64,10 @@ angular.module('mkm.seaCrimeData', [
 
       $scope.$reports = data.incidents;
 
+      // var randInd = Math.floor(data.incidents.length * Math.random());
+
+      // $scope.report = data.incidents[randInd];
+
     });
 
     $scope.mapStyle = mapStyle;

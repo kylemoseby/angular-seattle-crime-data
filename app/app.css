@@ -77,6 +77,23 @@ map-canvas {
   display: block;
   height: 70vh;
 }
+.map-loader {
+  overflow: hidden;
+  padding: 0;
+  height: 0px;
+  display: flex;
+}
+.map-loaded-add,
+.map-loaded-remove {
+  transition: all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+.map-loaded,
+.map-loaded-add.map-loaded-add-active {
+  height: inherit;
+}
+.map-loaded-remove.map-loaded-remove-active {
+  background: yellow;
+}
 .incident-example,
 .map-report-detail,
 .timeline-report-detail {
@@ -184,8 +201,15 @@ report-type-child .report-types {
 /* Large devices (large desktops, 1200px and up) */
 .timeline-report-detail-panel {
   background: #fff;
-  height: 90vh;
-  width: 90vw;
+  height: 100vh;
+  width: 100vw;
+}
+.timeline-report-detail-panel h3 {
+  display: inline-block;
+}
+.timeline-report-detail-panel #street-view-detail {
+  height: 70vh;
+  width: 100%;
 }
 seattle-crime-plotted {
   overflow: hidden;
@@ -201,7 +225,7 @@ seattle-crime-plotted crime-plot-menu .filter-list {
   list-style: none;
   padding: 5px 10px;
   display: inline-block;
-  max-width: 50%;
+  width: 100%;
 }
 seattle-crime-plotted crime-plot-menu .filter-list md-checkbox {
   white-space: nowrap;

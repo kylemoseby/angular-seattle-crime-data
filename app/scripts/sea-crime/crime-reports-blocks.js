@@ -342,6 +342,8 @@ angular.module('mkm.seaCrimeData')
           var scaleYCount = d3.scaleLinear();
           var districtColor = d3.scaleOrdinal().range(d3.schemeCategory20);
 
+
+
           // DOM ELEMENTS
           var $wrapper = d3.select($element[0]);
 
@@ -353,6 +355,7 @@ angular.module('mkm.seaCrimeData')
               .append('path');
 
             var valueline = d3.line()
+            // .interpolate("basis")
               .x(function(d) {
                 return Math.floor(scaleXTime(new Date(d.date_reported)));
               })
@@ -383,7 +386,9 @@ angular.module('mkm.seaCrimeData')
             var hght = $element[0].offsetHeight;
             var wdth = $element[0].offsetWidth;
 
-            $svg.attr('width', wdth).attr('height', hght);
+            $svg
+            .attr('width', wdth)
+            .attr('height', hght);
 
             var districtSectors = d3
               .nest()
@@ -391,6 +396,8 @@ angular.module('mkm.seaCrimeData')
                 return d.district_sector;
               })
               .entries(_reports);
+
+              console.log(districtSectors);
 
 
             scaleXTime.domain(
