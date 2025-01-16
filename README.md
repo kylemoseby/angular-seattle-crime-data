@@ -1,3 +1,5 @@
+# Archived:   SPD no longer maintains datasource.
+
 # angular-seatle-crime-data
 
 This project is generated with [yo angular generator](https://github.com/yeoman/generator-angular)
